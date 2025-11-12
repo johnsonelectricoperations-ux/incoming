@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성적서 입력 - 검사성적서 관리</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .header-title h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .header-title p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+    
+    .btn-outline:hover {
+      background: white;
+      color: #667eea;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    
+    .nav-menu {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-btn {
+      padding: 12px 24px;
+      background: #f0f4ff;
+      color: #667eea;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .nav-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .nav-btn.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .form-container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .form-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .required {
+      color: #e74c3c;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    select.form-control {
+      cursor: pointer;
+    }
+
+    /* TM-NO 자동완성 스타일 */
+    .autocomplete-results {
+      position: absolute;
+      z-index: 1000;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      background: white;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-top: 4px;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    .autocomplete-item:hover {
+      background-color: #f0f4ff;
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-tmno {
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 4px;
+    }
+
+    .autocomplete-product {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    .file-upload-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 40px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    .file-upload-btn:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    
+    .file-upload-btn.dragover {
+      border-color: #667eea;
+      background: #e8f0fe;
+    }
+    
+    .file-input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .file-info {
+      margin-top: 10px;
+      padding: 10px;
+      background: #e8f5e9;
+      border-radius: 8px;
+      color: #2e7d32;
+      font-size: 13px;
+      display: none;
+    }
+    
+    .alert {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .alert-error {
+      background-color: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+    }
+    
+    .alert-success {
+      background-color: #efe;
+      border: 1px solid #cfc;
+      color: #3c3;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 20px;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loading-content {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .form-help {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+      
+      .form-container {
+        padding: 20px;
+      }
+      
+      .nav-menu {
+        flex-direction: column;
+      }
+      
+      .nav-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>협력사 수입검사 관리</h1>
+        <p id="userInfo">로딩 중...</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <?!= include('Navigation') ?>
+    
+    <div class="form-container">
+      <h2 class="form-title">검사성적서 등록</h2>
+      
+      <div id="alertBox" class="alert"></div>
+      
+      <form id="dataForm" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">입고날짜 <span class="required">*</span></label>
+          <input type="date" class="form-control" id="inputDate" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">입고시간 <span class="required">*</span></label>
+          <select class="form-control" id="inputTime" required>
+            <option value="">시간 선택</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">TM-NO <span class="required">*</span></label>
+          <input type="text" class="form-control" id="inputTmNo" placeholder="TM-NO를 입력하세요" required autocomplete="off">
+          <div id="tmNoAutocomplete" class="autocomplete-results"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">제품명 <span class="required">*</span></label>
+          <input type="text" class="form-control" id="inputProductName" placeholder="제품명이 자동으로 입력됩니다" readonly style="background-color: #f5f5f5;">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">수량 <span class="required">*</span></label>
+          <input type="number" class="form-control" id="inputQuantity" placeholder="수량을 입력하세요" min="0" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">검사성적서 PDF <span class="required">*</span></label>
+          <div class="file-upload-wrapper">
+            <div class="file-upload-btn" id="fileUploadBtn">
+              <span>📎 클릭 또는 드래그하여 PDF 파일 업로드</span>
+            </div>
+            <input type="file" class="file-input" id="fileInput" accept=".pdf" required>
+          </div>
+          <div class="file-info" id="fileInfo"></div>
+          <div class="form-help">최대 10MB까지 업로드 가능합니다. (필수)</div>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="btnSubmit">등록하기</button>
+      </form>
+    </div>
+  </div>
+  
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p>데이터를 저장하는 중입니다...</p>
+    </div>
+  </div>
+  
+  <script>
+    // ===== 토큰 관리 =====
+    let sessionToken = null;
+
+    // 토큰 초기화 (서버에서 전달받은 토큰 또는 sessionStorage에서)
+    function initToken() {
+      // 서버에서 전달받은 토큰 (템플릿 변수)
+      const serverToken = '<?!= token ?>';
+
+      if (serverToken && serverToken !== 'undefined' && serverToken.length > 10) {
+        sessionToken = serverToken;
+        sessionStorage.setItem('sessionToken', serverToken);
+        console.log('토큰 초기화 완료 (서버에서 전달)');
+      } else {
+        // sessionStorage에서 토큰 가져오기
+        sessionToken = sessionStorage.getItem('sessionToken');
+        console.log('토큰 초기화 완료 (sessionStorage)');
+      }
+
+      if (!sessionToken) {
+        console.error('토큰 없음 - 로그인 필요');
+        redirectToLogin();
+      }
+
+      return sessionToken;
+    }
+
+    // 안전한 페이지 이동 (iframe 샌드박스 호환)
+    function safeNavigate(url, params) {
+      // Query string 생성
+      let fullUrl = url;
+      if (params) {
+        const queryString = Object.keys(params)
+          .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+          .join('&');
+        fullUrl = url + '?' + queryString;
+      }
+
+      // window.top.location.href로 직접 네비게이션
+      // form.submit()은 사용자 제스처로 간주되지 않아 sandbox 에러 발생
+      window.top.location.href = fullUrl;
+    }
+
+    // 로그인 페이지로 리다이렉트
+    function redirectToLogin() {
+      sessionStorage.removeItem('sessionToken');
+      safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+    }
+
+    let selectedFile = null;
+
+    window.onload = function() {
+      initToken();
+      loadUserInfo();
+      initializeForm();
+      setupFileUpload();
+      setupTmNoAutocomplete();
+    };
+
+    // 네비게이션 초기화 함수
+    function initNavigation(currentPage, userRole) {
+      const navButtons = {
+        'dashboard': 'navDashboard',
+        'entry': 'navEntry',
+        'history': 'navHistory',
+        'certificate': 'navCertificate'
+      };
+
+      if (navButtons[currentPage]) {
+        const btn = document.getElementById(navButtons[currentPage]);
+        if (btn) {
+          btn.classList.add('active');
+        }
+      }
+
+      // Item 등록 버튼은 대시보드에서만 표시
+      const itemBtn = document.getElementById('navItem');
+      if (itemBtn) {
+        itemBtn.style.display = (currentPage === 'dashboard') ? 'inline-block' : 'none';
+      }
+
+      // 사용자 관리 버튼은 관리자만 표시
+      const usersBtn = document.getElementById('navUsers');
+      if (usersBtn) {
+        usersBtn.style.display = (userRole === '관리자') ? 'inline-block' : 'none';
+      }
+
+      // 네비게이션 메뉴 표시 (부드러운 fade-in 효과)
+      const navMenu = document.getElementById('navMenu');
+      if (navMenu) {
+        navMenu.style.opacity = '1';
+      }
+    }
+
+    // Item 클릭 핸들러
+    function handleItemClick() {
+      goToPage('dashboard');
+    }
+
+    function loadUserInfo() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const user = response.user;
+            document.getElementById('userInfo').textContent =
+              `${user.companyName} | ${user.name} (${user.role})`;
+
+            // 네비게이션 초기화
+            initNavigation('entry', user.role);
+          } else {
+            redirectToLogin();
+          }
+        })
+        .getCurrentUserByToken(sessionToken);
+    }
+    
+    function initializeForm() {
+      // 오늘 날짜 설정
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('inputDate').value = today;
+      
+      // 시간 옵션 생성 (오전/오후)
+      const timeSelect = document.getElementById('inputTime');
+      
+      const option1 = document.createElement('option');
+      option1.value = '오전';
+      option1.textContent = '오전';
+      timeSelect.appendChild(option1);
+      
+      const option2 = document.createElement('option');
+      option2.value = '오후';
+      option2.textContent = '오후';
+      timeSelect.appendChild(option2);
+    }
+    
+    function setupFileUpload() {
+      const fileInput = document.getElementById('fileInput');
+      const fileUploadBtn = document.getElementById('fileUploadBtn');
+      
+      // 파일 선택 이벤트
+      fileInput.addEventListener('change', handleFileSelect);
+      
+      // 드래그 앤 드롭
+      fileUploadBtn.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileUploadBtn.classList.add('dragover');
+      });
+      
+      fileUploadBtn.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        fileUploadBtn.classList.remove('dragover');
+      });
+      
+      fileUploadBtn.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileUploadBtn.classList.remove('dragover');
+        
+        if (e.dataTransfer.files.length > 0) {
+          fileInput.files = e.dataTransfer.files;
+          handleFileSelect({ target: fileInput });
+        }
+      });
+    }
+    
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      
+      if (!file) {
+        selectedFile = null;
+        document.getElementById('fileInfo').style.display = 'none';
+        return;
+      }
+      
+      // PDF 파일 체크
+      if (file.type !== 'application/pdf') {
+        showAlert('PDF 파일만 업로드 가능합니다.', 'error');
+        e.target.value = '';
+        return;
+      }
+      
+      // 파일 크기 체크 (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showAlert('파일 크기는 10MB를 초과할 수 없습니다.', 'error');
+        e.target.value = '';
+        return;
+      }
+      
+      selectedFile = file;
+      
+      // 파일 정보 표시
+      const fileInfo = document.getElementById('fileInfo');
+      fileInfo.innerHTML = `📄 ${file.name} (${formatFileSize(file.size)})`;
+      fileInfo.style.display = 'block';
+      
+      hideAlert();
+    }
+    
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+    
+    function handleSubmit(e) {
+      e.preventDefault();
+      
+      const formData = {
+        date: document.getElementById('inputDate').value,
+        time: document.getElementById('inputTime').value,
+        tmNo: document.getElementById('inputTmNo').value.trim(),
+        productName: document.getElementById('inputProductName').value.trim(),
+        quantity: document.getElementById('inputQuantity').value
+      };
+
+      // 유효성 검사
+      if (!formData.date || !formData.time || !formData.tmNo ||
+          !formData.productName || !formData.quantity) {
+        showAlert('모든 필수 항목을 입력해주세요.', 'error');
+        return;
+      }
+      
+      // PDF 파일 필수 체크
+      if (!selectedFile) {
+        showAlert('검사성적서 PDF 파일을 업로드해주세요.', 'error');
+        return;
+      }
+      
+      // 로딩 표시
+      showLoading();
+      
+      // 파일 업로드 후 데이터 저장
+      uploadFileAndSaveData(formData);
+    }
+    
+    function uploadFileAndSaveData(formData) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const bytes = e.target.result.split(',')[1]; // Base64 데이터
+        
+        const fileData = {
+          fileName: selectedFile.name,
+          mimeType: selectedFile.type,
+          bytes: bytes,
+          tmNo: formData.tmNo
+        };
+        
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              formData.pdfUrl = response.fileUrl;
+              saveData(formData);
+            } else {
+              hideLoading();
+              showAlert(response.message, 'error');
+            }
+          })
+          .withFailureHandler(function(error) {
+            hideLoading();
+            console.error('파일 업로드 실패:', error);
+            showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
+          })
+          .uploadPdfFile(sessionToken, fileData);
+      };
+      
+      reader.readAsDataURL(selectedFile);
+    }
+    
+    function saveData(formData) {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          hideLoading();
+
+          if (response.success) {
+            showAlert('성적서가 성공적으로 등록되었습니다.', 'success');
+            resetForm();
+          } else {
+            showAlert(response.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          console.error('데이터 저장 실패:', error);
+          showAlert('데이터 저장 중 오류가 발생했습니다.', 'error');
+        })
+        .createData(sessionToken, formData);
+    }
+    
+    function resetForm() {
+      document.getElementById('dataForm').reset();
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('inputDate').value = today;
+      selectedFile = null;
+      document.getElementById('fileInfo').style.display = 'none';
+      document.getElementById('fileInput').value = '';
+    }
+    
+    function showAlert(message, type) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.textContent = message;
+      alertBox.className = 'alert alert-' + type;
+      alertBox.style.display = 'block';
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function hideAlert() {
+      document.getElementById('alertBox').style.display = 'none';
+    }
+    
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+      document.getElementById('btnSubmit').disabled = true;
+    }
+    
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      document.getElementById('btnSubmit').disabled = false;
+    }
+    
+    function goToPage(page) {
+      const token = sessionStorage.getItem('sessionToken');
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      safeNavigate(webAppUrl, {
+        'page': page,
+        'token': token,
+        't': Date.now()
+      });
+    }
+
+    // TM-NO 자동완성 설정
+    function setupTmNoAutocomplete() {
+      const tmNoInput = document.getElementById('inputTmNo');
+      const autocompleteDiv = document.getElementById('tmNoAutocomplete');
+      const productNameInput = document.getElementById('inputProductName');
+      let searchTimeout;
+
+      // TM-NO 입력 시 자동완성
+      tmNoInput.addEventListener('input', function(e) {
+        const searchText = e.target.value.trim();
+
+        // 검색어가 없으면 자동완성 숨김
+        if (searchText.length === 0) {
+          autocompleteDiv.style.display = 'none';
+          productNameInput.value = '';
+          return;
+        }
+
+        // 디바운싱 (300ms 대기)
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+          // 서버에서 TM-NO 검색
+          google.script.run
+            .withSuccessHandler(function(response) {
+              if (response.success && response.items && response.items.length > 0) {
+                displayAutocompleteResults(response.items);
+              } else {
+                autocompleteDiv.style.display = 'none';
+              }
+            })
+            .withFailureHandler(function(error) {
+              console.error('TM-NO 검색 실패:', error);
+              autocompleteDiv.style.display = 'none';
+            })
+            .searchTmNo(sessionToken, searchText);
+        }, 300);
+      });
+
+      // 외부 클릭 시 자동완성 숨김
+      document.addEventListener('click', function(e) {
+        if (e.target !== tmNoInput && !autocompleteDiv.contains(e.target)) {
+          autocompleteDiv.style.display = 'none';
+        }
+      });
+    }
+
+    // 자동완성 결과 표시
+    function displayAutocompleteResults(items) {
+      const autocompleteDiv = document.getElementById('tmNoAutocomplete');
+      autocompleteDiv.innerHTML = '';
+
+      items.forEach(function(item) {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'autocomplete-item';
+        itemDiv.innerHTML = `
+          <div class="autocomplete-tmno">${item.tmNo}</div>
+          <div class="autocomplete-product">${item.productName} <span style="color: #666; font-size: 0.9em;">(${item.companyName})</span></div>
+        `;
+
+        itemDiv.addEventListener('click', function() {
+          // TM-NO와 제품명 자동 입력
+          document.getElementById('inputTmNo').value = item.tmNo;
+          document.getElementById('inputProductName').value = item.productName;
+          autocompleteDiv.style.display = 'none';
+        });
+
+        autocompleteDiv.appendChild(itemDiv);
+      });
+
+      autocompleteDiv.style.display = 'block';
+    }
+
+    // 로그아웃
+    function logout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        const token = sessionStorage.getItem('sessionToken');
+        google.script.run
+          .withSuccessHandler(function() {
+            sessionStorage.removeItem('sessionToken');
+            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+          })
+          .withFailureHandler(function(error) {
+            console.error('로그아웃 실패:', error);
+            sessionStorage.removeItem('sessionToken');
+            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+          })
+          .logoutWithToken(token);
+      }
+    }
+
+    function printCertificate() {
+      window.print();
+    }
+
+  </script>
+</body>
+</html>
