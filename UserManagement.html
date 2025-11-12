@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사용자 관리</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #d32f2f;
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .companies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .company-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .company-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+
+    .company-card h3 {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .company-code {
+      color: #666;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+
+    .company-stats {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 6px;
+    }
+
+    .stat-number {
+      font-size: 20px;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-content.large {
+      max-width: 1000px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .modal-header h2 {
+      color: #333;
+      font-size: 20px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .users-table th,
+    .users-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .users-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .users-table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .btn-small {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-active {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .badge-inactive {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .badge-admin {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .badge-jeo {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .badge-user {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+
+    .alert {
+      padding: 12px 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-error {
+      background-color: #ffebee;
+      border: 1px solid #ffcdd2;
+      color: #c62828;
+    }
+
+    .alert-success {
+      background-color: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #2e7d32;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .company-detail-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .detail-stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .detail-stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .detail-stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .password-hint {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .companies-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        flex-direction: column;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>업체 및 사용자 관리</h1>
+      <div class="header-actions">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="업체명 또는 업체코드로 검색..." onkeyup="handleSearch()">
+        </div>
+        <button class="btn btn-primary" onclick="showAddCompanyModal()">신규 업체 등록</button>
+      </div>
+    </div>
+
+    <div id="loadingIndicator" class="loading" style="display: none;">
+      <div class="spinner"></div>
+      <p>로딩 중...</p>
+    </div>
+
+    <div id="companiesContainer" class="companies-grid"></div>
+  </div>
+
+  <!-- 신규 업체 등록 모달 -->
+  <div id="addCompanyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>신규 업체 등록</h2>
+        <button class="close-btn" onclick="closeAddCompanyModal()">&times;</button>
+      </div>
+
+      <div id="addCompanyAlert"></div>
+
+      <form id="addCompanyForm" onsubmit="handleAddCompany(event)">
+        <div class="form-group">
+          <label for="newCompanyName">업체명 *</label>
+          <input type="text" id="newCompanyName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newUserName">관리자 성명 *</label>
+          <input type="text" id="newUserName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newUserId">관리자 ID *</label>
+          <input type="text" id="newUserId" required minlength="4" pattern="[a-zA-Z0-9]+">
+          <div class="password-hint">영문과 숫자만 사용 가능 (최소 4자)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="newUserPassword">비밀번호 *</label>
+          <input type="password" id="newUserPassword" required minlength="6">
+          <div class="password-hint">최소 6자 이상</div>
+        </div>
+
+        <div class="form-group">
+          <label for="newUserRole">권한 *</label>
+          <select id="newUserRole" required>
+            <option value="일반">일반</option>
+            <option value="JEO">JEO</option>
+            <option value="관리자">관리자</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeAddCompanyModal()">취소</button>
+          <button type="submit" class="btn btn-primary" id="btnAddCompany">등록</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 업체 상세 모달 -->
+  <div id="companyDetailModal" class="modal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h2 id="detailCompanyName"></h2>
+        <button class="close-btn" onclick="closeCompanyDetailModal()">&times;</button>
+      </div>
+
+      <div id="companyDetailAlert"></div>
+
+      <div id="companyDetailStats" class="company-detail-stats"></div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3>사용자 목록</h3>
+        <button class="btn btn-primary btn-small" onclick="showAddUserModal()">사용자 추가</button>
+      </div>
+
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>성명</th>
+            <th>ID</th>
+            <th>권한</th>
+            <th>상태</th>
+            <th>생성일</th>
+            <th>작업</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 사용자 추가 모달 -->
+  <div id="addUserModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>사용자 추가</h2>
+        <button class="close-btn" onclick="closeAddUserModal()">&times;</button>
+      </div>
+
+      <div id="addUserAlert"></div>
+
+      <form id="addUserForm" onsubmit="handleAddUser(event)">
+        <div class="form-group">
+          <label for="addUserName">성명 *</label>
+          <input type="text" id="addUserName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="addUserId">ID *</label>
+          <input type="text" id="addUserId" required minlength="4" pattern="[a-zA-Z0-9]+">
+          <div class="password-hint">영문과 숫자만 사용 가능 (최소 4자)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="addUserPassword">비밀번호 *</label>
+          <input type="password" id="addUserPassword" required minlength="6">
+          <div class="password-hint">최소 6자 이상</div>
+        </div>
+
+        <div class="form-group">
+          <label for="addUserRole">권한 *</label>
+          <select id="addUserRole" required>
+            <option value="일반">일반</option>
+            <option value="JEO">JEO</option>
+            <option value="관리자">관리자</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeAddUserModal()">취소</button>
+          <button type="submit" class="btn btn-primary" id="btnAddUser">추가</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 사용자 수정 모달 -->
+  <div id="editUserModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>사용자 정보 수정</h2>
+        <button class="close-btn" onclick="closeEditUserModal()">&times;</button>
+      </div>
+
+      <div id="editUserAlert"></div>
+
+      <form id="editUserForm" onsubmit="handleEditUser(event)">
+        <input type="hidden" id="editUserRowIndex">
+
+        <div class="form-group">
+          <label for="editUserName">성명 *</label>
+          <input type="text" id="editUserName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="editUserPassword">비밀번호</label>
+          <input type="password" id="editUserPassword" minlength="6">
+          <div class="password-hint">변경하지 않으려면 비워두세요 (변경 시 최소 6자)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="editUserRole">권한 *</label>
+          <select id="editUserRole" required>
+            <option value="일반">일반</option>
+            <option value="JEO">JEO</option>
+            <option value="관리자">관리자</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editUserStatus">상태 *</label>
+          <select id="editUserStatus" required>
+            <option value="활성">활성</option>
+            <option value="비활성">비활성</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeEditUserModal()">취소</button>
+          <button type="submit" class="btn btn-primary" id="btnEditUser">수정</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentToken = null;
+    let currentCompanyCode = '';
+    let allCompanies = [];
+
+    // 토큰 초기화 (서버에서 전달받은 토큰 또는 sessionStorage에서)
+    function initToken() {
+      // 서버에서 전달받은 토큰 (템플릿 변수)
+      const serverToken = '<?!= token ?>';
+
+      if (serverToken && serverToken !== 'undefined' && serverToken.length > 10) {
+        currentToken = serverToken;
+        sessionStorage.setItem('sessionToken', serverToken);
+        console.log('토큰 초기화 완료 (서버에서 전달)');
+      } else {
+        // sessionStorage에서 토큰 가져오기
+        currentToken = sessionStorage.getItem('sessionToken');
+        console.log('토큰 초기화 완료 (sessionStorage)');
+      }
+
+      if (!currentToken) {
+        console.error('토큰 없음 - 로그인 필요');
+        return false;
+      }
+
+      return true;
+    }
+
+    // 페이지 로드 시 실행
+    window.onload = function() {
+      if (!initToken()) {
+        alert('로그인이 필요합니다.');
+        window.location.href = '<?= getWebAppUrl() ?>?page=login';
+        return;
+      }
+
+      loadCompanies();
+    };
+
+    // 업체 목록 로드
+    function loadCompanies() {
+      showLoading(true);
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          showLoading(false);
+
+          if (response.success) {
+            allCompanies = response.data;
+            renderCompanies(allCompanies);
+          } else {
+            showError(response.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showError('업체 목록 로드 중 오류가 발생했습니다.');
+        })
+        .getCompanies(currentToken);
+    }
+
+    // 업체 목록 렌더링
+    function renderCompanies(companies) {
+      const container = document.getElementById('companiesContainer');
+
+      if (!companies || companies.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <p>등록된 업체가 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = companies.map(company => `
+        <div class="company-card" onclick="showCompanyDetail('${company.companyCode}')">
+          <h3>${company.companyName}</h3>
+          <div class="company-code">업체코드: ${company.companyCode}</div>
+          <div class="company-stats">
+            <div class="stat-item">
+              <div class="stat-number">${company.totalUsers}</div>
+              <div class="stat-label">전체 사용자</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">${company.activeUsers}</div>
+              <div class="stat-label">활성 사용자</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 검색 처리
+    function handleSearch() {
+      const searchText = document.getElementById('searchInput').value.trim();
+
+      if (!searchText) {
+        renderCompanies(allCompanies);
+        return;
+      }
+
+      const filtered = allCompanies.filter(company => {
+        return company.companyName.toLowerCase().includes(searchText.toLowerCase()) ||
+               company.companyCode.toLowerCase().includes(searchText.toLowerCase());
+      });
+
+      renderCompanies(filtered);
+    }
+
+    // 업체 상세 보기
+    function showCompanyDetail(companyCode) {
+      currentCompanyCode = companyCode;
+      showLoading(true);
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          showLoading(false);
+
+          if (response.success) {
+            renderCompanyDetail(response.data);
+            document.getElementById('companyDetailModal').classList.add('active');
+          } else {
+            showError(response.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showError('업체 정보 로드 중 오류가 발생했습니다.');
+        })
+        .getCompanyDetails(currentToken, companyCode);
+    }
+
+    // 업체 상세 정보 렌더링
+    function renderCompanyDetail(data) {
+      document.getElementById('detailCompanyName').textContent =
+        data.companyName + ' (' + data.companyCode + ')';
+
+      // 통계 표시
+      const statsHtml = `
+        <div class="detail-stat-card">
+          <div class="detail-stat-number">${data.stats.dataCount}</div>
+          <div class="detail-stat-label">성적서</div>
+        </div>
+        <div class="detail-stat-card">
+          <div class="detail-stat-number">${data.stats.itemCount}</div>
+          <div class="detail-stat-label">등록 품목</div>
+        </div>
+        <div class="detail-stat-card">
+          <div class="detail-stat-number">${data.stats.specCount}</div>
+          <div class="detail-stat-label">검사 규격</div>
+        </div>
+        <div class="detail-stat-card">
+          <div class="detail-stat-number">${data.stats.resultCount}</div>
+          <div class="detail-stat-label">검사 결과</div>
+        </div>
+      `;
+      document.getElementById('companyDetailStats').innerHTML = statsHtml;
+
+      // 사용자 목록 표시
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = data.users.map(user => {
+        const roleClass = user.role === '관리자' ? 'badge-admin' :
+                         user.role === 'JEO' ? 'badge-jeo' : 'badge-user';
+        const statusClass = user.status === '활성' ? 'badge-active' : 'badge-inactive';
+        const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-';
+
+        return `
+          <tr>
+            <td>${user.name}</td>
+            <td>${user.userId}</td>
+            <td><span class="badge ${roleClass}">${user.role}</span></td>
+            <td><span class="badge ${statusClass}">${user.status}</span></td>
+            <td>${createdDate}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-secondary btn-small" onclick="showEditUserModal(${user.rowIndex}, '${user.name}', '${user.role}', '${user.status}')">수정</button>
+                <button class="btn btn-danger btn-small" onclick="confirmDeleteUser(${user.rowIndex}, '${user.userId}')">삭제</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 신규 업체 등록 모달 표시
+    function showAddCompanyModal() {
+      document.getElementById('addCompanyForm').reset();
+      document.getElementById('addCompanyAlert').innerHTML = '';
+      document.getElementById('addCompanyModal').classList.add('active');
+    }
+
+    function closeAddCompanyModal() {
+      document.getElementById('addCompanyModal').classList.remove('active');
+    }
+
+    // 신규 업체 등록 처리
+    function handleAddCompany(event) {
+      event.preventDefault();
+
+      const companyData = {
+        companyName: document.getElementById('newCompanyName').value.trim(),
+        userName: document.getElementById('newUserName').value.trim(),
+        userId: document.getElementById('newUserId').value.trim(),
+        password: document.getElementById('newUserPassword').value.trim(),
+        role: document.getElementById('newUserRole').value
+      };
+
+      document.getElementById('btnAddCompany').disabled = true;
+      document.getElementById('btnAddCompany').textContent = '처리 중...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          document.getElementById('btnAddCompany').disabled = false;
+          document.getElementById('btnAddCompany').textContent = '등록';
+
+          if (response.success) {
+            showAlert('addCompanyAlert', response.message, 'success');
+            setTimeout(function() {
+              closeAddCompanyModal();
+              loadCompanies();
+            }, 1500);
+          } else {
+            showAlert('addCompanyAlert', response.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('btnAddCompany').disabled = false;
+          document.getElementById('btnAddCompany').textContent = '등록';
+          showAlert('addCompanyAlert', '업체 등록 중 오류가 발생했습니다.', 'error');
+        })
+        .addCompany(currentToken, companyData);
+    }
+
+    // 사용자 추가 모달 표시
+    function showAddUserModal() {
+      document.getElementById('addUserForm').reset();
+      document.getElementById('addUserAlert').innerHTML = '';
+      document.getElementById('addUserModal').classList.add('active');
+    }
+
+    function closeAddUserModal() {
+      document.getElementById('addUserModal').classList.remove('active');
+    }
+
+    // 사용자 추가 처리
+    function handleAddUser(event) {
+      event.preventDefault();
+
+      const userData = {
+        companyCode: currentCompanyCode,
+        userName: document.getElementById('addUserName').value.trim(),
+        userId: document.getElementById('addUserId').value.trim(),
+        password: document.getElementById('addUserPassword').value.trim(),
+        role: document.getElementById('addUserRole').value
+      };
+
+      document.getElementById('btnAddUser').disabled = true;
+      document.getElementById('btnAddUser').textContent = '처리 중...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          document.getElementById('btnAddUser').disabled = false;
+          document.getElementById('btnAddUser').textContent = '추가';
+
+          if (response.success) {
+            showAlert('addUserAlert', response.message, 'success');
+            setTimeout(function() {
+              closeAddUserModal();
+              showCompanyDetail(currentCompanyCode);
+            }, 1500);
+          } else {
+            showAlert('addUserAlert', response.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('btnAddUser').disabled = false;
+          document.getElementById('btnAddUser').textContent = '추가';
+          showAlert('addUserAlert', '사용자 추가 중 오류가 발생했습니다.', 'error');
+        })
+        .addUserToCompany(currentToken, userData);
+    }
+
+    // 사용자 수정 모달 표시
+    function showEditUserModal(rowIndex, name, role, status) {
+      document.getElementById('editUserRowIndex').value = rowIndex;
+      document.getElementById('editUserName').value = name;
+      document.getElementById('editUserPassword').value = '';
+      document.getElementById('editUserRole').value = role;
+      document.getElementById('editUserStatus').value = status;
+      document.getElementById('editUserAlert').innerHTML = '';
+      document.getElementById('editUserModal').classList.add('active');
+    }
+
+    function closeEditUserModal() {
+      document.getElementById('editUserModal').classList.remove('active');
+    }
+
+    // 사용자 수정 처리
+    function handleEditUser(event) {
+      event.preventDefault();
+
+      const rowIndex = parseInt(document.getElementById('editUserRowIndex').value);
+      const password = document.getElementById('editUserPassword').value.trim();
+
+      const userData = {
+        name: document.getElementById('editUserName').value.trim(),
+        password: password || null,
+        role: document.getElementById('editUserRole').value,
+        status: document.getElementById('editUserStatus').value
+      };
+
+      document.getElementById('btnEditUser').disabled = true;
+      document.getElementById('btnEditUser').textContent = '처리 중...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          document.getElementById('btnEditUser').disabled = false;
+          document.getElementById('btnEditUser').textContent = '수정';
+
+          if (response.success) {
+            showAlert('editUserAlert', response.message, 'success');
+            setTimeout(function() {
+              closeEditUserModal();
+              showCompanyDetail(currentCompanyCode);
+            }, 1500);
+          } else {
+            showAlert('editUserAlert', response.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('btnEditUser').disabled = false;
+          document.getElementById('btnEditUser').textContent = '수정';
+          showAlert('editUserAlert', '사용자 수정 중 오류가 발생했습니다.', 'error');
+        })
+        .updateUserInfo(currentToken, rowIndex, userData);
+    }
+
+    // 사용자 삭제 확인
+    function confirmDeleteUser(rowIndex, userId) {
+      if (confirm(`사용자 '${userId}'를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) {
+        deleteUser(rowIndex);
+      }
+    }
+
+    // 사용자 삭제 처리
+    function deleteUser(rowIndex) {
+      showLoading(true);
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          showLoading(false);
+
+          if (response.success) {
+            showAlert('companyDetailAlert', response.message, 'success');
+            setTimeout(function() {
+              showCompanyDetail(currentCompanyCode);
+            }, 1500);
+          } else {
+            showAlert('companyDetailAlert', response.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showAlert('companyDetailAlert', '사용자 삭제 중 오류가 발생했습니다.', 'error');
+        })
+        .deleteUser(currentToken, rowIndex);
+    }
+
+    function closeCompanyDetailModal() {
+      document.getElementById('companyDetailModal').classList.remove('active');
+      currentCompanyCode = '';
+      loadCompanies(); // 목록 새로고침
+    }
+
+    // 로딩 표시
+    function showLoading(show) {
+      document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+    }
+
+    // 알림 표시
+    function showAlert(elementId, message, type) {
+      const alertBox = document.getElementById(elementId);
+      alertBox.className = 'alert alert-' + type;
+      alertBox.textContent = message;
+      alertBox.style.display = 'block';
+
+      setTimeout(function() {
+        alertBox.style.display = 'none';
+      }, 5000);
+    }
+
+    // 에러 표시
+    function showError(message) {
+      alert(message);
+    }
+  </script>
+</body>
+</html>
