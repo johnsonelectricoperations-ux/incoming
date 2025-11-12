@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - 검사성적서 관리</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .login-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-header h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    
+    .login-header p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-login:active {
+      transform: translateY(0);
+    }
+    
+    .btn-login:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .alert {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .alert-error {
+      background-color: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+    }
+    
+    .alert-success {
+      background-color: #efe;
+      border: 1px solid #cfc;
+      color: #3c3;
+    }
+    
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .info-box {
+      background-color: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 5px;
+      font-size: 13px;
+      color: #555;
+    }
+    
+    .info-box strong {
+      display: block;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+    
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+      
+      .login-header h1 {
+        font-size: 24px;
+      }
+    }
+
+    .btn-register {
+      width: 100%;
+      padding: 14px;
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn-register:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-register:active {
+      transform: translateY(0);
+    }
+
+    .btn-back {
+      width: 100%;
+      padding: 14px;
+      background: #f0f0f0;
+      color: #666;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn-back:hover {
+      background: #e0e0e0;
+    }
+
+    .register-form {
+      display: none;
+    }
+
+    .form-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h1>🔐 로그인</h1>
+      <p>검사성적서 관리 시스템</p>
+    </div>
+    
+    <div id="alertBox" class="alert"></div>
+    
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="userId">아이디</label>
+        <input type="text" id="userId" name="userId" placeholder="아이디를 입력하세요" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+      </div>
+      
+      <button type="submit" class="btn-login" id="btnLogin">로그인</button>
+    </form>
+    
+    <div class="loading-spinner" id="loadingSpinner">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: #666;">로그인 중...</p>
+    </div>
+    
+    <div class="info-box">
+      <strong>테스트 계정</strong>
+      관리자: admin / admin1234<br>
+      협력사A: companyA / pass1234
+    </div>
+  </div>
+  
+  <script>
+    // 로그인 처리
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const userId = document.getElementById('userId').value.trim();
+      const password = document.getElementById('password').value;
+      
+      if (!userId || !password) {
+        showAlert('아이디와 비밀번호를 입력해주세요.', 'error');
+        return;
+      }
+      
+      // UI 업데이트
+      document.getElementById('btnLogin').disabled = true;
+      document.getElementById('loadingSpinner').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'none';
+      hideAlert();
+      
+      // 서버 호출 (토큰 기반 로그인)
+      google.script.run
+        .withSuccessHandler(onLoginSuccess)
+        .withFailureHandler(onLoginFailure)
+        .loginUserWithToken(userId, password);
+    }
+
+    // 로그인 성공
+    function onLoginSuccess(response) {
+      if (response.success) {
+        // 토큰을 sessionStorage에 저장
+        if (response.token) {
+          sessionStorage.setItem('sessionToken', response.token);
+          console.log('세션 토큰 저장 완료');
+        }
+
+        showAlert('로그인 성공! 페이지를 이동합니다...', 'success');
+
+        // 토큰을 URL 파라미터로 전달하여 페이지 이동
+        // iframe 샌드박스 환경에서는 form submit으로 페이지 전환
+        google.script.run
+          .withSuccessHandler(function(webAppUrl) {
+            const token = sessionStorage.getItem('sessionToken');
+            redirectToPage(webAppUrl, token);
+          })
+          .withFailureHandler(function() {
+            // 실패시 하드코딩된 URL 사용
+            const token = sessionStorage.getItem('sessionToken');
+            const fallbackUrl = 'https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec';
+            redirectToPage(fallbackUrl, token);
+          })
+          .getWebAppUrl();
+      } else {
+        showAlert(response.message, 'error');
+        resetForm();
+      }
+    }
+
+    // iframe 샌드박스에서 안전한 페이지 리디렉션
+    function redirectToPage(baseUrl, token) {
+      // URL 파라미터 생성
+      const params = {
+        'page': 'dashboard',
+        'token': token,
+        't': Date.now()
+      };
+
+      // Query string 생성
+      const queryString = Object.keys(params)
+        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+        .join('&');
+
+      const fullUrl = baseUrl + '?' + queryString;
+
+      // window.top.location.href로 직접 네비게이션
+      // form.submit()은 사용자 제스처로 간주되지 않아 sandbox 에러 발생
+      window.top.location.href = fullUrl;
+    }
+
+    // 회원가입 폼 표시
+    function showRegisterForm() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.querySelector('.info-box').style.display = 'none';
+      document.querySelector('.login-header h1').textContent = '🔐 회원가입';
+      
+      const registerFormHtml = `
+        <div class="register-form" id="registerForm">
+          <div class="form-title">신규 사용자 등록</div>
+          
+          <form id="registerFormElement" onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label for="regCompanyName">업체명</label>
+              <input type="text" id="regCompanyName" name="companyName" placeholder="업체명을 입력하세요" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="regName">성명</label>
+              <input type="text" id="regName" name="name" placeholder="이름을 입력하세요" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="regUserId">아이디</label>
+              <input type="text" id="regUserId" name="userId" placeholder="아이디를 입력하세요 (최소 4자)" required minlength="4">
+            </div>
+            
+            <div class="form-group">
+              <label for="regPassword">비밀번호</label>
+              <input type="password" id="regPassword" name="password" placeholder="비밀번호를 입력하세요 (최소 6자)" required minlength="6">
+            </div>
+            
+            <div class="form-group">
+              <label for="regPasswordConfirm">비밀번호 확인</label>
+              <input type="password" id="regPasswordConfirm" name="passwordConfirm" placeholder="비밀번호를 다시 입력하세요" required minlength="6">
+            </div>
+            
+            <button type="submit" class="btn-login" id="btnRegister">가입하기</button>
+            <button type="button" class="btn-back" onclick="showLoginForm()">로그인으로 돌아가기</button>
+          </form>
+        </div>
+      `;
+      
+      const alertBox = document.getElementById('alertBox');
+      alertBox.insertAdjacentHTML('afterend', registerFormHtml);
+      document.getElementById('registerForm').style.display = 'block';
+      
+      hideAlert();
+    }
+
+    // 로그인 폼으로 돌아가기
+    function showLoginForm() {
+      const registerForm = document.getElementById('registerForm');
+      if (registerForm) {
+        registerForm.remove();
+      }
+      
+      document.getElementById('loginForm').style.display = 'block';
+      document.querySelector('.info-box').style.display = 'block';
+      document.querySelector('.login-header h1').textContent = '🔐 로그인';
+      
+      hideAlert();
+    }
+
+    // 회원가입 처리
+    function handleRegister(event) {
+      event.preventDefault();
+      
+      const companyName = document.getElementById('regCompanyName').value.trim();
+      const name = document.getElementById('regName').value.trim();
+      const userId = document.getElementById('regUserId').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+      
+      // 비밀번호 확인
+      if (password !== passwordConfirm) {
+        showAlert('비밀번호가 일치하지 않습니다.', 'error');
+        return;
+      }
+      
+      // UI 업데이트
+      document.getElementById('btnRegister').disabled = true;
+      document.getElementById('btnRegister').textContent = '가입 처리 중...';
+      
+      // 서버 호출
+      const userData = {
+        companyName: companyName,
+        name: name,
+        userId: userId,
+        password: password
+      };
+      
+      google.script.run
+        .withSuccessHandler(onRegisterSuccess)
+        .withFailureHandler(onRegisterFailure)
+        .registerUser(userData);
+    }
+
+    // 회원가입 성공
+    function onRegisterSuccess(response) {
+      if (response.success) {
+        showAlert(response.message, 'success');
+        
+        // 2초 후 로그인 화면으로 이동
+        setTimeout(function() {
+          showLoginForm();
+        }, 2000);
+      } else {
+        showAlert(response.message, 'error');
+        document.getElementById('btnRegister').disabled = false;
+        document.getElementById('btnRegister').textContent = '가입하기';
+      }
+    }
+
+    // 회원가입 실패
+    function onRegisterFailure(error) {
+      console.error('Register error:', error);
+      showAlert('회원가입 처리 중 오류가 발생했습니다.', 'error');
+      document.getElementById('btnRegister').disabled = false;
+      document.getElementById('btnRegister').textContent = '가입하기';
+    }  
+        
+   
+    // 로그인 실패
+    function onLoginFailure(error) {
+      console.error('Login error:', error);
+      showAlert('로그인 처리 중 오류가 발생했습니다.', 'error');
+      resetForm();
+    }
+    
+    // 알림 표시
+    function showAlert(message, type) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.textContent = message;
+      alertBox.className = 'alert alert-' + type;
+      alertBox.style.display = 'block';
+    }
+    
+    // 알림 숨김
+    function hideAlert() {
+      document.getElementById('alertBox').style.display = 'none';
+    }
+    
+    // 폼 리셋
+    function resetForm() {
+      document.getElementById('btnLogin').disabled = false;
+      document.getElementById('loadingSpinner').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+    }
+    
+    // 엔터키 처리
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('userId').focus();
+    });
+  </script>
+</body>
+</html>
