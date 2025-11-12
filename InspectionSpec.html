@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>검사규격 등록/수정 - 검사성적서 관리</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header-title p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-outline:hover {
+      background: white;
+      color: #667eea;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .nav-menu {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 12px 24px;
+      background: #f0f4ff;
+      color: #667eea;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .nav-btn.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    thead {
+      background-color: #f8f9fa;
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #555;
+      border-bottom: 2px solid #e0e0e0;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-edit {
+      background: #ffc107;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #ffb300;
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #d32f2f;
+    }
+
+    /* 모달 스타일 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 50px auto;
+      padding: 0;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 25px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .close {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .close:hover {
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .inspection-items-table {
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .inspection-items-table th,
+    .inspection-items-table td {
+      padding: 8px;
+      font-size: 13px;
+    }
+
+    .inspection-items-table input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .btn-add-row {
+      background: #4caf50;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-add-row:hover {
+      background: #45a049;
+    }
+
+    .btn-remove-row {
+      background: #f44336;
+      color: white;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      padding: 20px 25px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-cancel {
+      background: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+      background: #5a6268;
+    }
+
+    .btn-save {
+      background: #667eea;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-save:hover {
+      background: #5568d3;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    /* TM-NO 자동완성 스타일 */
+    .autocomplete-results {
+      position: absolute;
+      z-index: 1000;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      background: white;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-top: 4px;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    .autocomplete-item:hover {
+      background-color: #f0f4ff;
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-tmno {
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 4px;
+    }
+
+    .autocomplete-product {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .autocomplete-company {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 95%;
+        margin: 20px auto;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>협력사 수입검사 관리</h1>
+        <p id="userInfo">로딩 중...</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <?!= include('Navigation') ?>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">검사 규격 관리</h2>
+        <button class="btn btn-primary" onclick="showAddModal()">➕ 새 규격 추가</button>
+      </div>
+
+      <!-- 검색 필터 -->
+      <div class="search-bar" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
+        <div style="flex: 1;">
+          <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">업체명</label>
+          <select id="searchSpecCompany" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+            <option value="">전체</option>
+          </select>
+        </div>
+        <div style="flex: 1;">
+          <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">TM-NO</label>
+          <input type="text" id="searchSpecTmNo" placeholder="TM-NO 검색" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+        </div>
+        <button class="btn btn-primary" onclick="searchSpecs()" style="padding: 10px 20px;">🔍 검색</button>
+        <button class="btn" onclick="clearSpecSearch()" style="padding: 10px 20px; background: #6c757d; color: white;">↻ 초기화</button>
+      </div>
+
+      <div id="specsContainer">
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>등록된 검사 규격이 없습니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추가/수정 모달 -->
+  <div id="specModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">검사 규격 추가</h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group" style="position: relative;">
+          <label class="form-label">TM-NO</label>
+          <input type="text" class="form-control" id="specTmNo" placeholder="TM-NO를 입력하세요" autocomplete="off">
+          <div id="specTmNoAutocomplete" class="autocomplete-results"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">제품명</label>
+          <input type="text" class="form-control" id="specProductName" placeholder="제품명이 자동으로 입력됩니다" readonly style="background-color: #f5f5f5;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">업체명</label>
+          <input type="text" class="form-control" id="specCompanyName" placeholder="업체명이 자동으로 입력됩니다" readonly style="background-color: #f5f5f5;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">검사 항목</label>
+          <button class="btn-add-row" onclick="addInspectionRow()">➕ 검사항목 추가</button>
+          <table class="inspection-items-table">
+            <thead>
+              <tr>
+                <th style="width: 20%;">검사항목</th>
+                <th style="width: 15%;">측정방법</th>
+                <th style="width: 15%;">규격하한</th>
+                <th style="width: 15%;">규격상한</th>
+                <th style="width: 15%;">시료수</th>
+                <th style="width: 10%;">삭제</th>
+              </tr>
+            </thead>
+            <tbody id="inspectionItemsBody">
+              <!-- 검사항목 행들이 여기에 추가됩니다 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">취소</button>
+        <button class="btn-save" onclick="saveSpecs()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== 토큰 관리 =====
+    let sessionToken = null;
+    let currentUser = null;
+    let editingTmNo = null;
+
+    function initToken() {
+      const serverToken = '<?!= token ?>';
+      if (serverToken && serverToken !== 'undefined' && serverToken.length > 10) {
+        sessionToken = serverToken;
+        sessionStorage.setItem('sessionToken', serverToken);
+      } else {
+        sessionToken = sessionStorage.getItem('sessionToken');
+      }
+
+      if (!sessionToken) {
+        redirectToLogin();
+      }
+      return sessionToken;
+    }
+
+    // 안전한 페이지 이동 (iframe 샌드박스 호환)
+    function safeNavigate(url, params) {
+      // Query string 생성
+      let fullUrl = url;
+      if (params) {
+        const queryString = Object.keys(params)
+          .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+          .join('&');
+        fullUrl = url + '?' + queryString;
+      }
+
+      // window.top.location.href로 직접 네비게이션
+      // form.submit()은 사용자 제스처로 간주되지 않아 sandbox 에러 발생
+      window.top.location.href = fullUrl;
+    }
+
+    function redirectToLogin() {
+      sessionStorage.removeItem('sessionToken');
+      safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+    }
+
+    window.onload = function() {
+      initToken();
+      loadUserInfo();
+      loadCompanyList();
+      loadSpecs();
+    };
+
+    // 네비게이션 초기화 함수
+    function initNavigation(currentPage, userRole) {
+      const navButtons = {
+        'dashboard': 'navDashboard',
+        'entry': 'navEntry',
+        'history': 'navHistory',
+        'certificate': 'navCertificate',
+        'inspection': 'navInspection'
+      };
+
+      if (navButtons[currentPage]) {
+        const btn = document.getElementById(navButtons[currentPage]);
+        if (btn) {
+          btn.classList.add('active');
+        }
+      }
+
+      if (userRole === '관리자') {
+        const inspectionBtn = document.getElementById('navInspection');
+        if (inspectionBtn) {
+          inspectionBtn.style.display = 'inline-block';
+        }
+      }
+
+      // Item 등록 버튼은 대시보드에서만 표시
+      const itemBtn = document.getElementById('navItem');
+      if (itemBtn) {
+        itemBtn.style.display = (currentPage === 'dashboard') ? 'inline-block' : 'none';
+      }
+
+      // 사용자 관리 버튼은 관리자만 표시
+      const usersBtn = document.getElementById('navUsers');
+      if (usersBtn) {
+        usersBtn.style.display = (userRole === '관리자') ? 'inline-block' : 'none';
+      }
+
+      // 네비게이션 메뉴 표시 (부드러운 fade-in 효과)
+      const navMenu = document.getElementById('navMenu');
+      if (navMenu) {
+        navMenu.style.opacity = '1';
+      }
+    }
+
+    // Item 클릭 핸들러
+    function handleItemClick() {
+      goToPage('dashboard');
+    }
+
+    function loadUserInfo() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            currentUser = response.user;
+            document.getElementById('userInfo').textContent =
+              `${currentUser.companyName} | ${currentUser.name} (${currentUser.role})`;
+
+            // 네비게이션 초기화
+            initNavigation('inspection', currentUser.role);
+          } else {
+            redirectToLogin();
+          }
+        })
+        .getCurrentUserByToken(sessionToken);
+    }
+
+    // 업체명 목록 로드
+    function loadCompanyList() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success && response.companies) {
+            const select = document.getElementById('searchSpecCompany');
+            // 기존 옵션 제거 (첫 번째 "전체" 옵션 제외)
+            while (select.options.length > 1) {
+              select.remove(1);
+            }
+            // 업체명 옵션 추가
+            response.companies.forEach(function(company) {
+              const option = document.createElement('option');
+              option.value = company;
+              option.textContent = company;
+              select.appendChild(option);
+            });
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('업체 목록 로드 실패:', error);
+        })
+        .getCompanyList(sessionToken);
+    }
+
+    // 검사 규격 목록 로드
+    function loadSpecs(filters) {
+      const options = filters || {};
+      google.script.run
+        .withSuccessHandler(displaySpecs)
+        .withFailureHandler(function(error) {
+          console.error('규격 로드 실패:', error);
+        })
+        .getInspectionSpecs(sessionToken, options);
+    }
+
+    // 검색 실행
+    function searchSpecs() {
+      const companyName = document.getElementById('searchSpecCompany').value.trim();
+      const tmNo = document.getElementById('searchSpecTmNo').value.trim();
+
+      const filters = {};
+      if (companyName) filters.companyName = companyName;
+      if (tmNo) filters.tmNo = tmNo;
+
+      loadSpecs(filters);
+    }
+
+    // 검색 초기화
+    function clearSpecSearch() {
+      document.getElementById('searchSpecCompany').value = '';
+      document.getElementById('searchSpecTmNo').value = '';
+      loadSpecs();
+    }
+
+    // 규격 목록 표시
+    function displaySpecs(response) {
+      const container = document.getElementById('specsContainer');
+
+      if (!response.success || response.data.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>등록된 검사 규격이 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // TM-NO별로 그룹화
+      const grouped = {};
+      response.data.forEach(function(spec) {
+        const key = `${spec.tmNo}_${spec.productName}_${spec.companyName}`;
+        if (!grouped[key]) {
+          grouped[key] = {
+            tmNo: spec.tmNo,
+            productName: spec.productName,
+            companyName: spec.companyName,
+            items: []
+          };
+        }
+        grouped[key].items.push(spec);
+      });
+
+      let html = '<table><thead><tr><th>TM-NO</th><th>제품명</th><th>업체명</th><th>검사항목 수</th><th>작업</th></tr></thead><tbody>';
+
+      Object.keys(grouped).forEach(function(key) {
+        const group = grouped[key];
+        html += `
+          <tr>
+            <td>${group.tmNo}</td>
+            <td>${group.productName}</td>
+            <td>${group.companyName}</td>
+            <td>${group.items.length}개</td>
+            <td>
+              <button class="btn-sm btn-edit" onclick='editSpecs("${group.tmNo}", "${group.productName}", "${group.companyName}")'>✏️ 수정</button>
+              <button class="btn-sm btn-delete" onclick='deleteSpecs("${group.tmNo}", "${group.productName}", "${group.companyName}")'>🗑️ 삭제</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    // 추가 모달 표시
+    function showAddModal() {
+      editingTmNo = null;
+      document.getElementById('modalTitle').textContent = '검사 규격 추가';
+      document.getElementById('specTmNo').value = '';
+      document.getElementById('specTmNo').readOnly = false;
+      document.getElementById('specProductName').value = '';
+      document.getElementById('specProductName').readOnly = true;
+      document.getElementById('specCompanyName').value = '';
+      document.getElementById('specCompanyName').readOnly = true;
+
+      // 검사항목 테이블 초기화
+      document.getElementById('inspectionItemsBody').innerHTML = '';
+      addInspectionRow();
+
+      // TM-NO 자동완성 설정
+      setupTmNoAutocomplete();
+
+      document.getElementById('specModal').style.display = 'block';
+    }
+
+    // TM-NO 자동완성 설정
+    function setupTmNoAutocomplete() {
+      const tmNoInput = document.getElementById('specTmNo');
+      const autocompleteDiv = document.getElementById('specTmNoAutocomplete');
+      const productNameInput = document.getElementById('specProductName');
+      const companyNameInput = document.getElementById('specCompanyName');
+      let searchTimeout;
+
+      // 기존 이벤트 리스너 제거를 위해 새로운 요소로 교체
+      const newTmNoInput = tmNoInput.cloneNode(true);
+      tmNoInput.parentNode.replaceChild(newTmNoInput, tmNoInput);
+
+      // TM-NO 입력 시 자동완성
+      newTmNoInput.addEventListener('input', function(e) {
+        const searchText = e.target.value.trim();
+
+        // 검색어가 없으면 자동완성 숨김
+        if (searchText.length === 0) {
+          autocompleteDiv.style.display = 'none';
+          productNameInput.value = '';
+          companyNameInput.value = '';
+          return;
+        }
+
+        // 디바운싱 (300ms 대기)
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+          // ItemList 시트에서 TM-NO 검색
+          google.script.run
+            .withSuccessHandler(function(response) {
+              if (response.success && response.items && response.items.length > 0) {
+                displayAutocompleteResults(response.items);
+              } else {
+                autocompleteDiv.style.display = 'none';
+              }
+            })
+            .withFailureHandler(function(error) {
+              console.error('TM-NO 검색 실패:', error);
+              autocompleteDiv.style.display = 'none';
+            })
+            .searchTmNo(sessionToken, searchText);
+        }, 300);
+      });
+
+      // 외부 클릭 시 자동완성 숨김
+      document.addEventListener('click', function(e) {
+        if (e.target !== newTmNoInput && !autocompleteDiv.contains(e.target)) {
+          autocompleteDiv.style.display = 'none';
+        }
+      });
+    }
+
+    // 자동완성 결과 표시
+    function displayAutocompleteResults(items) {
+      const autocompleteDiv = document.getElementById('specTmNoAutocomplete');
+      const tmNoInput = document.getElementById('specTmNo');
+      const productNameInput = document.getElementById('specProductName');
+      const companyNameInput = document.getElementById('specCompanyName');
+
+      autocompleteDiv.innerHTML = '';
+
+      items.forEach(function(item) {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'autocomplete-item';
+        itemDiv.innerHTML = `
+          <div class="autocomplete-tmno">${item.tmNo}</div>
+          <div class="autocomplete-product">${item.productName} <span style="color: #666; font-size: 0.9em;">(${item.companyName})</span></div>
+        `;
+
+        itemDiv.addEventListener('click', function() {
+          // TM-NO, 제품명, 업체명 자동 입력
+          tmNoInput.value = item.tmNo;
+          productNameInput.value = item.productName;
+          companyNameInput.value = item.companyName;
+          autocompleteDiv.style.display = 'none';
+        });
+
+        autocompleteDiv.appendChild(itemDiv);
+      });
+
+      autocompleteDiv.style.display = 'block';
+    }
+
+    // 검사항목 행 추가
+    function addInspectionRow() {
+      const tbody = document.getElementById('inspectionItemsBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" class="inspection-item" placeholder="검사항목"></td>
+        <td><input type="text" class="measurement-method" placeholder="측정방법"></td>
+        <td><input type="text" class="lower-limit" placeholder="하한값"></td>
+        <td><input type="text" class="upper-limit" placeholder="상한값"></td>
+        <td><input type="text" class="sample-size" placeholder="시료수"></td>
+        <td><button class="btn-remove-row" onclick="removeInspectionRow(this)">❌</button></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    // 검사항목 행 삭제
+    function removeInspectionRow(btn) {
+      const tbody = document.getElementById('inspectionItemsBody');
+      if (tbody.rows.length > 1) {
+        btn.closest('tr').remove();
+      } else {
+        alert('최소 1개의 검사항목이 필요합니다.');
+      }
+    }
+
+    // 규격 저장
+    function saveSpecs() {
+      const tmNo = document.getElementById('specTmNo').value.trim();
+      const productName = document.getElementById('specProductName').value.trim();
+      const companyName = document.getElementById('specCompanyName').value.trim();
+
+      if (!tmNo || !productName || !companyName) {
+        alert('TM-NO, 제품명, 업체명을 모두 입력해주세요.');
+        return;
+      }
+
+      const rows = document.querySelectorAll('#inspectionItemsBody tr');
+      const specs = [];
+
+      try {
+        rows.forEach(function(row) {
+        const inspectionItem = row.querySelector('.inspection-item').value.trim();
+        const measurementMethod = row.querySelector('.measurement-method').value.trim();
+        const lowerLimit = row.querySelector('.lower-limit').value.trim();
+        const upperLimit = row.querySelector('.upper-limit').value.trim();
+        const sampleSize = row.querySelector('.sample-size').value.trim();
+
+        if (inspectionItem) {
+          // 측정방법과 시료수는 필수 입력 사항
+          if (!measurementMethod) {
+            alert('검사항목 "' + inspectionItem + '"의 측정방법을 입력해주세요.');
+            throw new Error('측정방법 미입력');
+          }
+          if (!sampleSize) {
+            alert('검사항목 "' + inspectionItem + '"의 시료수를 입력해주세요.');
+            throw new Error('시료수 미입력');
+          }
+
+          specs.push({
+            tmNo: tmNo,
+            productName: productName,
+            companyName: companyName,
+            inspectionItem: inspectionItem,
+            measurementMethod: measurementMethod,
+            lowerLimit: lowerLimit,
+            upperLimit: upperLimit,
+            sampleSize: sampleSize
+          });
+        }
+      });
+      } catch (error) {
+        // validation 에러 발생 시 종료 (이미 alert 메시지 표시됨)
+        return;
+      }
+
+      if (specs.length === 0) {
+        alert('최소 1개의 검사항목을 입력해주세요.');
+        return;
+      }
+
+      // 수정 모드인 경우, 기존 데이터 먼저 삭제 후 추가 (중복 방지)
+      if (editingTmNo !== null) {
+        google.script.run
+          .withSuccessHandler(function(deleteResponse) {
+            if (deleteResponse.success) {
+              // 기존 데이터 삭제 성공 후 새 데이터 추가
+              google.script.run
+                .withSuccessHandler(function(response) {
+                  if (response.success) {
+                    alert(response.message || '검사 규격이 저장되었습니다.');
+                    closeModal();
+                    loadSpecs();
+                  } else {
+                    alert(response.message || '저장 중 오류가 발생했습니다.');
+                  }
+                })
+                .withFailureHandler(function(error) {
+                  console.error('저장 실패:', error);
+                  alert('저장 중 오류가 발생했습니다.');
+                })
+                .addInspectionSpecsBatch(sessionToken, specs);
+            } else {
+              alert(deleteResponse.message || '기존 데이터 삭제 중 오류가 발생했습니다.');
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('삭제 실패:', error);
+            alert('기존 데이터 삭제 중 오류가 발생했습니다.');
+          })
+          .deleteInspectionSpecsByTmNoAndCompany(sessionToken, tmNo, companyName);
+      } else {
+        // 추가 모드인 경우, 바로 추가
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              alert(response.message || '검사 규격이 저장되었습니다.');
+              closeModal();
+              loadSpecs();
+            } else {
+              alert(response.message || '저장 중 오류가 발생했습니다.');
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('저장 실패:', error);
+            alert('저장 중 오류가 발생했습니다.');
+          })
+          .addInspectionSpecsBatch(sessionToken, specs);
+      }
+    }
+
+    // 수정 모달 표시
+    function editSpecs(tmNo, productName, companyName) {
+      editingTmNo = tmNo;
+      document.getElementById('modalTitle').textContent = '검사 규격 수정';
+      document.getElementById('specTmNo').value = tmNo;
+      document.getElementById('specTmNo').readOnly = true;
+      document.getElementById('specProductName').value = productName;
+      document.getElementById('specProductName').readOnly = true;
+      document.getElementById('specCompanyName').value = companyName;
+      document.getElementById('specCompanyName').readOnly = true;
+
+      // 기존 데이터 로드
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const tbody = document.getElementById('inspectionItemsBody');
+            tbody.innerHTML = '';
+
+            response.data.forEach(function(spec) {
+              const row = document.createElement('tr');
+              row.setAttribute('data-row-index', spec.rowIndex);
+              row.innerHTML = `
+                <td><input type="text" class="inspection-item" value="${spec.inspectionItem}"></td>
+                <td><input type="text" class="measurement-method" value="${spec.measurementMethod}"></td>
+                <td><input type="text" class="lower-limit" value="${spec.lowerLimit}"></td>
+                <td><input type="text" class="upper-limit" value="${spec.upperLimit}"></td>
+                <td><input type="text" class="sample-size" value="${spec.sampleSize}"></td>
+                <td><button class="btn-remove-row" onclick="removeInspectionRow(this)">❌</button></td>
+              `;
+              tbody.appendChild(row);
+            });
+          }
+        })
+        .getInspectionSpecs(sessionToken, {tmNo: tmNo, companyName: companyName});
+
+      document.getElementById('specModal').style.display = 'block';
+    }
+
+    // 규격 삭제
+    function deleteSpecs(tmNo, productName, companyName) {
+      if (!confirm(`${tmNo} (${productName})의 모든 검사 규격을 삭제하시겠습니까?`)) {
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            response.data.forEach(function(spec) {
+              google.script.run
+                .withSuccessHandler(function() {
+                  loadSpecs();
+                })
+                .deleteInspectionSpec(sessionToken, spec.rowIndex);
+            });
+            alert('삭제되었습니다.');
+          }
+        })
+        .getInspectionSpecs(sessionToken, {tmNo: tmNo});
+    }
+
+    // 모달 닫기
+    function closeModal() {
+      document.getElementById('specModal').style.display = 'none';
+      document.getElementById('specTmNo').readOnly = false;
+      document.getElementById('specProductName').readOnly = false;
+      editingTmNo = null;  // 모달 닫을 때 편집 모드 리셋
+    }
+
+    // 페이지 이동
+    function goToPage(page) {
+      const token = sessionStorage.getItem('sessionToken');
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      safeNavigate(webAppUrl, {
+        'page': page,
+        'token': token,
+        't': Date.now()
+      });
+    }
+
+    // 로그아웃
+    function logout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        const token = sessionStorage.getItem('sessionToken');
+        google.script.run
+          .withSuccessHandler(function() {
+            sessionStorage.removeItem('sessionToken');
+            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+          })
+          .withFailureHandler(function(error) {
+            console.error('로그아웃 실패:', error);
+            sessionStorage.removeItem('sessionToken');
+            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+          })
+          .logoutWithToken(token);
+      }
+    }
+
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+      const modal = document.getElementById('specModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    };
+  </script>
+</body>
+</html>
