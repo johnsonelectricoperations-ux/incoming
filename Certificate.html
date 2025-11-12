@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>확인증 출력 - 검사성적서 관리</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .header-title h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .header-title p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+    
+    .btn-outline:hover {
+      background: white;
+      color: #667eea;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    
+    .nav-menu {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-btn {
+      padding: 12px 24px;
+      background: #f0f4ff;
+      color: #667eea;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .nav-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .nav-btn.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .btn-primary {
+      padding: 12px 30px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    
+    .btn-print {
+      padding: 12px 30px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-print:hover {
+      background: #45a049;
+    }
+    
+    /* 확인증 미리보기 */
+    .certificate-preview {
+      background: white;
+      padding: 40px;
+      border: 2px solid #333;
+      margin-top: 30px;
+      display: block;
+    }
+    
+    .cert-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px double #333;
+    }
+    
+    .cert-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .cert-subtitle {
+      font-size: 18px;
+      color: #666;
+    }
+    
+    .cert-info {
+      margin-bottom: 30px;
+    }
+    
+    .info-row {
+      display: flex;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .info-label {
+      width: 150px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .info-value {
+      flex: 1;
+      color: #666;
+    }
+    
+    .cert-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    
+    .cert-table th,
+    .cert-table td {
+      border: 1px solid #333;
+      padding: 12px;
+      text-align: center;
+    }
+    
+    .cert-table th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+    
+    .cert-footer {
+      margin-top: 40px;
+      text-align: right;
+    }
+    
+    .cert-date {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    
+    .cert-company {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    /* 인쇄 스타일 */
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      
+      body {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      /* 숨길 요소들 */
+      .header,
+      .nav-menu,
+      .section,
+      .btn,
+      .no-print,
+      .form-row,
+      .form-group,
+      .btn-primary,
+      .btn-print {
+        display: none !important;
+        visibility: hidden !important;
+      }
+      
+      .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      
+      /* 확인증만 표시 */
+      #certificateContainer {
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      .certificate-preview {
+        display: block !important;
+        visibility: visible !important;
+        border: 2px solid #333 !important;
+        margin: 0 !important;
+        padding: 40px !important;
+        page-break-inside: avoid !important;
+      }
+      
+      .cert-header,
+      .cert-info,
+      .cert-table,
+      .cert-footer {
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      /* 테이블 스타일 유지 */
+      .cert-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+      
+      .cert-table th,
+      .cert-table td {
+        border: 1px solid #333 !important;
+        padding: 12px !important;
+        text-align: center !important;
+      }
+      
+      .cert-table th {
+        background-color: #f5f5f5 !important;
+        font-weight: bold !important;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .nav-menu {
+        flex-direction: column;
+      }
+      
+      .nav-btn {
+        width: 100%;
+      }
+      
+      .certificate-preview {
+        padding: 20px;
+      }
+      
+      .cert-title {
+        font-size: 24px;
+      }
+      
+      .cert-table {
+        font-size: 12px;
+      }
+
+      .certificate-preview {
+        background: white;
+        padding: 40px;
+        border: 3px solid #667eea;  /* 테두리 색상 변경 */
+        margin-top: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);  /* 그림자 추가 */
+        animation: fadeIn 0.5s ease-in;  /* 애니메이션 추가 */
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .certificate-preview::before {
+        content: "👇 아래 내용이 인쇄됩니다";
+        display: block;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 20px;
+        padding: 10px;
+        background: #f0f4ff;
+        border-radius: 8px;
+      }
+
+      /* 인쇄 스타일 */
+      @media print {
+        @page {
+          size: A4;
+          margin: 15mm;
+        }
+        
+        /* 기본 설정 */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        
+        body {
+          margin: 0;
+          padding: 0;
+          background: white;
+        }
+        
+        /* 인쇄 시 숨길 요소들을 명시적으로 나열 */
+        .header {
+          display: none !important;
+        }
+        
+        .nav-menu {
+          display: none !important;
+        }
+        
+        .section {
+          display: none !important;
+        }
+        
+        .btn {
+          display: none !important;
+        }
+        
+        .btn-primary {
+          display: none !important;
+        }
+        
+        .btn-print {
+          display: none !important;
+        }
+        
+        .no-print {
+          display: none !important;
+        }
+        
+        .form-row {
+          display: none !important;
+        }
+        
+        .form-group {
+          display: none !important;
+        }
+        
+        /* 컨테이너는 표시 */
+        .container {
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        
+        /* 확인증 컨테이너와 미리보기는 표시 */
+        #certificateContainer {
+          display: block !important;
+          visibility: visible !important;
+        }
+        
+        .certificate-preview {
+          display: block !important;
+          visibility: visible !important;
+          border: 2px solid #000 !important;
+          padding: 20px !important;
+          margin: 0 !important;
+          background: white !important;
+        }
+        
+        /* 확인증 내부 요소들 모두 표시 */
+        .cert-header {
+          display: block !important;
+          visibility: visible !important;
+        }
+        
+        .cert-title {
+          display: block !important;
+          visibility: visible !important;
+          font-size: 28px !important;
+          font-weight: bold !important;
+          color: #000 !important;
+        }
+        
+        .cert-subtitle {
+          display: block !important;
+          visibility: visible !important;
+          font-size: 16px !important;
+          color: #666 !important;
+        }
+        
+        .cert-info {
+          display: block !important;
+          visibility: visible !important;
+        }
+        
+        .info-row {
+          display: flex !important;
+          visibility: visible !important;
+        }
+        
+        .info-label {
+          display: block !important;
+          visibility: visible !important;
+          width: 120px !important;
+          color: #000 !important;
+        }
+        
+        .info-value {
+          display: block !important;
+          visibility: visible !important;
+          color: #000 !important;
+        }
+        
+        .cert-table {
+          display: table !important;
+          visibility: visible !important;
+          width: 100% !important;
+          border-collapse: collapse !important;
+        }
+        
+        .cert-table thead {
+          display: table-header-group !important;
+          visibility: visible !important;
+        }
+        
+        .cert-table tbody {
+          display: table-row-group !important;
+          visibility: visible !important;
+        }
+        
+        .cert-table tr {
+          display: table-row !important;
+          visibility: visible !important;
+        }
+        
+        .cert-table th {
+          display: table-cell !important;
+          visibility: visible !important;
+          border: 1px solid #000 !important;
+          padding: 8px !important;
+          background-color: #f0f0f0 !important;
+          color: #000 !important;
+        }
+        
+        .cert-table td {
+          display: table-cell !important;
+          visibility: visible !important;
+          border: 1px solid #000 !important;
+          padding: 8px !important;
+          color: #000 !important;
+        }
+        
+        .cert-footer {
+          display: block !important;
+          visibility: visible !important;
+        }
+        
+        .cert-date {
+          display: block !important;
+          visibility: visible !important;
+          color: #000 !important;
+        }
+        
+        .cert-company {
+          display: block !important;
+          visibility: visible !important;
+          color: #000 !important;
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header no-print">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>협력사 수입검사 관리</h1>
+        <p id="userInfo">로딩 중...</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="no-print">
+      <?!= include('Navigation') ?>
+    </div>
+    
+    <div class="section no-print">
+      <h2 class="section-title">확인증 생성</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">전표번호</label>
+          <input type="text" class="form-control" id="slipNumber" placeholder="전표번호 입력">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">입고일자</label>
+          <input type="date" class="form-control" id="receiptDate">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">입고시간</label>
+          <select class="form-control" id="receiptTime">
+            <option value="">전체</option>
+            <option value="오전">오전</option>
+            <option value="오후">오후</option>
+          </select>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="btn-primary no-print" onclick="generateCertificate()">📋 확인증 생성</button>
+        <button class="btn-print no-print" onclick="printCertificate();" id="btnPrint" style="display: none; margin-left: 10px;">🖨️ 인쇄</button>
+        <!-- 안내 메시지 추가 -->
+        <p id="guideMessage" style="margin-top: 15px; color: #666; font-size: 14px;">
+          ℹ️ 확인증 생성 버튼을 클릭하면 아래에 미리보기가 표시됩니다. 인쇄 버튼을 클릭하면 새 창에서 인쇄 미리보기가 열립니다.
+        </p>
+      </div>
+    </div>
+    
+    <div id="certificateContainer"></div>
+  </div>
+  
+  <script>
+    // ===== 토큰 관리 =====
+    let sessionToken = null;
+
+    // 토큰 초기화 (서버에서 전달받은 토큰 또는 sessionStorage에서)
+    function initToken() {
+      // 서버에서 전달받은 토큰 (템플릿 변수)
+      const serverToken = '<?!= token ?>';
+
+      if (serverToken && serverToken !== 'undefined' && serverToken.length > 10) {
+        sessionToken = serverToken;
+        sessionStorage.setItem('sessionToken', serverToken);
+        console.log('토큰 초기화 완료 (서버에서 전달)');
+      } else {
+        // sessionStorage에서 토큰 가져오기
+        sessionToken = sessionStorage.getItem('sessionToken');
+        console.log('토큰 초기화 완료 (sessionStorage)');
+      }
+
+      if (!sessionToken) {
+        console.error('토큰 없음 - 로그인 필요');
+        redirectToLogin();
+      }
+
+      return sessionToken;
+    }
+
+    // 안전한 페이지 이동 (iframe 샌드박스 호환)
+    function safeNavigate(url, params) {
+      // Query string 생성
+      let fullUrl = url;
+      if (params) {
+        const queryString = Object.keys(params)
+          .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+          .join('&');
+        fullUrl = url + '?' + queryString;
+      }
+
+      // window.top.location.href로 직접 네비게이션
+      // form.submit()은 사용자 제스처로 간주되지 않아 sandbox 에러 발생
+      window.top.location.href = fullUrl;
+    }
+
+    // 로그인 페이지로 리다이렉트
+    function redirectToLogin() {
+      sessionStorage.removeItem('sessionToken');
+      safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+    }
+
+    let currentData = null;
+    let currentUser = null;
+
+    window.onload = function() {
+      initToken();
+      loadUserInfo();
+
+      // 오늘 날짜 설정
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('receiptDate').value = today;
+    };
+
+    // 네비게이션 초기화 함수
+    function initNavigation(currentPage, userRole) {
+      const navButtons = {
+        'dashboard': 'navDashboard',
+        'entry': 'navEntry',
+        'history': 'navHistory',
+        'certificate': 'navCertificate'
+      };
+
+      if (navButtons[currentPage]) {
+        const btn = document.getElementById(navButtons[currentPage]);
+        if (btn) {
+          btn.classList.add('active');
+        }
+      }
+
+      // Item 등록 버튼은 대시보드에서만 표시
+      const itemBtn = document.getElementById('navItem');
+      if (itemBtn) {
+        itemBtn.style.display = (currentPage === 'dashboard') ? 'inline-block' : 'none';
+      }
+
+      // 사용자 관리 버튼은 관리자만 표시
+      const usersBtn = document.getElementById('navUsers');
+      if (usersBtn) {
+        usersBtn.style.display = (userRole === '관리자') ? 'inline-block' : 'none';
+      }
+
+      // 네비게이션 메뉴 표시 (부드러운 fade-in 효과)
+      const navMenu = document.getElementById('navMenu');
+      if (navMenu) {
+        navMenu.style.opacity = '1';
+      }
+    }
+
+    // Item 클릭 핸들러
+    function handleItemClick() {
+      goToPage('dashboard');
+    }
+
+    function loadUserInfo() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            currentUser = response.user;
+            document.getElementById('userInfo').textContent =
+              `${currentUser.companyName} | ${currentUser.name} (${currentUser.role})`;
+
+            // 네비게이션 초기화
+            initNavigation('certificate', currentUser.role);
+          } else {
+            redirectToLogin();
+          }
+        })
+        .getCurrentUserByToken(sessionToken);
+    }
+    
+    function generateCertificate() {
+      const slipNumber = document.getElementById('slipNumber').value.trim();
+      const date = document.getElementById('receiptDate').value;
+      const time = document.getElementById('receiptTime').value;
+      
+      if (!date) {
+        alert('입고일자를 선택해주세요.');
+        return;
+      }
+      
+      const container = document.getElementById('certificateContainer');
+      container.innerHTML = '<div class="loading">' +
+        '<div class="spinner"></div>' +
+        '<p>확인증을 생성하는 중...</p>' +
+      '</div>';
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response && response.success) {
+            currentData = response.data;
+            displayCertificate(slipNumber, date, time, currentData);
+          } else {
+            showEmpty('해당 날짜/시간에 등록된 데이터가 없습니다.');
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('데이터 조회 실패:', error);
+          showEmpty('데이터를 불러올 수 없습니다.');
+        })
+        .getDataByDateAndTime(sessionToken, date, time);
+    }
+    
+    function displayCertificate(slipNumber, date, time, data) {
+      console.log('=== displayCertificate 시작 ===');
+      console.log('데이터:', data);
+      
+      if (!data || data.length === 0) {
+        showEmpty('해당 날짜/시간에 등록된 데이터가 없습니다.');
+        return;
+      }
+      
+      // 시간순으로 정렬
+      data.sort(function(a, b) {
+        if (a.time === b.time) return 0;
+        if (a.time === '오전' && b.time === '오후') return -1;
+        return 1;
+      });
+      
+      let tableRows = '';
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+        tableRows += '<tr>' +
+          '<td>' + (i + 1) + '</td>' +
+          '<td>' + item.time + '</td>' +
+          '<td>' + item.tmNo + '</td>' +
+          '<td>' + item.productName + '</td>' +
+          '<td>' + item.quantity + '</td>' +
+          '</tr>';
+      }
+      
+      const today = new Date().toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const timeDisplay = time ? time : '전체';
+      const companyName = currentUser ? currentUser.companyName : '-';
+      const slipNumberDisplay = slipNumber || '-';
+      
+      // HTML 생성 - ID 확인!
+      const html = 
+        '<div class="certificate-preview" id="certificatePreview">' +
+          '<div class="cert-header">' +
+            '<div class="cert-title">검사성적서 입고 확인증</div>' +
+            '<div class="cert-subtitle">Certificate of Receipt</div>' +
+          '</div>' +
+          '<div class="cert-info">' +
+            '<div class="info-row">' +
+              '<div class="info-label">전표번호</div>' +
+              '<div class="info-value">' + slipNumberDisplay + '</div>' +
+            '</div>' +
+            '<div class="info-row">' +
+              '<div class="info-label">입고일자</div>' +
+              '<div class="info-value">' + date + '</div>' +
+            '</div>' +
+            '<div class="info-row">' +
+              '<div class="info-label">입고시간</div>' +
+              '<div class="info-value">' + timeDisplay + '</div>' +
+            '</div>' +
+            '<div class="info-row">' +
+              '<div class="info-label">업체명</div>' +
+              '<div class="info-value">' + companyName + '</div>' +
+            '</div>' +
+            '<div class="info-row">' +
+              '<div class="info-label">총 입고 건수</div>' +
+              '<div class="info-value">' + data.length + '건</div>' +
+            '</div>' +
+          '</div>' +
+          '<table class="cert-table">' +
+            '<thead>' +
+              '<tr>' +
+                '<th style="width: 60px;">No.</th>' +
+                '<th style="width: 100px;">입고시간</th>' +
+                '<th>TM-NO</th>' +
+                '<th>제품명</th>' +
+                '<th style="width: 100px;">수량</th>' +
+              '</tr>' +
+            '</thead>' +
+            '<tbody>' +
+              tableRows +
+            '</tbody>' +
+          '</table>' +
+          '<div class="cert-footer">' +
+            '<div class="cert-date">' + today + '</div>' +
+            '<div class="cert-company">' + companyName + '</div>' +
+          '</div>' +
+        '</div>';
+      
+      console.log('HTML 생성 완료, 길이:', html.length);
+      console.log('HTML 시작 부분:', html.substring(0, 100));
+      
+      // HTML 삽입
+      document.getElementById('certificateContainer').innerHTML = html;
+      document.getElementById('btnPrint').style.display = 'inline-block';
+      
+      console.log('HTML 삽입 완료');
+      
+      // ID 확인
+      setTimeout(function() {
+        const preview = document.getElementById('certificatePreview');
+        console.log('certificatePreview 요소:', preview);
+        
+        if (preview) {
+          console.log('ID 확인 성공!');
+          preview.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        } else {
+          console.error('ID를 찾을 수 없음!');
+        }
+      }, 200);
+    }
+    
+    function showEmpty(message) {
+      const container = document.getElementById('certificateContainer');
+      container.innerHTML = '<div class="empty-state">' +
+        '<div class="empty-icon">📭</div>' +
+        '<p>' + message + '</p>' +
+      '</div>';
+      document.getElementById('btnPrint').style.display = 'none';
+    }
+
+    // 로그아웃
+    function logout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        const token = sessionStorage.getItem('sessionToken');
+        google.script.run
+          .withSuccessHandler(function() {
+            sessionStorage.removeItem('sessionToken');
+            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+          })
+          .withFailureHandler(function(error) {
+            console.error('로그아웃 실패:', error);
+            sessionStorage.removeItem('sessionToken');
+            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+          })
+          .logoutWithToken(token);
+      }
+    }
+
+    function goToPage(page) {
+      const token = sessionStorage.getItem('sessionToken');
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      safeNavigate(webAppUrl, {
+        'page': page,
+        'token': token,
+        't': Date.now()
+      });
+    }
+
+    function printCertificate() {
+      console.log('=== printCertificate 시작 ===');
+      
+      // certificateContainer에서 전체 HTML 가져오기
+      const container = document.getElementById('certificateContainer');
+      
+      if (!container) {
+        alert('확인증 컨테이너를 찾을 수 없습니다.');
+        return;
+      }
+      
+      const certificateHTML = container.innerHTML;
+      console.log('HTML 길이:', certificateHTML.length);
+      
+      if (!certificateHTML || certificateHTML.trim() === '') {
+        alert('확인증을 먼저 생성해주세요.');
+        return;
+      }
+      
+      // 새 창으로 인쇄
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      
+      if (!printWindow) {
+        alert('팝업이 차단되었습니다. 팝업을 허용해주세요.');
+        return;
+      }
+      
+      printWindow.document.write('<!DOCTYPE html>');
+      printWindow.document.write('<html><head>');
+      printWindow.document.write('<meta charset="UTF-8">');
+      printWindow.document.write('<title>확인증 인쇄</title>');
+      printWindow.document.write('<style>');
+      printWindow.document.write('@page { size: A4; margin: 15mm; }');
+      printWindow.document.write('* { box-sizing: border-box; }');
+      printWindow.document.write('body { font-family: "Segoe UI", "Malgun Gothic", sans-serif; margin: 20px; padding: 0; }');
+      printWindow.document.write('.certificate-preview { border: 2px solid #333; padding: 40px; background: white; }');
+      printWindow.document.write('.cert-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px double #333; }');
+      printWindow.document.write('.cert-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: #000; }');
+      printWindow.document.write('.cert-subtitle { font-size: 18px; color: #666; }');
+      printWindow.document.write('.cert-info { margin-bottom: 30px; }');
+      printWindow.document.write('.info-row { display: flex; padding: 10px; border-bottom: 1px solid #eee; }');
+      printWindow.document.write('.info-label { width: 150px; font-weight: bold; color: #333; }');
+      printWindow.document.write('.info-value { flex: 1; color: #666; }');
+      printWindow.document.write('.cert-table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
+      printWindow.document.write('.cert-table th, .cert-table td { border: 1px solid #333; padding: 12px; text-align: center; color: #000; }');
+      printWindow.document.write('.cert-table th { background-color: #f5f5f5; font-weight: bold; }');
+      printWindow.document.write('.cert-footer { margin-top: 40px; text-align: right; }');
+      printWindow.document.write('.cert-date { font-size: 18px; margin-bottom: 20px; color: #000; }');
+      printWindow.document.write('.cert-company { font-size: 20px; font-weight: bold; color: #000; }');
+      printWindow.document.write('</style>');
+      printWindow.document.write('</head><body>');
+      printWindow.document.write(certificateHTML);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      
+      console.log('새 창에 HTML 작성 완료');
+
+      // 로딩 후 인쇄
+      setTimeout(function() {
+        printWindow.focus();
+        printWindow.print();
+        console.log('인쇄 다이얼로그 열림');
+
+        // 인쇄 완료 또는 취소 후 창 닫기 (선택사항)
+        // printWindow.close(); // 필요시 주석 제거
+      }, 500);
+    }
+
+  </script>
+</body>
+</html>
