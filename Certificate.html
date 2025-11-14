@@ -709,7 +709,7 @@
     // 로그인 페이지로 리다이렉트
     function redirectToLogin() {
       sessionStorage.removeItem('sessionToken');
-      safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+      safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
     }
 
     let currentData = null;
@@ -743,7 +743,7 @@
       // Item 등록 버튼은 대시보드에서만 표시
       const itemBtn = document.getElementById('navItem');
       if (itemBtn) {
-        itemBtn.style.display = (currentPage === 'dashboard') ? 'inline-block' : 'none';
+        itemBtn.style.display = 'none';
       }
 
       // 사용자 관리 버튼은 관리자만 표시
@@ -852,11 +852,11 @@
       const slipNumberDisplay = slipNumber || '-';
       
       // HTML 생성 - ID 확인!
-      const html = 
+      const html =
         '<div class="certificate-preview" id="certificatePreview">' +
           '<div class="cert-header">' +
-            '<div class="cert-title">검사성적서 입고 확인증</div>' +
-            '<div class="cert-subtitle">Certificate of Receipt</div>' +
+            '<div class="cert-title">검사성적서 등록 확인서</div>' +
+            '<div class="cert-subtitle">Certificate of Registration</div>' +
           '</div>' +
           '<div class="cert-info">' +
             '<div class="info-row">' +
@@ -942,12 +942,12 @@
         google.script.run
           .withSuccessHandler(function() {
             sessionStorage.removeItem('sessionToken');
-            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+            safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
           })
           .withFailureHandler(function(error) {
             console.error('로그아웃 실패:', error);
             sessionStorage.removeItem('sessionToken');
-            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+            safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
           })
           .logoutWithToken(token);
       }
