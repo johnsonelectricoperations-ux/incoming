@@ -97,8 +97,11 @@ function getCompanies(token) {
  */
 function getCompanyDetails(token, companyCode) {
   try {
+    Logger.log('getCompanyDetails 호출됨 - companyCode: ' + companyCode);
+
     const session = getSessionByToken(token);
     if (!session || !session.userId) {
+      Logger.log('getCompanyDetails - 세션 없음');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -106,8 +109,11 @@ function getCompanyDetails(token, companyCode) {
       };
     }
 
+    Logger.log('getCompanyDetails - 세션 확인됨: ' + session.userId + ', 권한: ' + session.role);
+
     // 관리자만 접근 가능
     if (session.role !== '관리자') {
+      Logger.log('getCompanyDetails - 권한 부족: ' + session.role);
       return {
         success: false,
         message: '관리자 권한이 필요합니다.',
@@ -117,6 +123,7 @@ function getCompanyDetails(token, companyCode) {
 
     const userSheet = getSheet(USER_SHEET_NAME);
     if (!userSheet) {
+      Logger.log('getCompanyDetails - Users 시트 없음');
       return {
         success: false,
         message: 'Users 시트를 찾을 수 없습니다.',
@@ -125,8 +132,10 @@ function getCompanyDetails(token, companyCode) {
     }
 
     const data = userSheet.getDataRange().getValues();
+    Logger.log('getCompanyDetails - Users 시트 행 수: ' + data.length);
 
     if (data.length <= 1) {
+      Logger.log('getCompanyDetails - 데이터 없음');
       return {
         success: false,
         message: '해당 업체를 찾을 수 없습니다.',
@@ -147,6 +156,21 @@ function getCompanyDetails(token, companyCode) {
           companyName = String(row[1] || '').trim();
         }
 
+        // createdAt을 문자열로 변환 (Date 객체는 직렬화 문제 발생 가능)
+        let createdAtStr = '';
+        if (row[7]) {
+          try {
+            if (row[7] instanceof Date) {
+              createdAtStr = Utilities.formatDate(row[7], 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+            } else {
+              createdAtStr = String(row[7]);
+            }
+          } catch (e) {
+            Logger.log('createdAt 변환 오류: ' + e.toString());
+            createdAtStr = '';
+          }
+        }
+
         users.push({
           rowIndex: i + 1,
           companyCode: rowCompanyCode,
@@ -155,23 +179,28 @@ function getCompanyDetails(token, companyCode) {
           userId: String(row[3] || ''),
           role: String(row[5] || ''),
           status: String(row[6] || ''),
-          createdAt: row[7]
+          createdAt: createdAtStr
         });
       }
     }
 
+    Logger.log('getCompanyDetails - 사용자 수: ' + users.length);
+
     if (users.length === 0) {
+      Logger.log('getCompanyDetails - 업체코드 ' + companyCode + ' 사용자 없음');
       return {
         success: false,
-        message: '해당 업체를 찾을 수 없습니다.',
+        message: '해당 업체를 찾을 수 없습니다. (업체코드: ' + companyCode + ')',
         data: null
       };
     }
 
     // 업체별 통계 조회
+    Logger.log('getCompanyDetails - 통계 조회 시작: ' + companyName);
     const stats = getCompanyStatistics(companyName);
+    Logger.log('getCompanyDetails - 통계 조회 완료');
 
-    return {
+    const result = {
       success: true,
       data: {
         companyCode: companyCode,
@@ -181,11 +210,16 @@ function getCompanyDetails(token, companyCode) {
       }
     };
 
+    Logger.log('getCompanyDetails - 반환 직전, success: ' + result.success + ', users 수: ' + result.data.users.length);
+
+    return result;
+
   } catch (error) {
     Logger.log('getCompanyDetails 오류: ' + error.toString());
+    Logger.log('에러 스택: ' + error.stack);
     return {
       success: false,
-      message: '업체 정보 조회 중 오류가 발생했습니다.',
+      message: '업체 정보 조회 중 오류가 발생했습니다: ' + error.toString(),
       data: null
     };
   }
@@ -197,6 +231,8 @@ function getCompanyDetails(token, companyCode) {
  */
 function getCompanyStatistics(companyName) {
   try {
+    Logger.log('getCompanyStatistics 시작 - companyName: ' + companyName);
+
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const stats = {
       dataCount: 0,
@@ -206,41 +242,67 @@ function getCompanyStatistics(companyName) {
     };
 
     // Data 시트 카운트 (성적서 업로드)
-    const dataSheetName = getDataSheetName(companyName);
-    const dataSheet = ss.getSheetByName(dataSheetName);
-    if (dataSheet) {
-      const dataData = dataSheet.getDataRange().getValues();
-      stats.dataCount = dataData.length > 1 ? dataData.length - 1 : 0;
+    try {
+      const dataSheetName = getDataSheetName(companyName);
+      Logger.log('Data 시트명: ' + dataSheetName);
+      const dataSheet = ss.getSheetByName(dataSheetName);
+      if (dataSheet) {
+        const dataData = dataSheet.getDataRange().getValues();
+        stats.dataCount = dataData.length > 1 ? dataData.length - 1 : 0;
+        Logger.log('Data 카운트: ' + stats.dataCount);
+      }
+    } catch (e) {
+      Logger.log('Data 시트 조회 오류: ' + e.toString());
     }
 
     // ItemList 시트 카운트
-    const itemSheetName = getItemListSheetName(companyName);
-    const itemSheet = ss.getSheetByName(itemSheetName);
-    if (itemSheet) {
-      const itemData = itemSheet.getDataRange().getValues();
-      stats.itemCount = itemData.length > 1 ? itemData.length - 1 : 0;
+    try {
+      const itemSheetName = getItemListSheetName(companyName);
+      Logger.log('Item 시트명: ' + itemSheetName);
+      const itemSheet = ss.getSheetByName(itemSheetName);
+      if (itemSheet) {
+        const itemData = itemSheet.getDataRange().getValues();
+        stats.itemCount = itemData.length > 1 ? itemData.length - 1 : 0;
+        Logger.log('Item 카운트: ' + stats.itemCount);
+      }
+    } catch (e) {
+      Logger.log('Item 시트 조회 오류: ' + e.toString());
     }
 
     // InspectionSpec 시트 카운트
-    const specSheetName = getInspectionSpecSheetName(companyName);
-    const specSheet = ss.getSheetByName(specSheetName);
-    if (specSheet) {
-      const specData = specSheet.getDataRange().getValues();
-      stats.specCount = specData.length > 1 ? specData.length - 1 : 0;
+    try {
+      const specSheetName = getInspectionSpecSheetName(companyName);
+      Logger.log('Spec 시트명: ' + specSheetName);
+      const specSheet = ss.getSheetByName(specSheetName);
+      if (specSheet) {
+        const specData = specSheet.getDataRange().getValues();
+        stats.specCount = specData.length > 1 ? specData.length - 1 : 0;
+        Logger.log('Spec 카운트: ' + stats.specCount);
+      }
+    } catch (e) {
+      Logger.log('Spec 시트 조회 오류: ' + e.toString());
     }
 
     // Result 시트 카운트
-    const resultSheetName = getResultSheetName(companyName);
-    const resultSheet = ss.getSheetByName(resultSheetName);
-    if (resultSheet) {
-      const resultData = resultSheet.getDataRange().getValues();
-      stats.resultCount = resultData.length > 1 ? resultData.length - 1 : 0;
+    try {
+      const resultSheetName = getResultSheetName(companyName);
+      Logger.log('Result 시트명: ' + resultSheetName);
+      const resultSheet = ss.getSheetByName(resultSheetName);
+      if (resultSheet) {
+        const resultData = resultSheet.getDataRange().getValues();
+        stats.resultCount = resultData.length > 1 ? resultData.length - 1 : 0;
+        Logger.log('Result 카운트: ' + stats.resultCount);
+      }
+    } catch (e) {
+      Logger.log('Result 시트 조회 오류: ' + e.toString());
     }
 
+    Logger.log('getCompanyStatistics 완료 - stats: ' + JSON.stringify(stats));
     return stats;
 
   } catch (error) {
-    Logger.log('getCompanyStatistics 오류: ' + error.toString());
+    Logger.log('getCompanyStatistics 전체 오류: ' + error.toString());
+    Logger.log('에러 스택: ' + error.stack);
     return {
       dataCount: 0,
       itemCount: 0,
@@ -537,6 +599,101 @@ function addUserToCompany(token, userData) {
 }
 
 /**
+ * 업체명 수정
+ * @param {string} token - 세션 토큰
+ * @param {string} companyCode - 업체 코드
+ * @param {string} newCompanyName - 새 업체명
+ */
+function updateCompanyName(token, companyCode, newCompanyName) {
+  try {
+    const session = getSessionByToken(token);
+    if (!session || !session.userId) {
+      return {
+        success: false,
+        message: '로그인이 필요합니다.'
+      };
+    }
+
+    // 관리자만 접근 가능
+    if (session.role !== '관리자') {
+      return {
+        success: false,
+        message: '관리자 권한이 필요합니다.'
+      };
+    }
+
+    const userSheet = getSheet(USER_SHEET_NAME);
+    if (!userSheet) {
+      return {
+        success: false,
+        message: 'Users 시트를 찾을 수 없습니다.'
+      };
+    }
+
+    // 입력값 정규화
+    const trimmedCompanyCode = (companyCode || '').toString().trim();
+    const trimmedNewCompanyName = (newCompanyName || '').toString().trim();
+
+    // 입력값 검증
+    if (!trimmedCompanyCode || !trimmedNewCompanyName) {
+      return {
+        success: false,
+        message: '업체 코드와 업체명을 모두 입력해주세요.'
+      };
+    }
+
+    // 업체 코드 존재 확인
+    const data = userSheet.getDataRange().getValues();
+    let oldCompanyName = '';
+    let updatedCount = 0;
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const rowCompanyCode = String(row[0] || '').trim();
+
+      if (rowCompanyCode === trimmedCompanyCode) {
+        if (!oldCompanyName) {
+          oldCompanyName = String(row[1] || '').trim();
+        }
+
+        // 업체명 업데이트
+        userSheet.getRange(i + 1, 2).setValue(trimmedNewCompanyName);
+        updatedCount++;
+      }
+    }
+
+    if (updatedCount === 0) {
+      return {
+        success: false,
+        message: '존재하지 않는 업체 코드입니다.'
+      };
+    }
+
+    // 업체 시트명도 변경 (기존 oldCompanyName → 새 newCompanyName)
+    // 시트명 변경 함수 호출
+    const renameResult = renameCompanySheets(oldCompanyName, trimmedNewCompanyName);
+    if (!renameResult.success) {
+      Logger.log(`시트명 변경 실패: ${renameResult.message}`);
+      // 시트명 변경 실패해도 업체명은 수정됨
+    }
+
+    Logger.log(`업체명 수정 완료: ${oldCompanyName} → ${trimmedNewCompanyName} (${updatedCount}개 사용자)`);
+
+    return {
+      success: true,
+      message: '업체명이 수정되었습니다.'
+    };
+
+  } catch (error) {
+    Logger.log('updateCompanyName 오류: ' + error.toString());
+    return {
+      success: false,
+      message: '업체명 수정 중 오류가 발생했습니다.'
+    };
+  }
+}
+
+/**
  * 사용자 정보 수정
  * @param {string} token - 세션 토큰
  * @param {number} rowIndex - Users 시트의 행 번호
@@ -754,6 +911,108 @@ function searchCompanies(token, searchText) {
       success: false,
       message: '업체 검색 중 오류가 발생했습니다.',
       data: []
+    };
+  }
+}
+
+/**
+ * 비밀번호 변경 (일반 사용자용)
+ * @param {string} token - 세션 토큰
+ * @param {string} currentPassword - 현재 비밀번호
+ * @param {string} newPassword - 새 비밀번호
+ */
+function changePassword(token, currentPassword, newPassword) {
+  try {
+    const session = getSessionByToken(token);
+    if (!session || !session.userId) {
+      return {
+        success: false,
+        message: '로그인이 필요합니다.'
+      };
+    }
+
+    const userSheet = getSheet(USER_SHEET_NAME);
+    if (!userSheet) {
+      return {
+        success: false,
+        message: 'Users 시트를 찾을 수 없습니다.'
+      };
+    }
+
+    // 입력값 정규화
+    const trimmedCurrentPassword = (currentPassword || '').toString().trim();
+    const trimmedNewPassword = (newPassword || '').toString().trim();
+
+    // 입력값 검증
+    if (!trimmedCurrentPassword || !trimmedNewPassword) {
+      return {
+        success: false,
+        message: '현재 비밀번호와 새 비밀번호를 모두 입력해주세요.'
+      };
+    }
+
+    // 새 비밀번호 길이 체크
+    if (trimmedNewPassword.length < 6) {
+      return {
+        success: false,
+        message: '새 비밀번호는 최소 6자 이상이어야 합니다.'
+      };
+    }
+
+    // 현재 비밀번호와 새 비밀번호가 같은지 확인
+    if (trimmedCurrentPassword === trimmedNewPassword) {
+      return {
+        success: false,
+        message: '현재 비밀번호와 새 비밀번호가 동일합니다.'
+      };
+    }
+
+    // 사용자 정보 조회
+    const data = userSheet.getDataRange().getValues();
+    let userRowIndex = -1;
+    let storedPassword = '';
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const rowUserId = String(row[3] || '').trim();
+
+      if (rowUserId === session.userId) {
+        userRowIndex = i + 1; // 시트의 행 번호 (1-based)
+        storedPassword = String(row[4] || '').trim();
+        break;
+      }
+    }
+
+    if (userRowIndex === -1) {
+      return {
+        success: false,
+        message: '사용자 정보를 찾을 수 없습니다.'
+      };
+    }
+
+    // 현재 비밀번호 확인
+    if (storedPassword !== trimmedCurrentPassword) {
+      return {
+        success: false,
+        message: '현재 비밀번호가 올바르지 않습니다.'
+      };
+    }
+
+    // 비밀번호 업데이트 (5번째 컬럼 = 비밀번호)
+    userSheet.getRange(userRowIndex, 5).setValue(trimmedNewPassword);
+
+    Logger.log(`비밀번호 변경 완료: ${session.userId}`);
+
+    return {
+      success: true,
+      message: '비밀번호가 성공적으로 변경되었습니다.'
+    };
+
+  } catch (error) {
+    Logger.log('changePassword 오류: ' + error.toString());
+    return {
+      success: false,
+      message: '비밀번호 변경 중 오류가 발생했습니다.'
     };
   }
 }
