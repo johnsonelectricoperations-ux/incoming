@@ -647,3 +647,32 @@ function getAllCompanyNames() {
     return [];
   }
 }
+
+/**
+ * 업체 시트명 변경 (업체명이 변경되었을 때)
+ * 주의: 현재 시스템은 업체코드 기반 시트명을 사용하므로 (Data_C01, List_C01 등)
+ * 업체명이 변경되어도 시트명은 변경하지 않음
+ *
+ * @param {string} oldCompanyName - 기존 업체명
+ * @param {string} newCompanyName - 새 업체명
+ * @returns {Object} {success: boolean, message: string}
+ */
+function renameCompanySheets(oldCompanyName, newCompanyName) {
+  try {
+    // 현재 시스템은 업체코드 기반 시트명을 사용하므로
+    // 업체명이 변경되어도 시트명은 변경하지 않음
+    Logger.log(`업체명 변경: ${oldCompanyName} → ${newCompanyName} (시트명은 업체코드 기반이므로 변경 불필요)`);
+
+    return {
+      success: true,
+      message: '시트명은 업체코드 기반이므로 변경이 불필요합니다.'
+    };
+
+  } catch (error) {
+    logError('renameCompanySheets', error);
+    return {
+      success: false,
+      message: '시트명 변경 중 오류가 발생했습니다.'
+    };
+  }
+}
