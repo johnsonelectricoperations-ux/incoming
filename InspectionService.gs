@@ -561,3 +561,88 @@ function getInspectionSpecsByTmNo(token, tmNo) {
     };
   }
 }
+
+/**
+ * 검사결과등록을 위한 검사규격 조회
+ * @param {string} token - 세션 토큰
+ * @param {string} companyName - 업체명
+ * @param {string} tmNo - TM-NO
+ * @returns {Object} {success, specs: [{inspectionItem, measurementMethod, lowerLimit, upperLimit, sampleSize}]}
+ */
+function getInspectionSpecsForResult(token, companyName, tmNo) {
+  try {
+    // 토큰 검증
+    const session = getSessionByToken(token);
+    if (!session || !session.userId) {
+      return {
+        success: false,
+        message: '로그인이 필요합니다.',
+        specs: []
+      };
+    }
+
+    // 권한 체크: 관리자 또는 JEO만 접근 가능
+    if (session.role !== '관리자' && session.role !== 'JEO') {
+      return {
+        success: false,
+        message: '검사결과등록 권한이 없습니다.',
+        specs: []
+      };
+    }
+
+    Logger.log(`getInspectionSpecsForResult: 업체=${companyName}, TM-NO=${tmNo}`);
+
+    // 해당 업체의 Spec 시트 조회
+    const sheetResult = getOrCreateInspectionSpecSheet(companyName);
+    if (!sheetResult.success) {
+      return {
+        success: false,
+        message: sheetResult.message || '검사규격 시트를 찾을 수 없습니다.',
+        specs: []
+      };
+    }
+
+    const sheet = sheetResult.sheet;
+    const data = sheet.getDataRange().getValues();
+    const specs = [];
+
+    // 헤더 제외하고 검색
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+
+      // TM-NO와 업체명이 모두 일치하는 행만 조회
+      if (String(row[1]) === String(tmNo) && String(row[3]) === String(companyName)) {
+        specs.push({
+          inspectionItem: String(row[4] || ''),
+          measurementMethod: String(row[5] || ''),
+          lowerLimit: String(row[6] || ''),
+          upperLimit: String(row[7] || ''),
+          sampleSize: parseInt(row[8]) || 1
+        });
+      }
+    }
+
+    if (specs.length === 0) {
+      return {
+        success: false,
+        message: '해당 업체/TM-NO의 검사규격이 등록되지 않았습니다.',
+        specs: []
+      };
+    }
+
+    Logger.log(`검사규격 조회 완료: ${specs.length}개 항목`);
+
+    return {
+      success: true,
+      specs: specs
+    };
+
+  } catch (error) {
+    Logger.log('getInspectionSpecsForResult 오류: ' + error.toString());
+    return {
+      success: false,
+      message: '검사규격 조회 중 오류가 발생했습니다: ' + error.message,
+      specs: []
+    };
+  }
+}
