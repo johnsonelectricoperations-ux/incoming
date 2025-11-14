@@ -11,19 +11,146 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f5f7fa;
       color: #333;
     }
-    
+
     /* 헤더 */
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       padding: 20px 30px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    /* 비밀번호 변경 모달 폼 스타일 */
+    .form-group-horizontal {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      margin-bottom: 20px;
+      align-items: start;
+    }
+
+    .form-input-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .required {
+      color: #e74c3c;
+      margin-left: 2px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .help-text {
+      padding: 8px 12px;
+      background-color: #f8f9fa;
+      border-left: 3px solid #667eea;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+      min-width: 180px;
+      align-self: center;
+      margin-top: 28px;
+    }
+
+    .alert {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .alert-error {
+      background-color: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+    }
+
+    .alert-success {
+      background-color: #efe;
+      border: 1px solid #cfc;
+      color: #3c3;
+    }
+
+    .btn-primary {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      padding: 12px 24px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    /* 반응형: 모바일에서는 세로 레이아웃 */
+    @media (max-width: 768px) {
+      .form-group-horizontal {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .help-text {
+        margin-top: 0;
+        min-width: auto;
+      }
     }
     
     .header-content {
@@ -127,67 +254,8 @@
       color: white;
       border-color: #667eea;
     }
-    
-    /* 통계 카드 */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    
-    .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-    
-    .stat-icon {
-      font-size: 36px;
-      margin-bottom: 10px;
-    }
-    
-    .stat-label {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-    
-    .stat-value {
-      font-size: 32px;
-      font-weight: bold;
-      color: #333;
-    }
-    
-    .stat-card.primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    
-    .stat-card.primary .stat-label {
-      color: rgba(255,255,255,0.9);
-    }
-    
-    .stat-card.primary .stat-value {
-      color: white;
-    }
-    
-    .stat-card.success {
-      border-left: 4px solid #4caf50;
-    }
-    
-    .stat-card.info {
-      border-left: 4px solid #2196f3;
-    }
-    
-    /* 최근 데이터 테이블 */
+
+    /* 섹션 스타일 */
     .section {
       background: white;
       border-radius: 12px;
@@ -195,7 +263,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       margin-bottom: 30px;
     }
-    
+
     .section-header {
       display: flex;
       justify-content: space-between;
@@ -204,11 +272,100 @@
       padding-bottom: 15px;
       border-bottom: 2px solid #f0f0f0;
     }
-    
+
     .section-title {
       font-size: 20px;
       font-weight: bold;
       color: #333;
+    }
+
+    /* 보드 그리드 */
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .board-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .board-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .board-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .board-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .board-icon {
+      font-size: 24px;
+    }
+
+    .board-content {
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .board-item {
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .board-item:last-child {
+      border-bottom: none;
+    }
+
+    .board-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .board-item-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .board-item-meta {
+      display: flex;
+      gap: 10px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .board-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .board-empty-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
     }
     
     .table-responsive {
@@ -281,23 +438,27 @@
         flex-direction: column;
         align-items: flex-start;
       }
-      
+
       .stats-grid {
         grid-template-columns: 1fr;
       }
-      
+
+      .board-grid {
+        grid-template-columns: 1fr;
+      }
+
       .nav-menu {
         flex-direction: column;
       }
-      
+
       .nav-btn {
         width: 100%;
       }
-      
+
       table {
         font-size: 12px;
       }
-      
+
       th, td {
         padding: 8px;
       }
@@ -313,6 +474,7 @@
         <p id="userInfo">로딩 중...</p>
       </div>
       <div class="header-actions">
+        <button class="btn btn-outline" id="btnChangePassword" onclick="showChangePasswordModal()" style="display: none;">🔒 비밀번호 변경</button>
         <button class="btn btn-outline" onclick="logout()">로그아웃</button>
       </div>
     </div>
@@ -322,55 +484,181 @@
   <div class="container">
     <!-- 내비게이션 메뉴 -->
     <?!= include('Navigation') ?>
-    
-    <!-- 통계 카드 -->
-    <div class="stats-grid">
-      <div class="stat-card primary">
-        <div class="stat-icon">📦</div>
-        <div class="stat-label">전체 등록 건수</div>
-        <div class="stat-value" id="totalCount">-</div>
+
+    <!-- 공지사항 및 업무연락 보드 -->
+    <div class="board-grid">
+      <!-- 공지사항 보드 -->
+      <div class="board-card">
+        <div class="board-header">
+          <div class="board-title">
+            <span class="board-icon">📢</span>
+            <span>공지사항</span>
+          </div>
+          <span style="font-size: 12px; color: #999;" id="noticeCount">0</span>
+        </div>
+        <div class="board-content" id="noticeBoard">
+          <div class="board-empty">
+            <div class="board-empty-icon">📭</div>
+            <p>등록된 공지사항이 없습니다.</p>
+          </div>
+        </div>
       </div>
-      
-      <div class="stat-card success">
-        <div class="stat-icon">📅</div>
-        <div class="stat-label">오늘 등록 건수</div>
-        <div class="stat-value" id="todayCount">-</div>
-      </div>
-      
-      <div class="stat-card info">
-        <div class="stat-icon">📆</div>
-        <div class="stat-label">이번달 등록 건수</div>
-        <div class="stat-value" id="monthCount">-</div>
+
+      <!-- 업무연락 보드 -->
+      <div class="board-card">
+        <div class="board-header">
+          <div class="board-title">
+            <span class="board-icon">📝</span>
+            <span>업무연락</span>
+          </div>
+          <span style="font-size: 12px; color: #999;" id="workNoticeCount">0</span>
+        </div>
+        <div class="board-content" id="workNoticeBoard">
+          <div class="board-empty">
+            <div class="board-empty-icon">📭</div>
+            <p>등록된 업무연락이 없습니다.</p>
+          </div>
+        </div>
       </div>
     </div>
-    
-    <!-- 최근 등록 데이터 -->
-    <div class="section">
-      <div class="section-header">
-        <h2 class="section-title">최근 등록 데이터</h2>
-        <button class="btn btn-white" onclick="goToPage('history')">전체 보기 →</button>
+  </div>
+
+  <!-- 검사결과등록 모달 -->
+  <div id="inspectionResultModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto;">
+    <div class="modal-content" style="background-color: white; margin: 50px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 1400px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+      <!-- 제목 (고정) -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+        <h3 style="font-size: 20px; font-weight: 600; margin: 0;">📊 검사결과등록</h3>
+        <span onclick="closeInspectionResultModal()" style="color: white; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
       </div>
-      
-      <div id="recentDataContainer">
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>데이터를 불러오는 중...</p>
+
+      <!-- 검색 필터 영역 (고정) -->
+      <div style="padding: 20px 25px; border-bottom: 1px solid #e0e0e0; flex-shrink: 0; background-color: #f8f9fa;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr) auto auto; gap: 10px; align-items: end;">
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">업체명</label>
+            <select id="inspectionSearchCompany" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+              <option value="">전체</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">입고일자</label>
+            <input type="date" id="inspectionSearchDate" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">시간</label>
+            <input type="text" id="inspectionSearchTime" placeholder="예: 오전" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">TM-NO</label>
+            <input type="text" id="inspectionSearchTmNo" placeholder="TM-NO 검색" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <button onclick="searchInspectionData()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">🔍 검색</button>
+          <button onclick="clearInspectionSearch()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">↻ 초기화</button>
         </div>
+      </div>
+
+      <!-- 검색 결과 테이블 (스크롤 가능) -->
+      <div style="flex: 1; overflow-y: auto; padding: 20px 25px; min-height: 200px;">
+        <div id="inspectionSearchResultContainer">
+          <div style="text-align: center; padding: 60px 20px; color: #999;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🔍</div>
+            <p style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">검색 조건을 입력하고 검색 버튼을 눌러주세요</p>
+            <p style="font-size: 14px;">조건 없이 검색하면 전체 데이터를 조회합니다</p>
+          </div>
+        </div>
+
+        <!-- 검사결과 입력 폼 (검색 결과 아래에 동적으로 표시) -->
+        <div id="inspectionInputFormContainer" style="display: none; margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 12px; border: 2px solid #667eea;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0;">
+            <h4 style="font-size: 18px; font-weight: bold; color: #667eea;">📋 검사결과 입력</h4>
+            <button onclick="cancelInspectionInput()" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">✕ 닫기</button>
+          </div>
+          <div id="inspectionDataInfo" style="margin-bottom: 20px; padding: 15px; background-color: white; border-radius: 8px;">
+            <!-- 데이터 정보 표시 -->
+          </div>
+          <div id="inspectionItemsContainer">
+            <!-- 검사항목별 입력 폼이 여기에 동적으로 생성됩니다 -->
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center;">
+            <button onclick="saveInspectionResultData()" style="padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px;">💾 저장</button>
+            <button onclick="cancelInspectionInput()" style="padding: 12px 30px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px;">취소</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 닫기 버튼 (고정) -->
+      <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; text-align: right; flex-shrink: 0;">
+        <button onclick="closeInspectionResultModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비밀번호 변경 모달 -->
+  <div id="changePasswordModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto;">
+    <div class="modal-content" style="background-color: white; margin: 100px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+      <!-- 제목 -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 20px; font-weight: 600; margin: 0;">🔒 비밀번호 변경</h3>
+        <span onclick="closeChangePasswordModal()" style="color: white; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1;">&times;</span>
+      </div>
+
+      <!-- 내용 -->
+      <div style="padding: 25px;">
+        <div id="passwordAlertBox" class="alert" style="display: none;"></div>
+
+        <form id="changePasswordForm" onsubmit="handleChangePassword(event)">
+          <div class="form-group-horizontal">
+            <div class="form-input-section">
+              <label class="form-label">현재 비밀번호 <span class="required">*</span></label>
+              <input type="password" class="form-control" id="currentPassword" placeholder="현재 비밀번호를 입력하세요" required>
+            </div>
+            <div class="help-text">
+              본인 확인을 위해<br>현재 비밀번호 입력
+            </div>
+          </div>
+
+          <div class="form-group-horizontal">
+            <div class="form-input-section">
+              <label class="form-label">새 비밀번호 <span class="required">*</span></label>
+              <input type="password" class="form-control" id="newPassword" placeholder="새 비밀번호를 입력하세요" required minlength="6">
+            </div>
+            <div class="help-text">
+              최소 6자 이상<br>입력해주세요
+            </div>
+          </div>
+
+          <div class="form-group-horizontal">
+            <div class="form-input-section">
+              <label class="form-label">새 비밀번호 확인 <span class="required">*</span></label>
+              <input type="password" class="form-control" id="confirmPassword" placeholder="새 비밀번호를 다시 입력하세요" required minlength="6">
+            </div>
+            <div class="help-text">
+              새 비밀번호를<br>다시 입력해주세요
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px;">
+            <button type="submit" class="btn-primary" style="flex: 1;" id="btnSubmitPassword">변경하기</button>
+            <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeChangePasswordModal()">취소</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 
   <!-- Item 관리 모달 -->
   <div id="itemModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-    <div class="modal-content" style="background-color: white; margin: 50px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 1200px; max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+    <div class="modal-content" style="background-color: white; margin: 50px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 1200px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+      <!-- 제목 (고정) -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
         <h3 style="font-size: 20px; font-weight: 600; margin: 0;">📦 Item 관리</h3>
         <span onclick="closeItemModal()" style="color: white; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
       </div>
 
-      <div style="padding: 25px;">
-        <!-- 검색 필터 -->
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
+      <!-- 검색 필터 (고정) -->
+      <div style="padding: 25px 25px 15px 25px; flex-shrink: 0; border-bottom: 1px solid #e0e0e0;">
+        <div style="display: flex; gap: 10px; align-items: flex-end;">
           <div style="flex: 1;">
             <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">업체명</label>
             <select id="searchItemCompany" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
@@ -385,8 +673,10 @@
           <button onclick="clearItemSearch()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">↻ 초기화</button>
           <button onclick="showItemAddModal()" style="padding: 10px 20px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer;">➕ 추가</button>
         </div>
+      </div>
 
-        <!-- Item 목록 -->
+      <!-- Item 목록 (스크롤 가능) -->
+      <div style="flex: 1; overflow-y: auto; padding: 20px 25px; min-height: 200px;">
         <div id="itemListContainer">
           <div style="text-align: center; padding: 60px 20px; color: #999;">
             <div style="font-size: 64px; margin-bottom: 20px;">📭</div>
@@ -395,7 +685,8 @@
         </div>
       </div>
 
-      <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; text-align: right;">
+      <!-- 닫기 버튼 (고정) -->
+      <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; text-align: right; flex-shrink: 0;">
         <button onclick="closeItemModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">닫기</button>
       </div>
     </div>
@@ -475,16 +766,16 @@
             <label style="font-weight: 600; color: #333; font-size: 14px;">검사 항목</label>
             <button onclick="addSpecRow()" style="padding: 8px 16px; background: #e69138; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">➕ 검사항목 추가</button>
           </div>
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
-              <thead>
+          <div style="max-height: 400px; overflow-y: auto; overflow-x: auto; border: 1px solid #ddd; border-radius: 8px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead style="position: sticky; top: 0; z-index: 10;">
                 <tr style="background-color: #f8f9fa;">
-                  <th style="padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 13px;">검사항목</th>
-                  <th style="padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 13px;">측정방법</th>
-                  <th style="padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 13px;">규격하한</th>
-                  <th style="padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 13px;">규격상한</th>
-                  <th style="padding: 10px; border: 1px solid #ddd; text-align: left; font-size: 13px;">시료수</th>
-                  <th style="padding: 10px; border: 1px solid #ddd; text-align: center; width: 80px; font-size: 13px;">삭제</th>
+                  <th style="padding: 10px; border: 1px solid #ddd; border-top: none; text-align: left; font-size: 13px; background-color: #f8f9fa;">검사항목</th>
+                  <th style="padding: 10px; border: 1px solid #ddd; border-top: none; text-align: left; font-size: 13px; background-color: #f8f9fa;">측정방법</th>
+                  <th style="padding: 10px; border: 1px solid #ddd; border-top: none; text-align: left; font-size: 13px; background-color: #f8f9fa;">규격하한</th>
+                  <th style="padding: 10px; border: 1px solid #ddd; border-top: none; text-align: left; font-size: 13px; background-color: #f8f9fa;">규격상한</th>
+                  <th style="padding: 10px; border: 1px solid #ddd; border-top: none; text-align: left; font-size: 13px; background-color: #f8f9fa;">시료수</th>
+                  <th style="padding: 10px; border: 1px solid #ddd; border-top: none; text-align: center; width: 80px; font-size: 13px; background-color: #f8f9fa;">삭제</th>
                 </tr>
               </thead>
               <tbody id="specItemsBody">
@@ -506,6 +797,16 @@
     // ===== 토큰 관리 =====
     let sessionToken = null;
     let currentUser = null; // 현재 로그인 사용자 정보 저장
+
+    // ===== API 호출 중복 방지 및 캐싱 =====
+    let isLoadingItems = false;
+    let isLoadingItemCompanyList = false;
+    let isLoadingItemSpecCounts = false;
+    let itemsCache = null;
+    let itemCompanyListCache = null;
+    let itemSpecCountsCache = null;
+    let cacheTimestamp = null;
+    const CACHE_DURATION = 30000; // 30초 캐시 유지
 
     // 토큰 초기화 (서버에서 전달받은 토큰 또는 sessionStorage에서)
     function initToken() {
@@ -549,7 +850,7 @@
     // 로그인 페이지로 리다이렉트
     function redirectToLogin() {
       sessionStorage.removeItem('sessionToken');
-      safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+      safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
     }
 
     // 페이지 로드 시 실행
@@ -557,13 +858,8 @@
       // 토큰 초기화
       initToken();
 
-      // 먼저 사용자 정보 로드 (세션 확인)
+      // 사용자 정보 로드 (세션 확인)
       loadUserInfo();
-
-      // 약간의 지연 후 대시보드 데이터 로드
-      setTimeout(function() {
-        loadDashboardData();
-      }, 500);
     };
 
     // 네비게이션 초기화 함수
@@ -586,7 +882,13 @@
       // Item 등록 버튼은 대시보드에서만 표시
       const itemBtn = document.getElementById('navItem');
       if (itemBtn) {
-        itemBtn.style.display = (currentPage === 'dashboard') ? 'inline-block' : 'none';
+        itemBtn.style.display = 'inline-block';
+      }
+
+      // 검사결과등록 버튼은 관리자 또는 JEO만 표시
+      const inspectionResultBtn = document.getElementById('navInspectionResult');
+      if (inspectionResultBtn) {
+        inspectionResultBtn.style.display = (userRole === '관리자' || userRole === 'JEO') ? 'inline-block' : 'none';
       }
 
       // 사용자 관리 버튼은 관리자만 표시
@@ -627,6 +929,12 @@
 
             // 네비게이션 초기화
             initNavigation('dashboard', user.role);
+
+            // 비밀번호 변경 버튼은 일반 사용자만 표시
+            const btnChangePassword = document.getElementById('btnChangePassword');
+            if (btnChangePassword && user.role !== '관리자') {
+              btnChangePassword.style.display = 'inline-block';
+            }
           } else {
             // 세션 없으면 로그인 페이지로
             console.error('세션 없음 - 로그인 페이지로 이동');
@@ -639,109 +947,6 @@
         .getCurrentUserByToken(sessionToken);
     }
 
-    // 대시보드 데이터 로드
-    function loadDashboardData() {
-      console.log('getDashboardStats 호출 시작...');
-
-      google.script.run
-        .withSuccessHandler(function(response) {
-          console.log('getDashboardStats 응답:', response);
-          console.log('응답 타입:', typeof response);
-          console.log('응답 null 체크:', response === null);
-          
-          if (!response) {
-            console.error('서버 응답이 null입니다.');
-            showError('데이터를 불러올 수 없습니다. 페이지를 새로고침해주세요.');
-            return;
-          }
-          
-          if (response.success) {
-            const stats = response.stats;
-            console.log('통계 데이터:', stats);
-            
-            // 통계 업데이트
-            document.getElementById('totalCount').textContent = stats.totalCount || 0;
-            document.getElementById('todayCount').textContent = stats.todayCount || 0;
-            document.getElementById('monthCount').textContent = stats.thisMonthCount || 0;
-            
-            // 최근 데이터 테이블 생성
-            displayRecentData(stats.recentData || []);
-          } else {
-            showError(response.message || '데이터를 불러올 수 없습니다.');
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('대시보드 데이터 로드 실패:', error);
-          console.error('에러 메시지:', error.message);
-          console.error('에러 스택:', error.stack);
-          showError('데이터 로드 중 오류가 발생했습니다: ' + error.message);
-        })
-        .getDashboardStats(sessionToken);
-    }
-        
-    // 최근 데이터 표시
-    function displayRecentData(data) {
-      const container = document.getElementById('recentDataContainer');
-      
-      if (!data || data.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📭</div>
-            <p>등록된 데이터가 없습니다.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      let html = `
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>업체명</th>
-                <th>입고날짜</th>
-                <th>입고시간</th>
-                <th>TM-NO</th>
-                <th>제품명</th>
-                <th>수량</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
-
-      data.forEach(function(item) {
-        html += `
-          <tr>
-            <td>${item.companyName}</td>
-            <td>${item.date}</td>
-            <td>${item.time}</td>
-            <td>${item.tmNo}</td>
-            <td>${item.productName}</td>
-            <td>${item.quantity}</td>
-          </tr>
-        `;
-      });
-      
-      html += `
-            </tbody>
-          </table>
-        </div>
-      `;
-      
-      container.innerHTML = html;
-    }
-    
-    // 에러 표시
-    function showError(message) {
-      const container = document.getElementById('recentDataContainer');
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state-icon">⚠️</div>
-          <p>${message}</p>
-        </div>
-      `;
-    }
-    
     // 페이지 이동
     function goToPage(page) {
       const token = sessionStorage.getItem('sessionToken');
@@ -751,6 +956,513 @@
         'token': token,
         't': Date.now()
       });
+    }
+
+    // ===== 검사결과등록 모달 =====
+
+    // 전역 변수
+    let currentInspectionDataId = null;
+    let currentInspectionCompanyName = null;
+    let currentInspectionTmNo = null;
+    let currentInspectionSpecs = null;
+
+    // 검사결과등록 모달 열기
+    function showInspectionResultModal() {
+      document.getElementById('inspectionResultModal').style.display = 'block';
+
+      // 업체명 목록 로드
+      loadInspectionCompanyList();
+    }
+
+    // 검사결과등록 모달 닫기
+    function closeInspectionResultModal() {
+      document.getElementById('inspectionResultModal').style.display = 'none';
+
+      // 초기화
+      clearInspectionSearch();
+      cancelInspectionInput();
+    }
+
+    // 업체명 목록 로드
+    function loadInspectionCompanyList() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success && response.companies) {
+            const select = document.getElementById('inspectionSearchCompany');
+
+            // 기존 옵션 제거 (전체 제외)
+            while (select.options.length > 1) {
+              select.remove(1);
+            }
+
+            // 업체명 추가
+            response.companies.forEach(function(company) {
+              const option = document.createElement('option');
+              option.value = company;
+              option.textContent = company;
+              select.appendChild(option);
+            });
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('업체 목록 로드 실패:', error);
+        })
+        .getNormalCompanyList(sessionToken);
+    }
+
+    // 검색 실행
+    function searchInspectionData() {
+      const companyName = document.getElementById('inspectionSearchCompany').value.trim();
+      const date = document.getElementById('inspectionSearchDate').value.trim();
+      const time = document.getElementById('inspectionSearchTime').value.trim();
+      const tmNo = document.getElementById('inspectionSearchTmNo').value.trim();
+
+      const filters = {
+        companyName: companyName,
+        date: date,
+        time: time,
+        tmNo: tmNo
+      };
+
+      console.log('검색 조건:', filters);
+
+      // 로딩 표시
+      const container = document.getElementById('inspectionSearchResultContainer');
+      container.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; color: #666;">
+          <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+          <p>검색 중...</p>
+        </div>
+      `;
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          displayInspectionSearchResult(response);
+        })
+        .withFailureHandler(function(error) {
+          console.error('검색 실패:', error);
+          container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: #dc3545;">
+              <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+              <p>검색 중 오류가 발생했습니다.</p>
+            </div>
+          `;
+        })
+        .searchDataForInspectionResult(sessionToken, filters);
+    }
+
+    // 검색 결과 표시
+    function displayInspectionSearchResult(response) {
+      const container = document.getElementById('inspectionSearchResultContainer');
+
+      if (!response.success) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; color: #dc3545;">
+            <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+            <p>${response.message || '검색에 실패했습니다.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (!response.data || response.data.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; color: #999;">
+            <div style="font-size: 64px; margin-bottom: 15px;">📭</div>
+            <p>검색 결과가 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // 테이블 생성
+      let html = `
+        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
+          <thead style="background-color: #f8f9fa;">
+            <tr>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">업체명</th>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">입고일자</th>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">시간</th>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">TM-NO</th>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">품명</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 180px;">작업</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      response.data.forEach(function(item) {
+        html += `
+          <tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor=''">
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.companyName}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.date}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.time}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.tmNo}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.productName}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
+              <button onclick='showInspectionInputForm("${item.id}", "${item.companyName}", "${item.tmNo}", "${item.productName}", "${item.date}", "${item.time}")' style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">📊 검사결과 등록</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+        <div style="margin-top: 15px; text-align: right; color: #666; font-size: 14px;">
+          총 <strong>${response.data.length}</strong>건
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    // 검색 조건 초기화
+    function clearInspectionSearch() {
+      document.getElementById('inspectionSearchCompany').value = '';
+      document.getElementById('inspectionSearchDate').value = '';
+      document.getElementById('inspectionSearchTime').value = '';
+      document.getElementById('inspectionSearchTmNo').value = '';
+
+      const container = document.getElementById('inspectionSearchResultContainer');
+      container.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; color: #999;">
+          <div style="font-size: 64px; margin-bottom: 20px;">🔍</div>
+          <p style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">검색 조건을 입력하고 검색 버튼을 눌러주세요</p>
+          <p style="font-size: 14px;">조건 없이 검색하면 전체 데이터를 조회합니다</p>
+        </div>
+      `;
+
+      // 입력 폼도 닫기
+      cancelInspectionInput();
+    }
+
+    // 검사결과 입력 폼 표시
+    function showInspectionInputForm(dataId, companyName, tmNo, productName, date, time) {
+      // 전역 변수에 저장
+      currentInspectionDataId = dataId;
+      currentInspectionCompanyName = companyName;
+      currentInspectionTmNo = tmNo;
+
+      console.log('검사결과 입력 폼 열기:', dataId, companyName, tmNo);
+
+      // 데이터 정보 표시
+      const infoContainer = document.getElementById('inspectionDataInfo');
+      infoContainer.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+          <div><strong>업체명:</strong> ${companyName}</div>
+          <div><strong>입고일자:</strong> ${date}</div>
+          <div><strong>시간:</strong> ${time}</div>
+          <div><strong>TM-NO:</strong> ${tmNo}</div>
+          <div><strong>품명:</strong> ${productName}</div>
+        </div>
+      `;
+
+      // 로딩 표시
+      const itemsContainer = document.getElementById('inspectionItemsContainer');
+      itemsContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px; color: #666;">
+          <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+          <p>검사규격 정보를 불러오는 중...</p>
+        </div>
+      `;
+
+      // 입력 폼 컨테이너 표시
+      document.getElementById('inspectionInputFormContainer').style.display = 'block';
+
+      // 검사규격 조회
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success && response.specs) {
+            currentInspectionSpecs = response.specs;
+            renderInspectionInputForm(response.specs);
+          } else {
+            itemsContainer.innerHTML = `
+              <div style="text-align: center; padding: 40px 20px; color: #dc3545;">
+                <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                <p>${response.message || '검사규격을 불러올 수 없습니다.'}</p>
+                <button onclick="cancelInspectionInput()" style="margin-top: 15px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">닫기</button>
+              </div>
+            `;
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('검사규격 조회 실패:', error);
+          itemsContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: #dc3545;">
+              <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+              <p>검사규격 조회 중 오류가 발생했습니다.</p>
+              <button onclick="cancelInspectionInput()" style="margin-top: 15px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">닫기</button>
+            </div>
+          `;
+        })
+        .getInspectionSpecsForResult(sessionToken, companyName, tmNo);
+    }
+
+    // 검사결과 입력 폼 렌더링
+    function renderInspectionInputForm(specs) {
+      const container = document.getElementById('inspectionItemsContainer');
+      let html = '';
+
+      specs.forEach(function(spec, index) {
+        const sampleSize = parseInt(spec.sampleSize) || 1;
+
+        html += `
+          <div class="inspection-item-form" data-index="${index}" style="margin-bottom: 25px; padding: 20px; background-color: white; border-radius: 8px; border: 1px solid #e0e0e0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0;">
+              <h5 style="font-size: 16px; font-weight: bold; color: #333; margin: 0;">검사항목: ${spec.inspectionItem}</h5>
+              <span class="pass-fail-badge" id="passFail_${index}" style="padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; background: #f0f0f0; color: #666;">-</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; font-size: 14px; color: #666;">
+              <div><strong>측정방법:</strong> ${spec.measurementMethod}</div>
+              <div><strong>규격:</strong> ${spec.lowerLimit || '-'} ~ ${spec.upperLimit || '-'}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">시료 측정값 (${sampleSize}개)</label>
+              <div style="display: grid; grid-template-columns: repeat(${Math.min(sampleSize, 5)}, 1fr); gap: 10px;">
+        `;
+
+        for (let i = 0; i < sampleSize; i++) {
+          html += `
+            <input type="number" step="any" class="sample-input" data-item-index="${index}" data-sample-index="${i}" placeholder="시료${i + 1}" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px;" onchange="calculatePassFailForItem(${index})">
+          `;
+        }
+
+        html += `
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // 특정 검사항목의 합부판정 계산
+    function calculatePassFailForItem(itemIndex) {
+      const spec = currentInspectionSpecs[itemIndex];
+      const sampleInputs = document.querySelectorAll(`.sample-input[data-item-index="${itemIndex}"]`);
+      const passFailSpan = document.getElementById(`passFail_${itemIndex}`);
+
+      const lowerLimit = spec.lowerLimit ? parseFloat(spec.lowerLimit) : null;
+      const upperLimit = spec.upperLimit ? parseFloat(spec.upperLimit) : null;
+
+      let allPass = true;
+      let hasValue = false;
+
+      sampleInputs.forEach(function(input) {
+        const value = input.value.trim();
+
+        if (value !== '') {
+          hasValue = true;
+          const numValue = parseFloat(value);
+
+          if (!isNaN(numValue)) {
+            // 하한 체크
+            if (lowerLimit !== null && numValue < lowerLimit) {
+              allPass = false;
+            }
+
+            // 상한 체크
+            if (upperLimit !== null && numValue > upperLimit) {
+              allPass = false;
+            }
+          }
+        }
+      });
+
+      // 합부판정 표시
+      if (!hasValue) {
+        passFailSpan.textContent = '-';
+        passFailSpan.style.background = '#f0f0f0';
+        passFailSpan.style.color = '#666';
+      } else if (allPass) {
+        passFailSpan.textContent = '합격';
+        passFailSpan.style.background = '#d4edda';
+        passFailSpan.style.color = '#155724';
+      } else {
+        passFailSpan.textContent = '불합격';
+        passFailSpan.style.background = '#f8d7da';
+        passFailSpan.style.color = '#721c24';
+      }
+    }
+
+    // 검사결과 저장
+    function saveInspectionResultData() {
+      if (!currentInspectionDataId || !currentInspectionSpecs) {
+        alert('검사 데이터를 선택해주세요.');
+        return;
+      }
+
+      // 모든 검사항목의 시료 데이터 수집
+      const results = [];
+
+      currentInspectionSpecs.forEach(function(spec, index) {
+        const sampleInputs = document.querySelectorAll(`.sample-input[data-item-index="${index}"]`);
+        const samples = [];
+
+        sampleInputs.forEach(function(input) {
+          const value = input.value.trim();
+          samples.push(value !== '' ? parseFloat(value) : '');
+        });
+
+        // 최소 1개 이상의 시료 값이 입력되었는지 확인
+        const hasValue = samples.some(function(s) {
+          return s !== '';
+        });
+
+        if (!hasValue) {
+          alert(`검사항목 "${spec.inspectionItem}"의 시료 값을 입력해주세요.`);
+          throw new Error('시료 값 누락');
+        }
+
+        // 합부판정 계산
+        const lowerLimit = spec.lowerLimit ? parseFloat(spec.lowerLimit) : null;
+        const upperLimit = spec.upperLimit ? parseFloat(spec.upperLimit) : null;
+        let allPass = true;
+
+        samples.forEach(function(value) {
+          if (value !== '') {
+            if (lowerLimit !== null && value < lowerLimit) {
+              allPass = false;
+            }
+            if (upperLimit !== null && value > upperLimit) {
+              allPass = false;
+            }
+          }
+        });
+
+        results.push({
+          inspectionItem: spec.inspectionItem,
+          measurementMethod: spec.measurementMethod,
+          lowerLimit: spec.lowerLimit,
+          upperLimit: spec.upperLimit,
+          samples: samples,
+          passFailResult: allPass ? '합격' : '불합격'
+        });
+      });
+
+      if (results.length === 0) {
+        alert('저장할 검사결과가 없습니다.');
+        return;
+      }
+
+      // 확인 메시지
+      if (!confirm('검사결과를 저장하시겠습니까?')) {
+        return;
+      }
+
+      // 저장 호출
+      console.log('검사결과 저장:', currentInspectionDataId, results);
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            alert('검사결과가 저장되었습니다.');
+            cancelInspectionInput();
+          } else {
+            alert(response.message || '저장에 실패했습니다.');
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('저장 실패:', error);
+          alert('저장 중 오류가 발생했습니다.');
+        })
+        .saveInspectionResults(sessionToken, currentInspectionDataId, results);
+    }
+
+    // 검사결과 입력 폼 닫기
+    function cancelInspectionInput() {
+      document.getElementById('inspectionInputFormContainer').style.display = 'none';
+      document.getElementById('inspectionDataInfo').innerHTML = '';
+      document.getElementById('inspectionItemsContainer').innerHTML = '';
+
+      // 전역 변수 초기화
+      currentInspectionDataId = null;
+      currentInspectionCompanyName = null;
+      currentInspectionTmNo = null;
+      currentInspectionSpecs = null;
+    }
+
+    // ===== 비밀번호 변경 모달 =====
+
+    // 비밀번호 변경 모달 열기
+    function showChangePasswordModal() {
+      document.getElementById('changePasswordModal').style.display = 'block';
+      document.getElementById('changePasswordForm').reset();
+      hidePasswordAlert();
+    }
+
+    // 비밀번호 변경 모달 닫기
+    function closeChangePasswordModal() {
+      document.getElementById('changePasswordModal').style.display = 'none';
+      document.getElementById('changePasswordForm').reset();
+      hidePasswordAlert();
+    }
+
+    // 비밀번호 변경 처리
+    function handleChangePassword(event) {
+      event.preventDefault();
+
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // 비밀번호 확인
+      if (newPassword !== confirmPassword) {
+        showPasswordAlert('새 비밀번호가 일치하지 않습니다.', 'error');
+        return;
+      }
+
+      // 현재 비밀번호와 새 비밀번호가 같은지 확인
+      if (currentPassword === newPassword) {
+        showPasswordAlert('현재 비밀번호와 새 비밀번호가 동일합니다. 다른 비밀번호를 입력해주세요.', 'error');
+        return;
+      }
+
+      // 버튼 비활성화
+      const btnSubmit = document.getElementById('btnSubmitPassword');
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = '변경 중...';
+
+      // 서버 호출
+      google.script.run
+        .withSuccessHandler(function(response) {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = '변경하기';
+
+          if (response.success) {
+            showPasswordAlert('비밀번호가 성공적으로 변경되었습니다.', 'success');
+            setTimeout(function() {
+              closeChangePasswordModal();
+            }, 2000);
+          } else {
+            showPasswordAlert(response.message || '비밀번호 변경에 실패했습니다.', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = '변경하기';
+          console.error('비밀번호 변경 실패:', error);
+          showPasswordAlert('비밀번호 변경 중 오류가 발생했습니다.', 'error');
+        })
+        .changePassword(sessionToken, currentPassword, newPassword);
+    }
+
+    // 비밀번호 알림 표시
+    function showPasswordAlert(message, type) {
+      const alertBox = document.getElementById('passwordAlertBox');
+      alertBox.textContent = message;
+      alertBox.className = 'alert alert-' + type;
+      alertBox.style.display = 'block';
+    }
+
+    // 비밀번호 알림 숨김
+    function hidePasswordAlert() {
+      const alertBox = document.getElementById('passwordAlertBox');
+      if (alertBox) {
+        alertBox.style.display = 'none';
+      }
     }
 
     // 로그아웃
@@ -777,9 +1489,29 @@
     // Item 관리 모달 열기
     function showItemManagementModal() {
       document.getElementById('itemModal').style.display = 'block';
-      loadItemCompanyList();
-      loadItemSpecCounts(); // 규격 등록 상태 로드
-      loadItems();
+
+      // 검색용 업체 목록과 규격 카운트만 로드 (아이템 목록은 검색 버튼 클릭 시 로드)
+      loadItemCompanyList(function() {
+        // 업체 목록 로드 후 규격 카운트 로드
+        setTimeout(function() {
+          loadItemSpecCounts(function() {
+            // 초기 안내 메시지 표시
+            showItemInitialMessage();
+          });
+        }, 300);
+      });
+    }
+
+    // Item 초기 안내 메시지 표시
+    function showItemInitialMessage() {
+      const container = document.getElementById('itemListContainer');
+      container.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; color: #999;">
+          <div style="font-size: 64px; margin-bottom: 20px;">🔍</div>
+          <p style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">검색 조건을 설정하고 검색 버튼을 눌러주세요.</p>
+          <p style="font-size: 14px;">업체명, TM-NO로 검색하거나, 조건 없이 검색하면 전체 Item을 조회합니다.</p>
+        </div>
+      `;
     }
 
     // Item 관리 모달 닫기
@@ -788,23 +1520,54 @@
     }
 
     // Item 업체명 목록 로드 (검색용)
-    function loadItemCompanyList() {
+    function loadItemCompanyList(callback) {
+      // 중복 호출 방지
+      if (isLoadingItemCompanyList) {
+        console.log('loadItemCompanyList: 이미 로딩 중');
+        if (callback) setTimeout(callback, 100);
+        return;
+      }
+
+      // 캐시 확인 (30초 이내)
+      if (itemCompanyListCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+        console.log('loadItemCompanyList: 캐시 사용');
+        updateItemCompanyList(itemCompanyListCache);
+        if (callback) callback();
+        return;
+      }
+
+      isLoadingItemCompanyList = true;
+
       google.script.run
         .withSuccessHandler(function(response) {
+          isLoadingItemCompanyList = false;
           if (response.success && response.companies) {
-            const select = document.getElementById('searchItemCompany');
-            while (select.options.length > 1) {
-              select.remove(1);
-            }
-            response.companies.forEach(function(company) {
-              const option = document.createElement('option');
-              option.value = company;
-              option.textContent = company;
-              select.appendChild(option);
-            });
+            itemCompanyListCache = response.companies;
+            cacheTimestamp = Date.now();
+            updateItemCompanyList(response.companies);
           }
+          if (callback) callback();
+        })
+        .withFailureHandler(function(error) {
+          isLoadingItemCompanyList = false;
+          console.error('업체 목록 로드 실패:', error);
+          if (callback) callback();
         })
         .getCompanyList(sessionToken);
+    }
+
+    // 업체 목록 UI 업데이트
+    function updateItemCompanyList(companies) {
+      const select = document.getElementById('searchItemCompany');
+      while (select.options.length > 1) {
+        select.remove(1);
+      }
+      companies.forEach(function(company) {
+        const option = document.createElement('option');
+        option.value = company;
+        option.textContent = company;
+        select.appendChild(option);
+      });
     }
 
     // Item 추가/수정 모달용 업체명 목록 로드 (일반 권한 업체만)
@@ -833,10 +1596,22 @@
 
     // Item 목록 로드
     function loadItems(filters) {
+      // 중복 호출 방지
+      if (isLoadingItems) {
+        console.log('loadItems: 이미 로딩 중');
+        return;
+      }
+
+      isLoadingItems = true;
       const options = filters || {};
+
       google.script.run
-        .withSuccessHandler(displayItems)
+        .withSuccessHandler(function(response) {
+          isLoadingItems = false;
+          displayItems(response);
+        })
         .withFailureHandler(function(error) {
+          isLoadingItems = false;
           console.error('Item 로드 실패:', error);
         })
         .getItems(sessionToken, options);
@@ -1044,9 +1819,19 @@
     let specItemMap = {}; // TM-NO|업체명 → 규격 개수
 
     // 검사규격 등록 상태 로드
-    function loadItemSpecCounts() {
+    function loadItemSpecCounts(callback) {
+      // 중복 호출 방지
+      if (isLoadingItemSpecCounts) {
+        console.log('loadItemSpecCounts: 이미 로딩 중');
+        if (callback) setTimeout(callback, 100);
+        return;
+      }
+
+      isLoadingItemSpecCounts = true;
+
       google.script.run
         .withSuccessHandler(function(response) {
+          isLoadingItemSpecCounts = false;
           if (response.success && response.data) {
             // TM-NO + 업체명별로 그룹화
             const grouped = {};
@@ -1063,7 +1848,15 @@
             Object.keys(grouped).forEach(function(key) {
               specItemMap[key] = grouped[key].length;
             });
+
+            console.log('규격 카운트 로드 완료:', Object.keys(specItemMap).length + '개 항목');
           }
+          if (callback) callback();
+        })
+        .withFailureHandler(function(error) {
+          isLoadingItemSpecCounts = false;
+          console.error('규격 카운트 로드 실패:', error);
+          if (callback) callback(); // 실패해도 다음 단계 진행
         })
         .getInspectionSpecs(sessionToken, {});
     }
@@ -1115,21 +1908,28 @@
       const tbody = document.getElementById('specItemsBody');
       const row = document.createElement('tr');
 
+      // spec 값들을 안전하게 처리 (undefined 방지)
+      const inspectionItem = (spec && spec.inspectionItem) ? String(spec.inspectionItem) : '';
+      const measurementMethod = (spec && spec.measurementMethod) ? String(spec.measurementMethod) : '';
+      const lowerLimit = (spec && spec.lowerLimit) ? String(spec.lowerLimit) : '';
+      const upperLimit = (spec && spec.upperLimit) ? String(spec.upperLimit) : '';
+      const sampleSize = (spec && spec.sampleSize) ? String(spec.sampleSize) : '';
+
       row.innerHTML = `
         <td style="padding: 8px; border: 1px solid #ddd;">
-          <input type="text" value="${spec ? spec.inspectionItem : ''}" placeholder="검사항목" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+          <input type="text" value="${inspectionItem}" placeholder="검사항목" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
         </td>
         <td style="padding: 8px; border: 1px solid #ddd;">
-          <input type="text" value="${spec ? spec.measurementMethod : ''}" placeholder="측정방법" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+          <input type="text" value="${measurementMethod}" placeholder="측정방법" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
         </td>
         <td style="padding: 8px; border: 1px solid #ddd;">
-          <input type="text" value="${spec ? spec.lowerLimit : ''}" placeholder="규격하한" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+          <input type="text" value="${lowerLimit}" placeholder="규격하한" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
         </td>
         <td style="padding: 8px; border: 1px solid #ddd;">
-          <input type="text" value="${spec ? spec.upperLimit : ''}" placeholder="규격상한" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+          <input type="text" value="${upperLimit}" placeholder="규격상한" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
         </td>
         <td style="padding: 8px; border: 1px solid #ddd;">
-          <input type="number" value="${spec ? spec.sampleSize : ''}" placeholder="시료수" min="1" max="10" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+          <input type="number" value="${sampleSize}" placeholder="시료수" min="1" max="10" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
         </td>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
           <button onclick="removeSpecRow(this)" style="padding: 4px 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">❌</button>
@@ -1147,43 +1947,68 @@
 
     // 검사규격 저장
     function saveItemSpecs() {
-      const tmNo = document.getElementById('specTmNo').value.trim();
-      const productName = document.getElementById('specProductName').value.trim();
-      const companyName = document.getElementById('specCompanyName').value.trim();
+      let tmNo, productName, companyName, specs;
 
-      if (!tmNo || !productName || !companyName) {
-        alert('TM-NO, 제품명, 업체명을 모두 입력해주세요.');
-        return;
-      }
+      try {
+        tmNo = document.getElementById('specTmNo').value.trim();
+        productName = document.getElementById('specProductName').value.trim();
+        companyName = document.getElementById('specCompanyName').value.trim();
 
-      const rows = document.querySelectorAll('#specItemsBody tr');
-      const specs = [];
-
-      rows.forEach(function(row) {
-        const inputs = row.querySelectorAll('input');
-        const inspectionItem = inputs[0].value.trim();
-        const measurementMethod = inputs[1].value.trim();
-        const lowerLimit = inputs[2].value.trim();
-        const upperLimit = inputs[3].value.trim();
-        const sampleSize = inputs[4].value.trim();
-
-        if (inspectionItem) {
-          specs.push({
-            tmNo: tmNo,
-            productName: productName,
-            companyName: companyName,
-            inspectionItem: inspectionItem,
-            measurementMethod: measurementMethod,
-            lowerLimit: lowerLimit,
-            upperLimit: upperLimit,
-            sampleSize: sampleSize
-          });
+        if (!tmNo || !productName || !companyName) {
+          alert('TM-NO, 제품명, 업체명을 모두 입력해주세요.');
+          return;
         }
-      });
 
-      if (specs.length === 0) {
-        alert('최소 1개의 검사항목을 입력해주세요.');
-        return;
+        const rows = document.querySelectorAll('#specItemsBody tr');
+        specs = [];
+
+        rows.forEach(function(row) {
+          const inputs = row.querySelectorAll('input');
+          const inspectionItem = inputs[0].value.trim();
+          const measurementMethod = inputs[1].value.trim();
+          const lowerLimit = inputs[2].value.trim();
+          const upperLimit = inputs[3].value.trim();
+          const sampleSize = inputs[4].value.trim();
+
+          if (inspectionItem) {
+            // 1. 검사항목이 입력되면 측정방법 필수
+            if (!measurementMethod) {
+              alert('검사항목 "' + inspectionItem + '"의 측정방법을 입력해주세요.');
+              throw new Error('측정방법 누락');
+            }
+
+            // 2. 시료수 필수 검사
+            if (!sampleSize || sampleSize === '' || isNaN(sampleSize) || parseInt(sampleSize) <= 0) {
+              alert('검사항목 "' + inspectionItem + '"의 시료수를 입력해주세요. (1 이상의 숫자)');
+              throw new Error('시료수 누락');
+            }
+
+            // 3. 규격 하한 또는 상한 중 최소 1개 필수
+            if (!lowerLimit && !upperLimit) {
+              alert('검사항목 "' + inspectionItem + '"의 규격 하한 또는 상한 중 최소 1개를 입력해주세요.');
+              throw new Error('규격 누락');
+            }
+
+            specs.push({
+              tmNo: tmNo,
+              productName: productName,
+              companyName: companyName,
+              inspectionItem: inspectionItem,
+              measurementMethod: measurementMethod,
+              lowerLimit: lowerLimit,
+              upperLimit: upperLimit,
+              sampleSize: sampleSize
+            });
+          }
+        });
+
+        if (specs.length === 0) {
+          alert('최소 1개의 검사항목을 입력해주세요.');
+          return;
+        }
+      } catch (error) {
+        console.error('검사규격 저장 검증 실패:', error);
+        return; // 유효성 검사 실패 시 저장 중단
       }
 
       // 수정 모드인 경우 기존 데이터 먼저 삭제 후 추가 (중복 방지)
@@ -1199,8 +2024,8 @@
                   if (response.success) {
                     alert('검사 규격이 수정되었습니다.');
                     closeSpecModal();
-                    loadItemSpecCounts();
-                    loadItems();
+                    // 순차적으로 데이터 새로고침 (규격 카운트 -> 아이템 목록)
+                    refreshSpecDataSequentially();
                   } else {
                     alert(response.message || '저장 중 오류가 발생했습니다.');
                   }
@@ -1227,8 +2052,8 @@
             if (response.success) {
               alert('검사 규격이 추가되었습니다.');
               closeSpecModal();
-              loadItemSpecCounts();
-              loadItems();
+              // 순차적으로 데이터 새로고침 (규격 카운트 -> 아이템 목록)
+              refreshSpecDataSequentially();
             } else {
               alert(response.message || '저장 중 오류가 발생했습니다.');
             }
@@ -1240,6 +2065,69 @@
           .addInspectionSpecsBatch(sessionToken, specs);
       }
     }
+
+    // 규격 데이터를 순차적으로 새로고침
+    function refreshSpecDataSequentially() {
+      console.log('규격 데이터 새로고침 시작');
+
+      // 먼저 규격 카운트 로드
+      google.script.run
+        .withSuccessHandler(function(response) {
+          isLoadingItemSpecCounts = false;
+          if (response.success && response.data) {
+            // TM-NO + 업체명별로 그룹화
+            const grouped = {};
+            response.data.forEach(function(spec) {
+              const key = spec.tmNo + '|' + spec.companyName;
+              if (!grouped[key]) {
+                grouped[key] = [];
+              }
+              grouped[key].push(spec);
+            });
+
+            // 개수를 specItemMap에 저장
+            specItemMap = {};
+            Object.keys(grouped).forEach(function(key) {
+              specItemMap[key] = grouped[key].length;
+            });
+
+            console.log('규격 카운트 업데이트 완료, 아이템 목록 로드 시작');
+
+            // 규격 카운트 로드 완료 후 아이템 목록 로드
+            setTimeout(function() {
+              loadItems();
+            }, 300);
+          }
+        })
+        .withFailureHandler(function(error) {
+          isLoadingItemSpecCounts = false;
+          console.error('규격 카운트 로드 실패:', error);
+          // 실패해도 아이템 목록은 로드
+          loadItems();
+        })
+        .getInspectionSpecs(sessionToken, {});
+    }
+
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+      // 검사결과등록 모달 외부 클릭
+      const inspectionResultModal = document.getElementById('inspectionResultModal');
+      if (event.target === inspectionResultModal) {
+        closeInspectionResultModal();
+      }
+
+      // 비밀번호 변경 모달 외부 클릭
+      const passwordModal = document.getElementById('changePasswordModal');
+      if (event.target === passwordModal) {
+        closeChangePasswordModal();
+      }
+
+      // Item 모달 외부 클릭
+      const itemModal = document.getElementById('itemModal');
+      if (event.target === itemModal) {
+        closeItemModal();
+      }
+    };
   </script>
 </body>
 </html>
