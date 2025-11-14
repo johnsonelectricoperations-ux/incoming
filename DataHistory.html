@@ -11,20 +11,20 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f5f7fa;
       color: #333;
     }
-    
+
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       padding: 20px 30px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    
+
     .header-content {
       max-width: 1400px;
       margin: 0 auto;
@@ -34,17 +34,17 @@
       flex-wrap: wrap;
       gap: 15px;
     }
-    
+
     .header-title h1 {
       font-size: 24px;
       margin-bottom: 5px;
     }
-    
+
     .header-title p {
       font-size: 14px;
       opacity: 0.9;
     }
-    
+
     .btn {
       padding: 10px 20px;
       border: none;
@@ -54,24 +54,24 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-    
+
     .btn-outline {
       background: transparent;
       color: white;
       border: 2px solid white;
     }
-    
+
     .btn-outline:hover {
       background: white;
       color: #667eea;
     }
-    
+
     .container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 30px 20px;
     }
-    
+
     .nav-menu {
       background: white;
       border-radius: 12px;
@@ -82,7 +82,7 @@
       gap: 15px;
       flex-wrap: wrap;
     }
-    
+
     .nav-btn {
       padding: 12px 24px;
       background: #f0f4ff;
@@ -94,18 +94,18 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-    
+
     .nav-btn:hover {
       background: #667eea;
       color: white;
       transform: translateY(-2px);
     }
-    
+
     .nav-btn.active {
       background: #667eea;
       color: white;
     }
-    
+
     .section {
       background: white;
       border-radius: 12px;
@@ -113,46 +113,54 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       margin-bottom: 30px;
     }
-    
+
     .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 20px;
       padding-bottom: 15px;
       border-bottom: 2px solid #f0f0f0;
-      flex-wrap: wrap;
-      gap: 15px;
     }
-    
+
     .section-title {
       font-size: 20px;
       font-weight: bold;
       color: #333;
+      margin-bottom: 20px;
     }
-    
-    .search-bar {
+
+    .form-group {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      min-width: 180px;
       flex: 1;
-      justify-content: flex-end;
     }
-    
-    .search-input {
-      padding: 10px 15px;
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .form-control {
+      padding: 10px 12px;
       border: 2px solid #e0e0e0;
       border-radius: 8px;
       font-size: 14px;
-      min-width: 200px;
     }
-    
-    .search-input:focus {
+
+    .form-control:focus {
       outline: none;
       border-color: #667eea;
     }
-    
-    .btn-search {
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      padding-bottom: 2px;
+    }
+
+    .btn-primary {
       padding: 10px 20px;
       background: #667eea;
       color: white;
@@ -160,26 +168,43 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
+      font-size: 14px;
     }
-    
-    .btn-search:hover {
+
+    .btn-primary:hover {
       background: #5568d3;
     }
-    
+
+    .btn-secondary {
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
     .table-responsive {
       overflow-x: auto;
+      margin-top: 20px;
     }
-    
+
     table {
       width: 100%;
       border-collapse: collapse;
       min-width: 800px;
     }
-    
+
     thead {
       background-color: #f8f9fa;
     }
-    
+
     th {
       padding: 12px;
       text-align: left;
@@ -189,108 +214,33 @@
       font-size: 14px;
       white-space: nowrap;
     }
-    
+
     td {
       padding: 12px;
       border-bottom: 1px solid #f0f0f0;
       font-size: 14px;
     }
-    
+
     tbody tr:hover {
       background-color: #f8f9fa;
     }
-    
-    .action-buttons {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-    
-    .btn-sm {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 5px;
-      font-size: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    
-    .btn-edit {
-      background: #4caf50;
-      color: white;
-    }
-    
-    .btn-edit:hover {
-      background: #45a049;
-    }
-    
-    .btn-delete {
-      background: #f44336;
-      color: white;
-    }
-    
-    .btn-delete:hover {
-      background: #da190b;
-    }
-    
-    .btn-view {
-      background: #2196f3;
-      color: white;
-    }
-    
-    .btn-view:hover {
-      background: #0b7dda;
-    }
-    
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .page-btn {
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    
-    .page-btn:hover {
-      background: #f0f0f0;
-    }
-    
-    .page-btn.active {
-      background: #667eea;
-      color: white;
-      border-color: #667eea;
-    }
-    
-    .page-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
+
     .empty-state {
       text-align: center;
       padding: 60px 20px;
       color: #999;
     }
-    
+
     .empty-icon {
       font-size: 64px;
       margin-bottom: 20px;
     }
-    
+
     .loading {
       text-align: center;
       padding: 40px;
     }
-    
+
     .spinner {
       border: 3px solid #f3f3f3;
       border-top: 3px solid #667eea;
@@ -300,126 +250,42 @@
       animation: spin 1s linear infinite;
       margin: 0 auto 15px;
     }
-    
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
-    /* 모달 */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      overflow-y: auto;
-    }
-    
-    .modal-content {
-      background-color: white;
-      margin: 50px auto;
-      padding: 30px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #f0f0f0;
-    }
-    
-    .modal-title {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    
-    .close {
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #999;
-    }
-    
-    .close:hover {
-      color: #333;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    .form-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
-    
-    .form-control {
-      width: 100%;
-      padding: 10px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    
-    .form-control:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .btn-cancel {
-      padding: 10px 20px;
-      background: #f0f0f0;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    
-    .btn-save {
-      padding: 10px 20px;
-      background: #667eea;
+
+    .btn-link {
+      padding: 6px 12px;
+      background: #2196f3;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 5px;
+      font-size: 12px;
       cursor: pointer;
-      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
     }
-    
-    @media (max-width: 768px) {
-      .search-bar {
-        width: 100%;
+
+    .btn-link:hover {
+      background: #0b7dda;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 15px;
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .search-container {
+        flex-wrap: wrap;
       }
-      
-      .search-input {
-        flex: 1;
-        min-width: auto;
-      }
-      
-      .nav-menu {
-        flex-direction: column;
-      }
-      
-      .nav-btn {
-        width: 100%;
+
+      .form-group {
+        min-width: 150px;
       }
     }
   </style>
@@ -436,109 +302,76 @@
       </div>
     </div>
   </div>
-  
+
   <div class="container">
     <?!= include('Navigation') ?>
-    
+
     <div class="section">
       <div class="section-header">
-        <h2 class="section-title">성적서 이력</h2>
-        <div class="search-bar">
-          <select class="search-input" id="searchCompany">
-            <option value="">업체명 (전체)</option>
+        <h2 class="section-title">성적서 이력 관리</h2>
+      </div>
+
+      <!-- 검색 폼 -->
+      <div class="search-container">
+        <div class="form-group">
+          <label class="form-label">업체명</label>
+          <select class="form-control" id="searchCompany">
+            <option value="">전체</option>
           </select>
-          <input type="date" class="search-input" id="searchDate" placeholder="입고날짜">
-          <input type="text" class="search-input" id="searchTmNo" placeholder="TM-NO">
-          <button class="btn-search" onclick="searchData()">🔍 검색</button>
-          <button class="btn-search" onclick="clearSearch()" style="background: #6c757d;">초기화</button>
         </div>
-      </div>
-      
-      <div id="tableContainer">
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>데이터를 불러오는 중...</p>
-        </div>
-      </div>
-      
-      <div id="paginationContainer"></div>
-    </div>
-  </div>
-  
-  <!-- 수정 모달 -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">성적서 수정</h3>
-        <span class="close" onclick="closeEditModal()">&times;</span>
-      </div>
-      
-      <form id="editForm" onsubmit="handleUpdate(event)">
-        <input type="hidden" id="editId">
-        
         <div class="form-group">
-          <label class="form-label">입고날짜</label>
-          <input type="date" class="form-control" id="editDate" required>
+          <label class="form-label">시작 날짜</label>
+          <input type="date" class="form-control" id="searchDateFrom">
         </div>
-        
         <div class="form-group">
-          <label class="form-label">입고시간</label>
-          <select class="form-control" id="editTime" required></select>
+          <label class="form-label">종료 날짜</label>
+          <input type="date" class="form-control" id="searchDateTo">
         </div>
-        
         <div class="form-group">
           <label class="form-label">TM-NO</label>
-          <input type="text" class="form-control" id="editTmNo" required>
+          <input type="text" class="form-control" id="searchTmNo" placeholder="TM-NO 검색">
         </div>
-        
-        <div class="form-group">
-          <label class="form-label">제품명</label>
-          <input type="text" class="form-control" id="editProductName" required>
+        <div class="btn-group">
+          <button class="btn-primary" onclick="searchData()">🔍 검색</button>
+          <button class="btn-secondary" onclick="clearSearch()">↻ 초기화</button>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label">수량</label>
-          <input type="number" class="form-control" id="editQuantity" min="0" required>
+      </div>
+
+      <!-- 결과 테이블 -->
+      <div id="tableContainer">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <p>검색 조건을 설정하고 검색 버튼을 눌러주세요.</p>
+          <p style="font-size: 14px; color: #999; margin-top: 10px;">업체명, 날짜기간, TM-NO로 검색하거나, 조건 없이 검색하면 전체 데이터를 조회합니다.</p>
         </div>
-        
-        <div class="modal-footer">
-          <button type="button" class="btn-cancel" onclick="closeEditModal()">취소</button>
-          <button type="submit" class="btn-save">저장</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
-  
-  <script>
-    // ===== 토큰 관리 =====
-    let sessionToken = null;
 
-    // 토큰 초기화 (서버에서 전달받은 토큰 또는 sessionStorage에서)
+  <script>
+    let sessionToken = null;
+    let currentUser = null;
+
+    // 토큰 초기화
     function initToken() {
-      // 서버에서 전달받은 토큰 (템플릿 변수)
       const serverToken = '<?!= token ?>';
 
       if (serverToken && serverToken !== 'undefined' && serverToken.length > 10) {
         sessionToken = serverToken;
         sessionStorage.setItem('sessionToken', serverToken);
-        console.log('토큰 초기화 완료 (서버에서 전달)');
       } else {
-        // sessionStorage에서 토큰 가져오기
         sessionToken = sessionStorage.getItem('sessionToken');
-        console.log('토큰 초기화 완료 (sessionStorage)');
       }
 
       if (!sessionToken) {
-        console.error('토큰 없음 - 로그인 필요');
         redirectToLogin();
       }
 
       return sessionToken;
     }
 
-    // 안전한 페이지 이동 (iframe 샌드박스 호환)
+    // 페이지 이동
     function safeNavigate(url, params) {
-      // Query string 생성
       let fullUrl = url;
       if (params) {
         const queryString = Object.keys(params)
@@ -546,63 +379,32 @@
           .join('&');
         fullUrl = url + '?' + queryString;
       }
-
-      // window.top.location.href로 직접 네비게이션
-      // form.submit()은 사용자 제스처로 간주되지 않아 sandbox 에러 발생
       window.top.location.href = fullUrl;
     }
 
-    // 로그인 페이지로 리다이렉트
     function redirectToLogin() {
       sessionStorage.removeItem('sessionToken');
-      safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+      safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
     }
 
-    let currentPage = 1;
-    let totalPages = 1;
-    let searchFilters = {
-      company: '',
-      date: '',
-      tmNo: ''
-    };
-    let inspectionResultKeys = new Set(); // 검사완료된 데이터 키 저장
-    let currentUser = null; // 현재 로그인 사용자 정보 저장
+    function goToPage(page) {
+      const token = sessionStorage.getItem('sessionToken');
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      safeNavigate(webAppUrl, {
+        'page': page,
+        'token': token,
+        't': Date.now()
+      });
+    }
 
+    // 페이지 로드
     window.onload = function() {
       initToken();
       loadUserInfo();
       loadCompanyList();
-      initializeTimeOptions();
-      loadInspectionResultKeys(); // 검사결과 키 로드 후 데이터 로드
     };
 
-    // 검사결과 키 로드
-    function loadInspectionResultKeys(callback) {
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success && response.keys) {
-            inspectionResultKeys = new Set(response.keys);
-          }
-          // 콜백이 있으면 실행, 없으면 loadData() 실행
-          if (callback && typeof callback === 'function') {
-            callback();
-          } else {
-            loadData();
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('검사결과 키 로드 실패:', error);
-          // 실패해도 데이터는 로드
-          if (callback && typeof callback === 'function') {
-            callback();
-          } else {
-            loadData();
-          }
-        })
-        .getAllInspectionResultKeys(sessionToken);
-    }
-
-    // 네비게이션 초기화 함수
+    // 네비게이션 초기화
     function initNavigation(currentPage, userRole) {
       const navButtons = {
         'dashboard': 'navDashboard',
@@ -621,7 +423,7 @@
       // Item 등록 버튼은 대시보드에서만 표시
       const itemBtn = document.getElementById('navItem');
       if (itemBtn) {
-        itemBtn.style.display = (currentPage === 'dashboard') ? 'inline-block' : 'none';
+        itemBtn.style.display = 'none';
       }
 
       // 사용자 관리 버튼은 관리자만 표시
@@ -630,48 +432,43 @@
         usersBtn.style.display = (userRole === '관리자') ? 'inline-block' : 'none';
       }
 
-      // 네비게이션 메뉴 표시 (부드러운 fade-in 효과)
       const navMenu = document.getElementById('navMenu');
       if (navMenu) {
         navMenu.style.opacity = '1';
       }
     }
 
-    // Item 클릭 핸들러
     function handleItemClick() {
       goToPage('dashboard');
     }
 
+    // 사용자 정보 로드
     function loadUserInfo() {
       google.script.run
         .withSuccessHandler(function(response) {
           if (response.success) {
             const user = response.user;
-            currentUser = user; // 전역 변수에 저장
+            currentUser = user;
             document.getElementById('userInfo').textContent =
-              `${user.companyName} | ${user.name} (${user.role})`;
-
-            // 네비게이션 초기화
+              user.companyName + ' | ' + user.name + ' (' + user.role + ')';
             initNavigation('history', user.role);
           } else {
             redirectToLogin();
           }
         })
+        .withFailureHandler(function(error) {
+          console.error('사용자 정보 로드 실패:', error);
+          redirectToLogin();
+        })
         .getCurrentUserByToken(sessionToken);
     }
 
+    // 업체 목록 로드
     function loadCompanyList() {
       google.script.run
         .withSuccessHandler(function(response) {
           if (response.success && response.companies) {
             const select = document.getElementById('searchCompany');
-
-            // 기존 옵션들 제거 (첫 번째 "전체" 옵션 제외)
-            while (select.options.length > 1) {
-              select.remove(1);
-            }
-
-            // 업체명 옵션 추가
             response.companies.forEach(function(company) {
               const option = document.createElement('option');
               option.value = company;
@@ -686,31 +483,23 @@
         .getCompanyList(sessionToken);
     }
 
-    function initializeTimeOptions() {
-      const timeSelect = document.getElementById('editTime');
-      
-      const option1 = document.createElement('option');
-      option1.value = '오전';
-      option1.textContent = '오전';
-      timeSelect.appendChild(option1);
-      
-      const option2 = document.createElement('option');
-      option2.value = '오후';
-      option2.textContent = '오후';
-      timeSelect.appendChild(option2);
-    }
-    
-    function loadData(page = 1) {
-      currentPage = page;
+    // 검색
+    function searchData() {
+      const companyName = document.getElementById('searchCompany').value.trim();
+      const dateFrom = document.getElementById('searchDateFrom').value.trim();
+      const dateTo = document.getElementById('searchDateTo').value.trim();
+      const tmNo = document.getElementById('searchTmNo').value.trim();
 
-      const options = {
-        page: page,
-        pageSize: 20,
-        searchCompany: searchFilters.company,
-        searchDate: searchFilters.date,
-        searchTmNo: searchFilters.tmNo
-      };
-      
+      const options = {};
+      if (companyName) options.searchCompany = companyName;
+      if (dateFrom) options.dateFrom = dateFrom;
+      if (dateTo) options.dateTo = dateTo;
+      if (tmNo) options.searchTmNo = tmNo;
+
+      // 로딩 표시
+      const container = document.getElementById('tableContainer');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div><p>데이터를 불러오는 중...</p></div>';
+
       google.script.run
         .withSuccessHandler(displayData)
         .withFailureHandler(function(error) {
@@ -719,252 +508,74 @@
         })
         .getData(sessionToken, options);
     }
-    
-    function displayData(response) {
-      const container = document.getElementById('tableContainer');
-      
-      // null 체크 추가
-      if (!response) {
-        showError('서버 응답이 없습니다. 페이지를 새로고침해주세요.');
-        return;
-      }
-      
-      if (!response.success) {
-        showError(response.message || '데이터를 불러올 수 없습니다.');
-        return;
-      }
-      
-      const data = response.data || [];
-      totalPages = response.totalPages || 0;
-      
-      if (data.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <p>등록된 데이터가 없습니다.</p>
-          </div>
-        `;
-        document.getElementById('paginationContainer').innerHTML = '';
-        return;
-      }
-      
-      // 관리자 여부 확인
-      const isAdmin = currentUser && currentUser.role === '관리자';
 
-      let html = `
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>업체명</th>
-                <th>입고날짜</th>
-                <th>입고시간</th>
-                <th>TM-NO</th>
-                <th>제품명</th>
-                <th>수량</th>
-                <th>등록일시</th>
-                ${isAdmin ? '<th>수입검사</th>' : ''}
-                <th>작업</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
-
-      data.forEach(function(item) {
-        const createdAt = item.createdAt || '-';
-        const pdfButton = item.pdfUrl ?
-          `<button class="btn-sm btn-view" onclick="viewPdf('${item.pdfUrl}')">📄 보기</button>` : '';
-
-        // 검사형태 확인
-        let inspectionButton;
-        if (item.inspectionType === '무검사') {
-          // 무검사인 경우
-          inspectionButton = `<span style="padding: 5px 10px; background: #9e9e9e; color: white; border-radius: 3px; font-size: 12px;">무검사</span>`;
-        } else {
-          // 검사가 필요한 경우
-          const inspectionKey = item.date + '|' + item.companyName + '|' + item.tmNo;
-          const hasInspectionResult = inspectionResultKeys.has(inspectionKey);
-
-          inspectionButton = hasInspectionResult ?
-            `<button class="btn-sm" style="background: #4caf50; color: white;" onclick="viewInspectionResults('${item.id}', '${item.companyName}', '${item.tmNo}', '${item.productName}', '${item.date}')">✅ 검사완료</button>` :
-            `<button class="btn-sm" style="background: #ff9800; color: white;" onclick="openInspectionModal('${item.id}', '${item.companyName}', '${item.tmNo}', '${item.productName}', '${item.date}')">🔍 검사대기</button>`;
-        }
-
-        html += `
-          <tr>
-            <td>${item.companyName}</td>
-            <td>${item.date}</td>
-            <td>${item.time}</td>
-            <td>${item.tmNo}</td>
-            <td>${item.productName}</td>
-            <td>${item.quantity}</td>
-            <td>${createdAt}</td>
-            ${isAdmin ? `<td>${inspectionButton}</td>` : ''}
-            <td>
-              <div class="action-buttons">
-                ${pdfButton}
-                <button class="btn-sm btn-edit" onclick="editData('${item.id}')">✏️ 수정</button>
-                <button class="btn-sm btn-delete" onclick="deleteData('${item.id}')">🗑️ 삭제</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      });
-      
-      html += `
-            </tbody>
-          </table>
-        </div>
-      `;
-      
-      container.innerHTML = html;
-      
-      // 페이지네이션 표시
-      displayPagination();
-    }
-    
-    function displayPagination() {
-      const container = document.getElementById('paginationContainer');
-      
-      if (totalPages <= 1) {
-        container.innerHTML = '';
-        return;
-      }
-      
-      let html = '<div class="pagination">';
-      
-      // 이전 버튼
-      html += `<button class="page-btn" onclick="loadData(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀ 이전</button>`;
-      
-      // 페이지 번호
-      for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
-          html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadData(${i})">${i}</button>`;
-        } else if (i === currentPage - 3 || i === currentPage + 3) {
-          html += '<span>...</span>';
-        }
-      }
-      
-      // 다음 버튼
-      html += `<button class="page-btn" onclick="loadData(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>다음 ▶</button>`;
-      
-      html += '</div>';
-      
-      container.innerHTML = html;
-    }
-    
-    function searchData() {
-      searchFilters.company = document.getElementById('searchCompany').value.trim();
-      searchFilters.date = document.getElementById('searchDate').value.trim();
-      searchFilters.tmNo = document.getElementById('searchTmNo').value.trim();
-      loadData(1);
-    }
-
+    // 검색 초기화
     function clearSearch() {
       document.getElementById('searchCompany').value = '';
-      document.getElementById('searchDate').value = '';
+      document.getElementById('searchDateFrom').value = '';
+      document.getElementById('searchDateTo').value = '';
       document.getElementById('searchTmNo').value = '';
-      searchFilters = {
-        company: '',
-        date: '',
-        tmNo: ''
-      };
-      loadData(1);
-    }
-    
-    function viewPdf(url) {
-      window.open(url, '_blank');
-    }
-    
-    function editData(id) {
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success) {
-            const data = response.data;
-            
-            document.getElementById('editId').value = data.id;
-            document.getElementById('editDate').value = data.date;
-            document.getElementById('editTime').value = data.time;
-            document.getElementById('editTmNo').value = data.tmNo;
-            document.getElementById('editProductName').value = data.productName;
-            document.getElementById('editQuantity').value = data.quantity;
-            
-            document.getElementById('editModal').style.display = 'block';
-          } else {
-            alert(response.message);
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('데이터 로드 실패:', error);
-          alert('데이터를 불러올 수 없습니다.');
-        })
-        .getDataById(id);
-    }
-    
-    function handleUpdate(e) {
-      e.preventDefault();
-      
-      const id = document.getElementById('editId').value;
-      const dataObj = {
-        date: document.getElementById('editDate').value,
-        time: document.getElementById('editTime').value,
-        tmNo: document.getElementById('editTmNo').value,
-        productName: document.getElementById('editProductName').value,
-        quantity: document.getElementById('editQuantity').value
-      };
-      
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success) {
-            alert('수정되었습니다.');
-            closeEditModal();
-            loadData(currentPage);
-          } else {
-            alert(response.message);
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('수정 실패:', error);
-          alert('수정 중 오류가 발생했습니다.');
-        })
-        .updateData(sessionToken, id, dataObj);
+
+      const container = document.getElementById('tableContainer');
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>검색 조건을 설정하고 검색 버튼을 눌러주세요.</p></div>';
     }
 
-    function deleteData(id) {
-      if (!confirm('정말 삭제하시겠습니까?')) {
+    // 데이터 표시
+    function displayData(response) {
+      const container = document.getElementById('tableContainer');
+
+      if (!response || !response.success) {
+        showError(response ? response.message : '데이터를 불러올 수 없습니다.');
         return;
       }
 
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success) {
-            alert('삭제되었습니다.');
-            loadData(currentPage);
-          } else {
-            alert(response.message);
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('삭제 실패:', error);
-          alert('삭제 중 오류가 발생했습니다.');
-        })
-        .deleteData(sessionToken, id);
+      const data = response.data || [];
+
+      if (data.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>검색 결과가 없습니다.</p></div>';
+        return;
+      }
+
+      let html = '<div class="table-responsive"><table><thead><tr>';
+      html += '<th>업체명</th>';
+      html += '<th>입고날짜</th>';
+      html += '<th>입고시간</th>';
+      html += '<th>TM-NO</th>';
+      html += '<th>제품명</th>';
+      html += '<th>수량</th>';
+      html += '<th>성적서</th>';
+      html += '</tr></thead><tbody>';
+
+      data.forEach(function(item) {
+        html += '<tr>';
+        html += '<td>' + (item.companyName || '') + '</td>';
+        html += '<td>' + (item.date || '') + '</td>';
+        html += '<td>' + (item.time || '') + '</td>';
+        html += '<td>' + (item.tmNo || '') + '</td>';
+        html += '<td>' + (item.productName || '') + '</td>';
+        html += '<td>' + (item.quantity || 0) + '</td>';
+        html += '<td>';
+        if (item.pdfUrl) {
+          html += '<a href="' + item.pdfUrl + '" target="_blank" class="btn-link">📄 보기</a>';
+        } else {
+          html += '-';
+        }
+        html += '</td>';
+        html += '</tr>';
+      });
+
+      html += '</tbody></table></div>';
+      html += '<p style="margin-top: 15px; color: #666; font-size: 14px;">총 ' + data.length + '건</p>';
+
+      container.innerHTML = html;
     }
-    
-    function closeEditModal() {
-      document.getElementById('editModal').style.display = 'none';
-    }
-    
+
+    // 에러 표시
     function showError(message) {
       const container = document.getElementById('tableContainer');
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">⚠️</div>
-          <p>${message}</p>
-        </div>
-      `;
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>' + message + '</p></div>';
     }
-    
+
     // 로그아웃
     function logout() {
       if (confirm('로그아웃 하시겠습니까?')) {
@@ -972,371 +583,16 @@
         google.script.run
           .withSuccessHandler(function() {
             sessionStorage.removeItem('sessionToken');
-            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+            redirectToLogin();
           })
           .withFailureHandler(function(error) {
             console.error('로그아웃 실패:', error);
             sessionStorage.removeItem('sessionToken');
-            safeNavigate('https://script.google.com/macros/s/AKfycbxQB4616RO3VVmBmKV4oiuyL0TM5FXmXRG6qWSxqBMfKg8MzfoTt9p0AWPbZbUdUtvs9g/exec', null);
+            redirectToLogin();
           })
           .logoutWithToken(token);
       }
     }
-
-    function goToPage(page) {
-      const token = sessionStorage.getItem('sessionToken');
-      const webAppUrl = '<?= getWebAppUrl() ?>';
-      safeNavigate(webAppUrl, {
-        'page': page,
-        'token': token,
-        't': Date.now()
-      });
-    }
-    
-    // 엔터키로 검색
-    document.addEventListener('DOMContentLoaded', function() {
-      const searchInputs = ['searchCompany', 'searchDate', 'searchTmNo'];
-      searchInputs.forEach(function(inputId) {
-        document.getElementById(inputId).addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            searchData();
-          }
-        });
-      });
-    });
-    
-    // 모달 외부 클릭시 닫기
-    window.onclick = function(event) {
-      const editModal = document.getElementById('editModal');
-      if (event.target === editModal) {
-        closeEditModal();
-      }
-      const inspectionModal = document.getElementById('inspectionModal');
-      if (event.target === inspectionModal) {
-        closeInspectionModal();
-      }
-      const viewInspectionModal = document.getElementById('viewInspectionModal');
-      if (event.target === viewInspectionModal) {
-        closeViewInspectionModal();
-      }
-    };
-
-    // ===== 검사결과 입력 기능 =====
-    let currentInspectionData = null;
-
-    // 검사 모달 열기
-    function openInspectionModal(dataId, companyName, tmNo, productName, date) {
-      currentInspectionData = {
-        dataId: dataId,
-        companyName: companyName,
-        tmNo: tmNo,
-        productName: productName,
-        date: date
-      };
-
-      // 검사규격 조회 (TM-NO와 업체명으로)
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success && response.data && response.data.length > 0) {
-            displayInspectionForm(response.data);
-            document.getElementById('inspectionModal').style.display = 'block';
-          } else {
-            alert('등록된 검사규격이 없습니다. 먼저 검사규격을 등록해주세요.');
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('검사규격 조회 실패:', error);
-          alert('검사규격 조회 중 오류가 발생했습니다.');
-        })
-        .getInspectionSpecs(sessionToken, {tmNo: tmNo, companyName: companyName});
-    }
-
-    // 검사 모달 닫기
-    function closeInspectionModal() {
-      document.getElementById('inspectionModal').style.display = 'none';
-      currentInspectionData = null;
-    }
-
-    // 검사 입력 폼 표시
-    function displayInspectionForm(specs) {
-      const tbody = document.getElementById('inspectionItemsBody');
-      tbody.innerHTML = '';
-
-      document.getElementById('inspectionInfo').textContent =
-        `${currentInspectionData.date} | ${currentInspectionData.companyName} | ${currentInspectionData.tmNo} | ${currentInspectionData.productName}`;
-
-      specs.forEach(function(spec, index) {
-        const row = document.createElement('tr');
-        row.setAttribute('data-spec-index', index);
-
-        // 시료 입력칸 생성
-        let sampleInputs = '';
-        const sampleSize = parseInt(spec.sampleSize) || 1;
-        for (let i = 1; i <= sampleSize; i++) {
-          sampleInputs += `<input type="number" step="any" class="sample-input" data-sample-index="${i-1}" placeholder="시료${i}" style="width: 80px; margin: 2px;">`;
-        }
-
-        row.innerHTML = `
-          <td>${spec.inspectionItem}</td>
-          <td>${spec.measurementMethod || '-'}</td>
-          <td>${spec.lowerLimit || '-'}</td>
-          <td>${spec.upperLimit || '-'}</td>
-          <td>${sampleInputs}</td>
-          <td class="pass-fail-result" style="font-weight: bold;">-</td>
-        `;
-
-        // 측정값 입력 이벤트
-        const inputs = row.querySelectorAll('.sample-input');
-        inputs.forEach(function(input) {
-          input.addEventListener('input', function() {
-            updatePassFailResult(row, spec.lowerLimit, spec.upperLimit, sampleSize);
-          });
-        });
-
-        tbody.appendChild(row);
-      });
-    }
-
-    // 합부판정 자동 계산
-    function updatePassFailResult(row, lowerLimit, upperLimit, sampleSize) {
-      const inputs = row.querySelectorAll('.sample-input');
-      const resultCell = row.querySelector('.pass-fail-result');
-
-      let allFilled = true;
-      let allPass = true;
-
-      for (let i = 0; i < sampleSize; i++) {
-        const value = parseFloat(inputs[i].value);
-
-        if (inputs[i].value === '' || isNaN(value)) {
-          allFilled = false;
-          break;
-        }
-
-        // 규격 검사
-        const hasLower = lowerLimit && lowerLimit !== '' && lowerLimit !== '-';
-        const hasUpper = upperLimit && upperLimit !== '' && upperLimit !== '-';
-
-        if (hasLower && hasUpper) {
-          // 양쪽 규격 모두 있는 경우
-          if (value <= parseFloat(lowerLimit) || value >= parseFloat(upperLimit)) {
-            allPass = false;
-          }
-        } else if (hasLower) {
-          // 하한만 있는 경우
-          if (value < parseFloat(lowerLimit)) {
-            allPass = false;
-          }
-        } else if (hasUpper) {
-          // 상한만 있는 경우
-          if (value > parseFloat(upperLimit)) {
-            allPass = false;
-          }
-        }
-      }
-
-      if (!allFilled) {
-        resultCell.textContent = '-';
-        resultCell.style.color = '';
-      } else if (allPass) {
-        resultCell.textContent = '합격';
-        resultCell.style.color = '#4caf50';
-      } else {
-        resultCell.textContent = '불합격';
-        resultCell.style.color = '#f44336';
-      }
-    }
-
-    // 검사결과 저장
-    function saveInspectionResults() {
-      const rows = document.querySelectorAll('#inspectionItemsBody tr');
-      const results = [];
-
-      // InspectionSpec에서 원본 데이터 가져오기
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success && response.data) {
-            const specs = response.data;
-
-            rows.forEach(function(row, index) {
-              const spec = specs[index];
-              const inputs = row.querySelectorAll('.sample-input');
-              const passFailResult = row.querySelector('.pass-fail-result').textContent;
-
-              if (passFailResult === '-') {
-                alert('모든 측정값을 입력해주세요.');
-                return;
-              }
-
-              const samples = [];
-              inputs.forEach(function(input) {
-                samples.push(input.value);
-              });
-
-              results.push({
-                inspectionItem: spec.inspectionItem,
-                measurementMethod: spec.measurementMethod || '',
-                lowerLimit: spec.lowerLimit || '',
-                upperLimit: spec.upperLimit || '',
-                samples: samples,
-                passFailResult: passFailResult
-              });
-            });
-
-            if (results.length === rows.length) {
-              // 서버에 저장
-              google.script.run
-                .withSuccessHandler(function(saveResponse) {
-                  if (saveResponse.success) {
-                    alert('검사결과가 저장되었습니다.');
-                    closeInspectionModal();
-                    loadInspectionResultKeys(function() {
-                      loadData(); // 검사결과 키 로드 완료 후 데이터 로드
-                    });
-                  } else {
-                    alert(saveResponse.message || '저장 중 오류가 발생했습니다.');
-                  }
-                })
-                .withFailureHandler(function(error) {
-                  console.error('저장 실패:', error);
-                  alert('저장 중 오류가 발생했습니다.');
-                })
-                .saveInspectionResults(sessionToken, currentInspectionData.dataId, results);
-            }
-          }
-        })
-        .getInspectionSpecs(sessionToken, {
-          tmNo: currentInspectionData.tmNo,
-          companyName: currentInspectionData.companyName
-        });
-    }
-
-    // 검사결과 조회 (검사완료 클릭 시)
-    function viewInspectionResults(dataId, companyName, tmNo, productName, date) {
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success && response.data && response.data.length > 0) {
-            displayViewInspectionResults(response.data, companyName, tmNo, productName, date);
-            document.getElementById('viewInspectionModal').style.display = 'block';
-          } else {
-            alert('저장된 검사결과가 없습니다.');
-          }
-        })
-        .withFailureHandler(function(error) {
-          console.error('검사결과 조회 실패:', error);
-          alert('검사결과 조회 중 오류가 발생했습니다.');
-        })
-        .getInspectionResultsByDataId(sessionToken, dataId);
-    }
-
-    // 검사결과 조회 결과 표시 (읽기 전용)
-    function displayViewInspectionResults(results, companyName, tmNo, productName, date) {
-      const tbody = document.getElementById('viewInspectionItemsBody');
-      tbody.innerHTML = '';
-
-      document.getElementById('viewInspectionInfo').textContent =
-        `${date} | ${companyName} | ${tmNo} | ${productName}`;
-
-      results.forEach(function(result) {
-        const row = document.createElement('tr');
-
-        // 시료 측정값 표시
-        let sampleValues = '';
-        result.samples.forEach(function(sample, index) {
-          sampleValues += `<span style="margin: 0 5px;"><strong>시료${index + 1}:</strong> ${sample}</span>`;
-        });
-
-        // 합부판정 색상
-        const passFailColor = result.passFailResult === '합격' ? '#4caf50' : '#f44336';
-
-        row.innerHTML = `
-          <td>${result.inspectionItem}</td>
-          <td>${result.measurementMethod || '-'}</td>
-          <td>${result.lowerLimit || '-'}</td>
-          <td>${result.upperLimit || '-'}</td>
-          <td>${sampleValues}</td>
-          <td style="font-weight: bold; color: ${passFailColor};">${result.passFailResult}</td>
-        `;
-
-        tbody.appendChild(row);
-      });
-    }
-
-    // 검사결과 조회 모달 닫기
-    function closeViewInspectionModal() {
-      document.getElementById('viewInspectionModal').style.display = 'none';
-    }
   </script>
-
-  <!-- 검사결과 입력 모달 -->
-  <div id="inspectionModal" class="modal">
-    <div class="modal-content" style="max-width: 95%; max-height: 90vh;">
-      <div class="modal-header">
-        <h3 class="modal-title">검사결과 입력</h3>
-        <span class="close" onclick="closeInspectionModal()">&times;</span>
-      </div>
-
-      <div style="padding: 15px; background: #f5f5f5; border-bottom: 1px solid #ddd;">
-        <strong id="inspectionInfo"></strong>
-      </div>
-
-      <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 200px);">
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr style="background: #f8f9fa;">
-              <th style="padding: 10px; border: 1px solid #ddd;">검사항목</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">측정방법</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">규격하한</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">규격상한</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">측정값 입력</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">합부판정</th>
-            </tr>
-          </thead>
-          <tbody id="inspectionItemsBody">
-          </tbody>
-        </table>
-      </div>
-
-      <div style="padding: 20px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 10px;">
-        <button onclick="closeInspectionModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">취소</button>
-        <button onclick="saveInspectionResults()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">저장</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 검사결과 조회 모달 (읽기 전용) -->
-  <div id="viewInspectionModal" class="modal">
-    <div class="modal-content" style="max-width: 95%; max-height: 90vh;">
-      <div class="modal-header">
-        <h3 class="modal-title">검사결과 조회</h3>
-        <span class="close" onclick="closeViewInspectionModal()">&times;</span>
-      </div>
-
-      <div style="padding: 15px; background: #f5f5f5; border-bottom: 1px solid #ddd;">
-        <strong id="viewInspectionInfo"></strong>
-      </div>
-
-      <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 200px);">
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr style="background: #f8f9fa;">
-              <th style="padding: 10px; border: 1px solid #ddd;">검사항목</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">측정방법</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">규격하한</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">규격상한</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">측정값</th>
-              <th style="padding: 10px; border: 1px solid #ddd;">합부판정</th>
-            </tr>
-          </thead>
-          <tbody id="viewInspectionItemsBody">
-          </tbody>
-        </table>
-      </div>
-
-      <div style="padding: 20px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 10px;">
-        <button onclick="closeViewInspectionModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">닫기</button>
-      </div>
-    </div>
-  </div>
 </body>
 </html>
