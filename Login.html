@@ -154,23 +154,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
-    .info-box {
-      background-color: #f0f4ff;
-      border-left: 4px solid #667eea;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 5px;
-      font-size: 13px;
-      color: #555;
-    }
-    
-    .info-box strong {
-      display: block;
-      margin-bottom: 10px;
-      color: #667eea;
-    }
-    
+
     @media (max-width: 480px) {
       .login-container {
         padding: 30px 20px;
@@ -263,14 +247,8 @@
       <div class="spinner"></div>
       <p style="margin-top: 10px; color: #666;">로그인 중...</p>
     </div>
-    
-    <div class="info-box">
-      <strong>테스트 계정</strong>
-      관리자: admin / admin1234<br>
-      협력사A: companyA / pass1234
-    </div>
   </div>
-  
+
   <script>
     // 로그인 처리
     function handleLogin(event) {
@@ -352,7 +330,6 @@
     // 회원가입 폼 표시
     function showRegisterForm() {
       document.getElementById('loginForm').style.display = 'none';
-      document.querySelector('.info-box').style.display = 'none';
       document.querySelector('.login-header h1').textContent = '🔐 회원가입';
       
       const registerFormHtml = `
@@ -404,11 +381,10 @@
       if (registerForm) {
         registerForm.remove();
       }
-      
+
       document.getElementById('loginForm').style.display = 'block';
-      document.querySelector('.info-box').style.display = 'block';
       document.querySelector('.login-header h1').textContent = '🔐 로그인';
-      
+
       hideAlert();
     }
 
