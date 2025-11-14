@@ -29,9 +29,44 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
     }
 
-    .header h1 {
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+
+    .btn-home {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .btn-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .header-title {
+      flex: 1;
+    }
+
+    .header-title h1 {
       color: #333;
       font-size: 24px;
       margin-bottom: 10px;
@@ -115,13 +150,42 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       padding: 20px;
-      cursor: pointer;
       transition: all 0.2s;
+      position: relative;
     }
 
     .company-card:hover {
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       transform: translateY(-2px);
+    }
+
+    .company-card-header {
+      cursor: pointer;
+    }
+
+    .company-card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .btn-edit-company {
+      flex: 1;
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-edit-company:hover {
+      background: #5568d3;
     }
 
     .company-card h3 {
@@ -416,6 +480,15 @@
         grid-template-columns: 1fr;
       }
 
+      .header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .header-left {
+        width: 100%;
+      }
+
       .header-actions {
         flex-direction: column;
       }
@@ -429,12 +502,19 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>업체 및 사용자 관리</h1>
-      <div class="header-actions">
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="업체명 또는 업체코드로 검색..." onkeyup="handleSearch()">
+      <div class="header-left">
+        <button class="btn-home" onclick="goToDashboard()" title="대시보드로 이동">🏠</button>
+        <div class="header-title">
+          <h1>업체 및 사용자 관리</h1>
         </div>
-        <button class="btn btn-primary" onclick="showAddCompanyModal()">신규 업체 등록</button>
+      </div>
+      <div style="flex: 1;">
+        <div class="header-actions">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="업체명 또는 업체코드로 검색..." onkeyup="handleSearch()">
+          </div>
+          <button class="btn btn-primary" onclick="showAddCompanyModal()">신규 업체 등록</button>
+        </div>
       </div>
     </div>
 
@@ -444,6 +524,32 @@
     </div>
 
     <div id="companiesContainer" class="companies-grid"></div>
+  </div>
+
+  <!-- 업체 수정 모달 -->
+  <div id="editCompanyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>업체 정보 수정</h2>
+        <button class="close-btn" onclick="closeEditCompanyModal()">&times;</button>
+      </div>
+
+      <div id="editCompanyAlert"></div>
+
+      <form id="editCompanyForm" onsubmit="handleEditCompany(event)">
+        <input type="hidden" id="editCompanyCode">
+
+        <div class="form-group">
+          <label for="editCompanyName">업체명 *</label>
+          <input type="text" id="editCompanyName" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeEditCompanyModal()">취소</button>
+          <button type="submit" class="btn btn-primary" id="btnEditCompany">수정</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- 신규 업체 등록 모달 -->
@@ -628,6 +734,19 @@
     let currentCompanyCode = '';
     let allCompanies = [];
 
+    // HTML/JavaScript 이스케이프 함수
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function escapeJs(text) {
+      if (!text) return '';
+      return String(text).replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+    }
+
     // 토큰 초기화 (서버에서 전달받은 토큰 또는 sessionStorage에서)
     function initToken() {
       // 서버에서 전달받은 토큰 (템플릿 변수)
@@ -670,6 +789,11 @@
         .withSuccessHandler(function(response) {
           showLoading(false);
 
+          if (!response) {
+            showError('서버로부터 응답을 받지 못했습니다.');
+            return;
+          }
+
           if (response.success) {
             allCompanies = response.data;
             renderCompanies(allCompanies);
@@ -698,22 +822,34 @@
         return;
       }
 
-      container.innerHTML = companies.map(company => `
-        <div class="company-card" onclick="showCompanyDetail('${company.companyCode}')">
-          <h3>${company.companyName}</h3>
-          <div class="company-code">업체코드: ${company.companyCode}</div>
-          <div class="company-stats">
-            <div class="stat-item">
-              <div class="stat-number">${company.totalUsers}</div>
-              <div class="stat-label">전체 사용자</div>
+      container.innerHTML = companies.map(company => {
+        const safeCompanyCode = escapeJs(company.companyCode);
+        const safeCompanyName = escapeJs(company.companyName);
+        const displayCompanyName = escapeHtml(company.companyName);
+        const displayCompanyCode = escapeHtml(company.companyCode);
+
+        return `
+          <div class="company-card">
+            <div class="company-card-header" onclick="showCompanyDetail('${safeCompanyCode}')">
+              <h3>${displayCompanyName}</h3>
+              <div class="company-code">업체코드: ${displayCompanyCode}</div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <div class="stat-number">${company.totalUsers}</div>
+                  <div class="stat-label">전체 사용자</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number">${company.activeUsers}</div>
+                  <div class="stat-label">활성 사용자</div>
+                </div>
+              </div>
             </div>
-            <div class="stat-item">
-              <div class="stat-number">${company.activeUsers}</div>
-              <div class="stat-label">활성 사용자</div>
+            <div class="company-card-actions">
+              <button class="btn-edit-company" onclick="event.stopPropagation(); showEditCompanyModal('${safeCompanyCode}', '${safeCompanyName}')">✏️ 업체명 수정</button>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // 검색 처리
@@ -735,23 +871,36 @@
 
     // 업체 상세 보기
     function showCompanyDetail(companyCode) {
+      console.log('showCompanyDetail 호출 - companyCode:', companyCode);
+      console.log('currentToken:', currentToken ? '있음' : '없음');
+
       currentCompanyCode = companyCode;
       showLoading(true);
 
       google.script.run
         .withSuccessHandler(function(response) {
           showLoading(false);
+          console.log('getCompanyDetails 응답:', response);
+
+          if (!response) {
+            console.error('응답이 null입니다');
+            showError('서버로부터 응답을 받지 못했습니다.');
+            return;
+          }
 
           if (response.success) {
+            console.log('업체 상세 정보 로드 성공');
             renderCompanyDetail(response.data);
             document.getElementById('companyDetailModal').classList.add('active');
           } else {
-            showError(response.message);
+            console.error('업체 상세 정보 로드 실패:', response.message);
+            showError(response.message || '업체 정보를 불러올 수 없습니다.');
           }
         })
         .withFailureHandler(function(error) {
           showLoading(false);
-          showError('업체 정보 로드 중 오류가 발생했습니다.');
+          console.error('getCompanyDetails 실패:', error);
+          showError('업체 정보 로드 중 오류가 발생했습니다: ' + error.message);
         })
         .getCompanyDetails(currentToken, companyCode);
     }
@@ -788,24 +937,102 @@
         const roleClass = user.role === '관리자' ? 'badge-admin' :
                          user.role === 'JEO' ? 'badge-jeo' : 'badge-user';
         const statusClass = user.status === '활성' ? 'badge-active' : 'badge-inactive';
-        const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-';
+
+        // createdAt 처리 - 이미 문자열로 포맷된 상태
+        let createdDate = '-';
+        if (user.createdAt) {
+          try {
+            // 서버에서 이미 포맷된 문자열로 받음
+            createdDate = user.createdAt;
+          } catch (e) {
+            console.error('날짜 파싱 오류:', e);
+            createdDate = '-';
+          }
+        }
+
+        // JavaScript 이스케이프 (onclick 속성용)
+        const safeName = escapeJs(user.name);
+        const safeUserId = escapeJs(user.userId);
+        const safeRole = escapeJs(user.role);
+        const safeStatus = escapeJs(user.status);
+
+        // HTML 이스케이프 (표시용)
+        const displayName = escapeHtml(user.name);
+        const displayUserId = escapeHtml(user.userId);
+        const displayRole = escapeHtml(user.role);
+        const displayStatus = escapeHtml(user.status);
 
         return `
           <tr>
-            <td>${user.name}</td>
-            <td>${user.userId}</td>
-            <td><span class="badge ${roleClass}">${user.role}</span></td>
-            <td><span class="badge ${statusClass}">${user.status}</span></td>
+            <td>${displayName}</td>
+            <td>${displayUserId}</td>
+            <td><span class="badge ${roleClass}">${displayRole}</span></td>
+            <td><span class="badge ${statusClass}">${displayStatus}</span></td>
             <td>${createdDate}</td>
             <td>
               <div class="action-buttons">
-                <button class="btn btn-secondary btn-small" onclick="showEditUserModal(${user.rowIndex}, '${user.name}', '${user.role}', '${user.status}')">수정</button>
-                <button class="btn btn-danger btn-small" onclick="confirmDeleteUser(${user.rowIndex}, '${user.userId}')">삭제</button>
+                <button class="btn btn-secondary btn-small" onclick="showEditUserModal(${user.rowIndex}, '${safeName}', '${safeRole}', '${safeStatus}')">수정</button>
+                <button class="btn btn-danger btn-small" onclick="confirmDeleteUser(${user.rowIndex}, '${safeUserId}')">삭제</button>
               </div>
             </td>
           </tr>
         `;
       }).join('');
+    }
+
+    // 업체 수정 모달 표시
+    function showEditCompanyModal(companyCode, companyName) {
+      document.getElementById('editCompanyCode').value = companyCode;
+      document.getElementById('editCompanyName').value = companyName;
+      document.getElementById('editCompanyAlert').innerHTML = '';
+      document.getElementById('editCompanyModal').classList.add('active');
+    }
+
+    function closeEditCompanyModal() {
+      document.getElementById('editCompanyModal').classList.remove('active');
+    }
+
+    // 업체 정보 수정 처리
+    function handleEditCompany(event) {
+      event.preventDefault();
+
+      const companyCode = document.getElementById('editCompanyCode').value.trim();
+      const newCompanyName = document.getElementById('editCompanyName').value.trim();
+
+      if (!newCompanyName) {
+        showAlert('editCompanyAlert', '업체명을 입력해주세요.', 'error');
+        return;
+      }
+
+      document.getElementById('btnEditCompany').disabled = true;
+      document.getElementById('btnEditCompany').textContent = '처리 중...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          document.getElementById('btnEditCompany').disabled = false;
+          document.getElementById('btnEditCompany').textContent = '수정';
+
+          if (!response) {
+            showAlert('editCompanyAlert', '서버로부터 응답을 받지 못했습니다.', 'error');
+            return;
+          }
+
+          if (response.success) {
+            showAlert('editCompanyAlert', response.message, 'success');
+            setTimeout(function() {
+              closeEditCompanyModal();
+              loadCompanies();
+            }, 1500);
+          } else {
+            showAlert('editCompanyAlert', response.message || '업체 수정 실패', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('btnEditCompany').disabled = false;
+          document.getElementById('btnEditCompany').textContent = '수정';
+          showAlert('editCompanyAlert', '업체 수정 중 오류가 발생했습니다.', 'error');
+        })
+        .updateCompanyName(currentToken, companyCode, newCompanyName);
     }
 
     // 신규 업체 등록 모달 표시
@@ -839,6 +1066,11 @@
           document.getElementById('btnAddCompany').disabled = false;
           document.getElementById('btnAddCompany').textContent = '등록';
 
+          if (!response) {
+            showAlert('addCompanyAlert', '서버로부터 응답을 받지 못했습니다.', 'error');
+            return;
+          }
+
           if (response.success) {
             showAlert('addCompanyAlert', response.message, 'success');
             setTimeout(function() {
@@ -846,7 +1078,7 @@
               loadCompanies();
             }, 1500);
           } else {
-            showAlert('addCompanyAlert', response.message, 'error');
+            showAlert('addCompanyAlert', response.message || '업체 등록 실패', 'error');
           }
         })
         .withFailureHandler(function(error) {
@@ -888,6 +1120,11 @@
           document.getElementById('btnAddUser').disabled = false;
           document.getElementById('btnAddUser').textContent = '추가';
 
+          if (!response) {
+            showAlert('addUserAlert', '서버로부터 응답을 받지 못했습니다.', 'error');
+            return;
+          }
+
           if (response.success) {
             showAlert('addUserAlert', response.message, 'success');
             setTimeout(function() {
@@ -895,7 +1132,7 @@
               showCompanyDetail(currentCompanyCode);
             }, 1500);
           } else {
-            showAlert('addUserAlert', response.message, 'error');
+            showAlert('addUserAlert', response.message || '사용자 추가 실패', 'error');
           }
         })
         .withFailureHandler(function(error) {
@@ -943,6 +1180,11 @@
           document.getElementById('btnEditUser').disabled = false;
           document.getElementById('btnEditUser').textContent = '수정';
 
+          if (!response) {
+            showAlert('editUserAlert', '서버로부터 응답을 받지 못했습니다.', 'error');
+            return;
+          }
+
           if (response.success) {
             showAlert('editUserAlert', response.message, 'success');
             setTimeout(function() {
@@ -950,7 +1192,7 @@
               showCompanyDetail(currentCompanyCode);
             }, 1500);
           } else {
-            showAlert('editUserAlert', response.message, 'error');
+            showAlert('editUserAlert', response.message || '사용자 수정 실패', 'error');
           }
         })
         .withFailureHandler(function(error) {
@@ -976,13 +1218,18 @@
         .withSuccessHandler(function(response) {
           showLoading(false);
 
+          if (!response) {
+            showAlert('companyDetailAlert', '서버로부터 응답을 받지 못했습니다.', 'error');
+            return;
+          }
+
           if (response.success) {
             showAlert('companyDetailAlert', response.message, 'success');
             setTimeout(function() {
               showCompanyDetail(currentCompanyCode);
             }, 1500);
           } else {
-            showAlert('companyDetailAlert', response.message, 'error');
+            showAlert('companyDetailAlert', response.message || '사용자 삭제 실패', 'error');
           }
         })
         .withFailureHandler(function(error) {
@@ -1018,6 +1265,13 @@
     // 에러 표시
     function showError(message) {
       alert(message);
+    }
+
+    // 대시보드로 이동
+    function goToDashboard() {
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      const token = sessionStorage.getItem('sessionToken') || currentToken;
+      window.location.href = webAppUrl + '?page=dashboard&token=' + encodeURIComponent(token) + '&t=' + Date.now();
     }
   </script>
 </body>
