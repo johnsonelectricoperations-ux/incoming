@@ -240,8 +240,8 @@ function checkPermission(requiredRole) {
     return false;
   }
 
-  // 관리자는 모든 권한 보유
-  if (session.role === '관리자') {
+  // 관리자와 JEO는 모든 권한 보유
+  if (session.role === '관리자' || session.role === 'JEO') {
     return true;
   }
 
@@ -264,8 +264,8 @@ function checkCompanyAccess(companyName) {
     return false;
   }
 
-  // 관리자는 모든 업체 데이터 접근 가능
-  if (session.role === '관리자') {
+  // 관리자와 JEO는 모든 업체 데이터 접근 가능
+  if (session.role === '관리자' || session.role === 'JEO') {
     return true;
   }
 
@@ -827,8 +827,8 @@ function getCompanyList(token) {
       };
     }
 
-    // 관리자만 업체 목록 조회 가능
-    if (session.role !== '관리자') {
+    // 관리자/JEO만 업체 목록 조회 가능
+    if (session.role !== '관리자' && session.role !== 'JEO') {
       return {
         success: false,
         message: '관리자 권한이 필요합니다.',
@@ -854,14 +854,27 @@ function getCompanyList(token) {
       };
     }
 
-    // 업체명 수집 (중복 제거) - index 1 = 업체명
+    // 업체명 수집 (관리자/JEO 권한 업체 제외)
     const companySet = new Set();
+    const adminJeoCompanies = new Set(); // 관리자/JEO 권한이 있는 업체
 
+    // 먼저 관리자/JEO 권한을 가진 업체 찾기
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const companyName = (row[1] || '').toString().trim();
+      const role = (row[5] || '').toString().trim(); // index 5 = 권한
+
+      if (companyName && (role === '관리자' || role === 'JEO')) {
+        adminJeoCompanies.add(companyName);
+      }
+    }
+
+    // 모든 업체명 수집 (관리자/JEO 권한 업체 제외)
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       const companyName = (row[1] || '').toString().trim();
 
-      if (companyName) {
+      if (companyName && !adminJeoCompanies.has(companyName)) {
         companySet.add(companyName);
       }
     }
@@ -899,8 +912,8 @@ function getNormalCompanyList(token) {
       };
     }
 
-    // 관리자만 업체 목록 조회 가능
-    if (session.role !== '관리자') {
+    // 관리자/JEO만 업체 목록 조회 가능
+    if (session.role !== '관리자' && session.role !== 'JEO') {
       return {
         success: false,
         message: '관리자 권한이 필요합니다.',
