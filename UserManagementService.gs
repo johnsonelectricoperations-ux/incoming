@@ -417,13 +417,17 @@ function addCompany(token, companyData) {
     // 새 업체 코드 생성
     const companyCode = generateNextCompanyCode();
 
-    // 업체별 시트 생성 (업체코드 전달)
-    const sheetResult = createCompanySheets(companyName, companyCode);
-    if (!sheetResult.success) {
-      return {
-        success: false,
-        message: '업체 시트 생성 중 오류가 발생했습니다.'
-      };
+    // 업체별 시트 생성 (관리자/JEO 권한은 제외)
+    if (role !== '관리자' && role !== 'JEO') {
+      const sheetResult = createCompanySheets(companyName, companyCode);
+      if (!sheetResult.success) {
+        return {
+          success: false,
+          message: '업체 시트 생성 중 오류가 발생했습니다.'
+        };
+      }
+    } else {
+      Logger.log(`관리자/JEO 계정은 시트 생성 생략: ${companyName} (${role})`);
     }
 
     // 사용자 추가
