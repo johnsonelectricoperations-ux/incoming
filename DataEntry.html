@@ -521,6 +521,34 @@
         itemBtn.style.display = 'none';
       }
 
+      // 검사결과등록 버튼은 관리자 또는 JEO만 표시
+      const inspectionResultBtn = document.getElementById('navInspectionResult');
+      if (inspectionResultBtn) {
+        inspectionResultBtn.style.display = (userRole === '관리자' || userRole === 'JEO') ? 'inline-block' : 'none';
+      }
+
+      // 검사결과이력 버튼은 관리자 또는 JEO만 표시
+      const inspectionHistoryBtn = document.getElementById('navInspectionHistory');
+      if (inspectionHistoryBtn) {
+        inspectionHistoryBtn.style.display = (userRole === '관리자' || userRole === 'JEO') ? 'inline-block' : 'none';
+      }
+
+      // JEO는 성적서입력, 이력관리, 확인증출력 버튼 숨김
+      const entryBtn = document.getElementById('navEntry');
+      if (entryBtn) {
+        entryBtn.style.display = (userRole === 'JEO') ? 'none' : 'inline-block';
+      }
+
+      const historyBtn = document.getElementById('navHistory');
+      if (historyBtn) {
+        historyBtn.style.display = (userRole === 'JEO') ? 'none' : 'inline-block';
+      }
+
+      const certificateBtn = document.getElementById('navCertificate');
+      if (certificateBtn) {
+        certificateBtn.style.display = (userRole === 'JEO') ? 'none' : 'inline-block';
+      }
+
       // 사용자 관리 버튼은 관리자만 표시
       const usersBtn = document.getElementById('navUsers');
       if (usersBtn) {
@@ -775,6 +803,18 @@
       safeNavigate(webAppUrl, {
         'page': page,
         'token': token,
+        't': Date.now()
+      });
+    }
+
+    // 검사결과등록 모달 (Dashboard로 이동하면서 자동 열기)
+    function showInspectionResultModal() {
+      const token = sessionStorage.getItem('sessionToken');
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      safeNavigate(webAppUrl, {
+        'page': 'dashboard',
+        'token': token,
+        'openInspectionModal': 'true',
         't': Date.now()
       });
     }
