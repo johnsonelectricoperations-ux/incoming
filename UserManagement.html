@@ -778,7 +778,7 @@
         return;
       }
 
-      loadCompanies();
+      showInitialMessage();
     };
 
     // 업체 목록 로드
@@ -806,6 +806,18 @@
           showError('업체 목록 로드 중 오류가 발생했습니다.');
         })
         .getCompanies(currentToken);
+    }
+
+    // 초기 안내 메시지 표시
+    function showInitialMessage() {
+      const container = document.getElementById('companiesContainer');
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <p style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">검색 조건을 입력하거나 신규 업체를 등록하세요.</p>
+          <p style="font-size: 14px;">업체명 또는 업체코드로 검색할 수 있습니다.</p>
+        </div>
+      `;
     }
 
     // 업체 목록 렌더링
@@ -854,6 +866,12 @@
 
     // 검색 처리
     function handleSearch() {
+      // 데이터가 아직 로드되지 않았으면 로드
+      if (!allCompanies || allCompanies.length === 0) {
+        loadCompanies();
+        return;
+      }
+
       const searchText = document.getElementById('searchInput').value.trim();
 
       if (!searchText) {
