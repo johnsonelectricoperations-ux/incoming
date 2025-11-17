@@ -116,8 +116,8 @@ function getFileInfo(token, fileId) {
     
     while (folders.hasNext()) {
       const folder = folders.next();
-      // 관리자는 모든 파일 접근 가능
-      if (session.role === '관리자') {
+      // 관리자/JEO는 모든 파일 접근 가능
+      if (session.role === '관리자' || session.role === 'JEO') {
         isAuthorized = true;
         break;
       }
@@ -172,8 +172,8 @@ function deleteFile(token, fileId) {
     
     while (folders.hasNext()) {
       const folder = folders.next();
-      // 관리자는 모든 파일 삭제 가능
-      if (session.role === '관리자') {
+      // 관리자/JEO는 모든 파일 삭제 가능
+      if (session.role === '관리자' || session.role === 'JEO') {
         isAuthorized = true;
         break;
       }
