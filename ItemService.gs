@@ -14,6 +14,14 @@ function getOrCreateItemListSheet(companyName) {
     let sheet = ss.getSheetByName(sheetName);
 
     if (!sheet) {
+      // JEO본사(관리자/JEO 권한)는 시트 생성 생략
+      if (companyName === 'JEO본사') {
+        return {
+          success: false,
+          message: '관리자/JEO 권한은 별도 시트가 필요하지 않습니다.'
+        };
+      }
+
       // 시트가 없으면 생성
       const result = createCompanySheets(companyName);
       if (!result.success) {
@@ -60,7 +68,7 @@ function searchTmNo(token, searchText) {
 
     // 검색할 업체 목록 결정
     let companiesToSearch = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToSearch = getAllCompanyNames();
     } else {
       companiesToSearch = [session.companyName];
@@ -140,7 +148,7 @@ function getItemByTmNo(token, tmNo) {
 
     // 검색할 업체 목록 결정
     let companiesToSearch = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToSearch = getAllCompanyNames();
     } else {
       companiesToSearch = [session.companyName];
@@ -203,7 +211,7 @@ function addItem(token, itemData) {
     }
 
     // 일반 사용자는 자기 업체 항목만 추가 가능
-    if (session.role !== '관리자' && itemData.companyName !== session.companyName) {
+    if (session.role !== '관리자' && session.role !== 'JEO' && itemData.companyName !== session.companyName) {
       return {
         success: false,
         message: '다른 업체의 항목을 추가할 권한이 없습니다.'
@@ -293,7 +301,7 @@ function getItems(token, options) {
     if (options && options.companyName) {
       // 특정 업체 지정된 경우
       companiesToQuery = [options.companyName];
-    } else if (session.role === '관리자') {
+    } else if (session.role === '관리자' || session.role === 'JEO') {
       // 관리자는 모든 업체
       companiesToQuery = getAllCompanyNames();
     } else {
@@ -395,7 +403,7 @@ function updateItem(token, sheetName, rowIndex, itemData) {
     const existingCompany = String(existingData[3]);
 
     // 권한 체크
-    if (session.role !== '관리자' && existingCompany !== session.companyName) {
+    if (session.role !== '관리자' && session.role !== 'JEO' && existingCompany !== session.companyName) {
       return {
         success: false,
         message: '해당 항목을 수정할 권한이 없습니다.'
@@ -462,7 +470,7 @@ function deleteItem(token, sheetName, rowIndex) {
     const existingCompany = String(existingData[3]);
 
     // 권한 체크
-    if (session.role !== '관리자' && existingCompany !== session.companyName) {
+    if (session.role !== '관리자' && session.role !== 'JEO' && existingCompany !== session.companyName) {
       return {
         success: false,
         message: '해당 항목을 삭제할 권한이 없습니다.'
