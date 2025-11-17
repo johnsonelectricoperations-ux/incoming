@@ -14,6 +14,15 @@ function getOrCreateDataSheet(companyName) {
     let sheet = ss.getSheetByName(sheetName);
 
     if (!sheet) {
+      // JEO본사(관리자/JEO 권한)는 시트 생성 생략
+      if (companyName === 'JEO본사') {
+        return {
+          success: false,
+          sheet: null,
+          message: '관리자/JEO 권한은 별도 시트가 필요하지 않습니다.'
+        };
+      }
+
       // 시트가 없으면 생성
       const result = createCompanySheets(companyName);
       if (!result.success) {
@@ -149,7 +158,7 @@ function getData(token, options) {
 
     // 조회할 업체 목록 결정
     let companiesToQuery = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       const companyStartTime = new Date().getTime();
       companiesToQuery = getAllCompanyNames();
       Logger.log(`getData: 업체 목록 조회 완료 (${companiesToQuery.length}개 업체, ${new Date().getTime() - companyStartTime}ms)`);
@@ -358,7 +367,7 @@ function getDataById(token, id) {
 
     // 조회할 업체 목록 결정
     let companiesToQuery = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToQuery = getAllCompanyNames();
     } else {
       companiesToQuery = [session.companyName];
@@ -381,7 +390,7 @@ function getDataById(token, id) {
           const row = data[i];
           if (String(row[1]) === String(id)) { // row[1]이 ID
           // 권한 체크
-          if (session.role !== '관리자' && String(row[2]) !== session.companyName) {
+          if (session.role !== '관리자' && session.role !== 'JEO' && String(row[2]) !== session.companyName) {
             return { success: false, message: '접근 권한이 없습니다.' };
           }
 
@@ -442,7 +451,7 @@ function updateData(token, id, dataObj) {
 
     // 조회할 업체 목록 결정
     let companiesToQuery = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToQuery = getAllCompanyNames();
     } else {
       companiesToQuery = [session.companyName];
@@ -465,7 +474,7 @@ function updateData(token, id, dataObj) {
           const row = data[i];
           if (String(row[1]) === String(id)) { // row[1]이 ID
           // 권한 체크
-          if (session.role !== '관리자' && String(row[2]) !== session.companyName) {
+          if (session.role !== '관리자' && session.role !== 'JEO' && String(row[2]) !== session.companyName) {
             return { success: false, message: '수정 권한이 없습니다.' };
           }
 
@@ -529,7 +538,7 @@ function deleteData(token, id) {
 
     // 조회할 업체 목록 결정
     let companiesToQuery = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToQuery = getAllCompanyNames();
     } else {
       companiesToQuery = [session.companyName];
@@ -552,7 +561,7 @@ function deleteData(token, id) {
           const row = data[i];
           if (String(row[1]) === String(id)) { // row[1]이 ID
           // 권한 체크
-          if (session.role !== '관리자' && String(row[2]) !== session.companyName) {
+          if (session.role !== '관리자' && session.role !== 'JEO' && String(row[2]) !== session.companyName) {
             return { success: false, message: '삭제 권한이 없습니다.' };
           }
 
@@ -608,7 +617,7 @@ function getDataByDate(token, date) {
 
     // 조회할 업체 목록 결정
     let companiesToQuery = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToQuery = getAllCompanyNames();
     } else {
       companiesToQuery = [session.companyName];
@@ -691,7 +700,7 @@ function getDataByDateAndTime(token, date, time) {
 
     // 조회할 업체 목록 결정
     let companiesToQuery = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToQuery = getAllCompanyNames();
     } else {
       companiesToQuery = [session.companyName];
@@ -889,6 +898,30 @@ function searchDataForInspectionResult(token, filters) {
             continue;
           }
 
+          // ItemList에서 검사형태 조회
+          let inspectionType = '';
+          const itemListSheetName = getItemListSheetName(rowCompanyName);
+          const itemListSheet = ss.getSheetByName(itemListSheetName);
+
+          if (itemListSheet) {
+            try {
+              const itemData = itemListSheet.getDataRange().getValues();
+              for (let j = 1; j < itemData.length; j++) {
+                if (String(itemData[j][1]) === tmNo) {
+                  inspectionType = String(itemData[j][4] || '검사');
+                  break;
+                }
+              }
+            } catch (e) {
+              Logger.log(`ItemList 조회 오류 (${rowCompanyName}, ${tmNo}): ${e.message}`);
+            }
+          }
+
+          // 무검사 항목은 제외 (검사결과등록 대상이 아님)
+          if (inspectionType === '무검사') {
+            continue;
+          }
+
           // 조건에 맞으면 결과에 추가
           results.push({
             id: id,
@@ -896,7 +929,8 @@ function searchDataForInspectionResult(token, filters) {
             date: rowDate,
             time: rowTime,
             tmNo: tmNo,
-            productName: productName
+            productName: productName,
+            inspectionType: inspectionType || '검사'
           });
         }
       } catch (e) {
