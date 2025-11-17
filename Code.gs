@@ -67,9 +67,12 @@ function doGet(e) {
     case 'inspection':
       template = HtmlService.createTemplateFromFile('InspectionSpec');
       break;
+    case 'inspection-history':
+      template = HtmlService.createTemplateFromFile('InspectionResultHistory');
+      break;
     case 'users':
-      // 관리자만 접근 가능
-      if (session.role !== '관리자') {
+      // 관리자/JEO만 접근 가능
+      if (session.role !== '관리자' && session.role !== 'JEO') {
         template = HtmlService.createTemplateFromFile('Dashboard');
       } else {
         template = HtmlService.createTemplateFromFile('UserManagement');
