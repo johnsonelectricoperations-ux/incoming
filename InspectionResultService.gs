@@ -14,6 +14,14 @@ function getOrCreateResultSheet(companyName) {
     let sheet = ss.getSheetByName(sheetName);
 
     if (!sheet) {
+      // JEO본사(관리자/JEO 권한)는 시트 생성 생략
+      if (companyName === 'JEO본사') {
+        return {
+          success: false,
+          message: '관리자/JEO 권한은 별도 시트가 필요하지 않습니다.'
+        };
+      }
+
       // 시트가 없으면 생성
       const result = createCompanySheets(companyName);
       if (!result.success) {
@@ -51,20 +59,55 @@ function saveInspectionResults(token, dataId, results) {
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-    // Data 시트에서 입고 정보 조회
-    const dataSheet = ss.getSheetByName(DATA_SHEET_NAME);
-    const dataValues = dataSheet.getDataRange().getValues();
-
+    // 업체별 Data 시트에서 입고 정보 조회
     let dataInfo = null;
-    for (let i = 1; i < dataValues.length; i++) {
-      if (String(dataValues[i][0]) === String(dataId)) {
-        dataInfo = {
-          date: dataValues[i][2],
-          companyName: dataValues[i][1],
-          tmNo: dataValues[i][4],
-          productName: dataValues[i][5]
-        };
-        break;
+    let companiesToQuery = [];
+
+    // 조회할 업체 목록 결정
+    if (session.role === '관리자' || session.role === 'JEO') {
+      companiesToQuery = getAllCompanyNames();
+    } else {
+      companiesToQuery = [session.companyName];
+    }
+
+    // 각 업체별 Data 시트에서 ID 검색
+    for (const companyName of companiesToQuery) {
+      const dataSheetName = getDataSheetName(companyName);
+      const dataSheet = ss.getSheetByName(dataSheetName);
+
+      if (!dataSheet) {
+        Logger.log(`saveInspectionResults: ${companyName}의 Data 시트를 찾을 수 없음`);
+        continue;
+      }
+
+      try {
+        const dataValues = dataSheet.getDataRange().getValues();
+
+        for (let i = 1; i < dataValues.length; i++) {
+          if (String(dataValues[i][1]) === String(dataId)) { // row[1]이 ID (업체CODE가 추가되어 인덱스 변경)
+            let dateValue = dataValues[i][3]; // 날짜는 3번 인덱스
+            if (dateValue instanceof Date) {
+              dateValue = Utilities.formatDate(dateValue, 'Asia/Seoul', 'yyyy-MM-dd');
+            } else if (dateValue) {
+              dateValue = String(dateValue).trim();
+            }
+
+            dataInfo = {
+              date: dateValue,
+              companyName: String(dataValues[i][2]),
+              tmNo: String(dataValues[i][5]),
+              productName: String(dataValues[i][6])
+            };
+            break;
+          }
+        }
+
+        if (dataInfo) {
+          break; // 데이터를 찾았으면 루프 종료
+        }
+      } catch (e) {
+        Logger.log(`saveInspectionResults: ${companyName} Data 시트 조회 오류 - ${e.message}`);
+        continue;
       }
     }
 
@@ -73,7 +116,7 @@ function saveInspectionResults(token, dataId, results) {
     }
 
     // 일반 사용자는 자기 업체 데이터만 저장 가능
-    if (session.role !== '관리자' && dataInfo.companyName !== session.companyName) {
+    if (session.role !== '관리자' && session.role !== 'JEO' && dataInfo.companyName !== session.companyName) {
       return {
         success: false,
         message: '다른 업체의 검사결과를 저장할 권한이 없습니다.'
@@ -173,20 +216,55 @@ function getInspectionResultsByDataId(token, dataId) {
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-    // Data 시트에서 입고 정보 조회
-    const dataSheet = ss.getSheetByName(DATA_SHEET_NAME);
-    const dataValues = dataSheet.getDataRange().getValues();
-
+    // 업체별 Data 시트에서 입고 정보 조회
     let dataInfo = null;
-    for (let i = 1; i < dataValues.length; i++) {
-      if (String(dataValues[i][0]) === String(dataId)) {
-        dataInfo = {
-          date: dataValues[i][2],
-          companyName: dataValues[i][1],
-          tmNo: dataValues[i][4],
-          productName: dataValues[i][5]
-        };
-        break;
+    let companiesToQuery = [];
+
+    // 조회할 업체 목록 결정
+    if (session.role === '관리자' || session.role === 'JEO') {
+      companiesToQuery = getAllCompanyNames();
+    } else {
+      companiesToQuery = [session.companyName];
+    }
+
+    // 각 업체별 Data 시트에서 ID 검색
+    for (const companyName of companiesToQuery) {
+      const dataSheetName = getDataSheetName(companyName);
+      const dataSheet = ss.getSheetByName(dataSheetName);
+
+      if (!dataSheet) {
+        Logger.log(`getInspectionResultsByDataId: ${companyName}의 Data 시트를 찾을 수 없음`);
+        continue;
+      }
+
+      try {
+        const dataValues = dataSheet.getDataRange().getValues();
+
+        for (let i = 1; i < dataValues.length; i++) {
+          if (String(dataValues[i][1]) === String(dataId)) { // row[1]이 ID
+            let dateValue = dataValues[i][3]; // 날짜는 3번 인덱스
+            if (dateValue instanceof Date) {
+              dateValue = Utilities.formatDate(dateValue, 'Asia/Seoul', 'yyyy-MM-dd');
+            } else if (dateValue) {
+              dateValue = String(dateValue).trim();
+            }
+
+            dataInfo = {
+              date: dateValue,
+              companyName: String(dataValues[i][2]),
+              tmNo: String(dataValues[i][5]),
+              productName: String(dataValues[i][6])
+            };
+            break;
+          }
+        }
+
+        if (dataInfo) {
+          break; // 데이터를 찾았으면 루프 종료
+        }
+      } catch (e) {
+        Logger.log(`getInspectionResultsByDataId: ${companyName} Data 시트 조회 오류 - ${e.message}`);
+        continue;
       }
     }
 
@@ -195,7 +273,7 @@ function getInspectionResultsByDataId(token, dataId) {
     }
 
     // 일반 사용자는 자기 업체 데이터만 조회 가능
-    if (session.role !== '관리자' && dataInfo.companyName !== session.companyName) {
+    if (session.role !== '관리자' && session.role !== 'JEO' && dataInfo.companyName !== session.companyName) {
       return {
         success: false,
         message: '다른 업체의 검사결과를 조회할 권한이 없습니다.',
@@ -228,6 +306,12 @@ function getInspectionResultsByDataId(token, dataId) {
     const searchKey = dateStr + '|' + dataInfo.companyName + '|' + dataInfo.tmNo;
     const results = [];
 
+    Logger.log('=== getInspectionResultsByDataId 검색 시작 ===');
+    Logger.log('dataId: ' + dataId);
+    Logger.log('dataInfo: ' + JSON.stringify(dataInfo));
+    Logger.log('searchKey: ' + searchKey);
+    Logger.log('resultData.length: ' + resultData.length);
+
     for (let i = 1; i < resultData.length; i++) {
       const row = resultData[i];
 
@@ -241,11 +325,30 @@ function getInspectionResultsByDataId(token, dataId) {
 
       const rowKey = rowDateStr + '|' + String(row[3]) + '|' + String(row[4]);
 
+      if (i <= 3) {
+        Logger.log(`row[${i}] key: ${rowKey}`);
+      }
+
       if (rowKey === searchKey) {
+        Logger.log('매칭 성공! row: ' + i);
         // 시료 데이터 추출 (컬럼 인덱스 수정: 업체CODE 추가로 +1)
         const samples = [];
         for (let j = 10; j < 20; j++) {
-          samples.push(row[j]);
+          // 값이 있으면 문자열로 변환, 없으면 빈 문자열
+          const value = row[j];
+          if (value !== null && value !== undefined && value !== '') {
+            samples.push(String(value));
+          } else {
+            samples.push('');
+          }
+        }
+
+        // registeredAt 날짜 변환
+        let registeredAtStr = '';
+        if (row[21] instanceof Date) {
+          registeredAtStr = Utilities.formatDate(row[21], 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+        } else if (row[21]) {
+          registeredAtStr = String(row[21]);
         }
 
         results.push({
@@ -260,7 +363,7 @@ function getInspectionResultsByDataId(token, dataId) {
           upperLimit: String(row[9] || ''),
           samples: samples,
           passFailResult: String(row[20] || ''),
-          registeredAt: row[21],
+          registeredAt: registeredAtStr,
           registeredBy: String(row[22] || '')
         });
       }
@@ -297,7 +400,7 @@ function getAllInspectionResultKeys(token) {
 
     // 조회할 업체 목록 결정
     let companiesToQuery = [];
-    if (session.role === '관리자') {
+    if (session.role === '관리자' || session.role === 'JEO') {
       companiesToQuery = getAllCompanyNames();
     } else {
       companiesToQuery = [session.companyName];
@@ -350,6 +453,339 @@ function getAllInspectionResultKeys(token) {
       success: false,
       message: '검사결과 키 조회 중 오류가 발생했습니다.',
       keys: []
+    };
+  }
+}
+
+/**
+ * 검사결과 이력 검색 (업체명/시작일자/종료일자/TM-NO)
+ */
+function searchInspectionResultHistory(token, filters) {
+  try {
+    const session = getSessionByToken(token);
+    if (!session || !session.userId) {
+      return { success: false, message: '로그인이 필요합니다.', data: [] };
+    }
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const results = [];
+
+    // 필터 파라미터 추출
+    const filterCompanyName = filters.companyName || '';
+    const filterDateFrom = filters.dateFrom || '';
+    const filterDateTo = filters.dateTo || '';
+    const filterTmNo = filters.tmNo || '';
+    const filterInspectionType = filters.inspectionType || '';
+
+    Logger.log('=== searchInspectionResultHistory 시작 ===');
+    Logger.log('필터: ' + JSON.stringify(filters));
+
+    // 조회할 업체 목록 결정
+    let companiesToQuery = [];
+    if (session.role === '관리자' || session.role === 'JEO') {
+      companiesToQuery = getAllCompanyNames();
+    } else {
+      companiesToQuery = [session.companyName];
+    }
+
+    // 업체명 필터가 있으면 해당 업체만 조회
+    if (filterCompanyName) {
+      if (companiesToQuery.includes(filterCompanyName)) {
+        companiesToQuery = [filterCompanyName];
+      } else {
+        // 권한이 없는 업체를 조회하려는 경우
+        return {
+          success: false,
+          message: '해당 업체의 데이터를 조회할 권한이 없습니다.',
+          data: []
+        };
+      }
+    }
+
+    Logger.log('조회 대상 업체: ' + companiesToQuery.join(', '));
+
+    // 각 업체별로 Data 시트와 Result 시트 조회
+    for (const companyName of companiesToQuery) {
+      const dataSheetName = getDataSheetName(companyName);
+      const dataSheet = ss.getSheetByName(dataSheetName);
+
+      if (!dataSheet) {
+        Logger.log(`${companyName}의 Data 시트를 찾을 수 없음`);
+        continue;
+      }
+
+      try {
+        const dataValues = dataSheet.getDataRange().getValues();
+
+        // 헤더 제외하고 처리
+        for (let i = 1; i < dataValues.length; i++) {
+          const row = dataValues[i];
+
+          // 날짜 형식 정규화 (row[3]이 날짜)
+          let dateStr = row[3];
+          if (row[3] instanceof Date) {
+            dateStr = Utilities.formatDate(row[3], 'Asia/Seoul', 'yyyy-MM-dd');
+          } else if (dateStr) {
+            dateStr = String(dateStr).trim();
+          }
+
+          const rowCompanyName = String(row[2] || '');
+          const tmNo = String(row[5] || '');
+          const productName = String(row[6] || '');
+          const pdfUrl = String(row[8] || '');
+
+          // 날짜 범위 필터 적용
+          if (filterDateFrom && dateStr < filterDateFrom) {
+            continue;
+          }
+          if (filterDateTo && dateStr > filterDateTo) {
+            continue;
+          }
+
+          // TM-NO 필터 적용 (부분 일치)
+          if (filterTmNo && tmNo.indexOf(filterTmNo) === -1) {
+            continue;
+          }
+
+          // ItemList에서 검사형태 조회
+          let inspectionType = '';
+          const itemListSheetName = getItemListSheetName(rowCompanyName);
+          const itemListSheet = ss.getSheetByName(itemListSheetName);
+
+          if (itemListSheet) {
+            try {
+              const itemData = itemListSheet.getDataRange().getValues();
+              for (let j = 1; j < itemData.length; j++) {
+                if (String(itemData[j][1]) === tmNo) {
+                  inspectionType = String(itemData[j][4] || '검사');
+                  break;
+                }
+              }
+            } catch (e) {
+              Logger.log(`ItemList 조회 오류 (${rowCompanyName}, ${tmNo}): ${e.message}`);
+            }
+          }
+
+          // 검사형태 필터 적용
+          if (filterInspectionType && inspectionType !== filterInspectionType) {
+            continue;
+          }
+
+          // 검사결과 존재 여부 및 합부판정 확인
+          const resultKey = dateStr + '|' + rowCompanyName + '|' + tmNo;
+          const inspectionResults = checkInspectionResults(companyName, resultKey);
+
+          results.push({
+            companyName: rowCompanyName,
+            date: dateStr,
+            tmNo: tmNo,
+            productName: productName,
+            pdfUrl: pdfUrl,
+            hasInspectionResult: inspectionResults.exists,
+            overallPassFail: inspectionResults.overallPassFail,
+            inspectionType: inspectionType || '검사'
+          });
+        }
+
+      } catch (e) {
+        Logger.log(`${companyName} Data 시트 조회 오류 - ${e.message}`);
+        continue;
+      }
+    }
+
+    Logger.log('검색 완료 - 총 ' + results.length + '건');
+
+    return {
+      success: true,
+      data: results
+    };
+
+  } catch (error) {
+    Logger.log('검사결과 이력 검색 오류: ' + error.toString());
+    return {
+      success: false,
+      message: '검사결과 이력 검색 중 오류가 발생했습니다: ' + error.message,
+      data: []
+    };
+  }
+}
+
+/**
+ * 검사결과 존재 여부 및 전체 합부판정 확인
+ * @param {string} companyName - 업체명
+ * @param {string} resultKey - 검색 키 (date|companyName|tmNo)
+ * @returns {Object} {exists: boolean, overallPassFail: string}
+ */
+function checkInspectionResults(companyName, resultKey) {
+  try {
+    const sheetResult = getOrCreateResultSheet(companyName);
+    if (!sheetResult.success) {
+      return { exists: false, overallPassFail: '' };
+    }
+
+    const resultSheet = sheetResult.sheet;
+    const resultData = resultSheet.getDataRange().getValues();
+
+    let passCount = 0;
+    let failCount = 0;
+    let totalCount = 0;
+
+    // 헤더 제외하고 처리
+    for (let i = 1; i < resultData.length; i++) {
+      const row = resultData[i];
+
+      // 날짜 형식 정규화 (row[2]가 날짜)
+      let rowDateStr = row[2];
+      if (row[2] instanceof Date) {
+        rowDateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
+      } else if (rowDateStr) {
+        rowDateStr = String(rowDateStr).trim();
+      }
+
+      const rowKey = rowDateStr + '|' + String(row[3]) + '|' + String(row[4]);
+
+      if (rowKey === resultKey) {
+        totalCount++;
+        const passFailResult = String(row[20] || '').trim();
+
+        if (passFailResult === '합격') {
+          passCount++;
+        } else if (passFailResult === '불합격') {
+          failCount++;
+        }
+      }
+    }
+
+    // 검사결과가 없으면
+    if (totalCount === 0) {
+      return { exists: false, overallPassFail: '' };
+    }
+
+    // 전체 합부판정 계산 (하나라도 불합격이면 전체 불합격)
+    let overallPassFail = '';
+    if (failCount > 0) {
+      overallPassFail = '불합격';
+    } else if (passCount === totalCount) {
+      overallPassFail = '합격';
+    }
+
+    return {
+      exists: true,
+      overallPassFail: overallPassFail
+    };
+
+  } catch (error) {
+    Logger.log('checkInspectionResults 오류: ' + error.toString());
+    return { exists: false, overallPassFail: '' };
+  }
+}
+
+/**
+ * 검사결과 조회 (resultKey로 직접 조회)
+ * @param {string} token - 세션 토큰
+ * @param {string} resultKey - 검색 키 (date|companyName|tmNo)
+ * @param {string} companyName - 업체명
+ * @returns {Object} {success, data, message}
+ */
+function getInspectionResultsByKey(token, resultKey, companyName) {
+  try {
+    const session = getSessionByToken(token);
+    if (!session || !session.userId) {
+      return { success: false, message: '로그인이 필요합니다.', data: [] };
+    }
+
+    // 일반 사용자는 자기 업체 데이터만 조회 가능
+    if (session.role !== '관리자' && session.role !== 'JEO' && companyName !== session.companyName) {
+      return {
+        success: false,
+        message: '다른 업체의 검사결과를 조회할 권한이 없습니다.',
+        data: []
+      };
+    }
+
+    // 해당 업체의 Result 시트 가져오기
+    const sheetResult = getOrCreateResultSheet(companyName);
+    if (!sheetResult.success) {
+      return {
+        success: false,
+        message: sheetResult.message || '수입검사결과 시트를 찾을 수 없습니다.',
+        data: []
+      };
+    }
+
+    const resultSheet = sheetResult.sheet;
+    const resultData = resultSheet.getDataRange().getValues();
+    const results = [];
+
+    Logger.log('=== getInspectionResultsByKey 검색 시작 ===');
+    Logger.log('resultKey: ' + resultKey);
+    Logger.log('companyName: ' + companyName);
+
+    // 검색 키로 매칭
+    for (let i = 1; i < resultData.length; i++) {
+      const row = resultData[i];
+
+      // 날짜 형식 정규화 (row[2]가 날짜)
+      let rowDateStr = row[2];
+      if (row[2] instanceof Date) {
+        rowDateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
+      } else if (rowDateStr) {
+        rowDateStr = String(rowDateStr).trim();
+      }
+
+      const rowKey = rowDateStr + '|' + String(row[3]) + '|' + String(row[4]);
+
+      if (rowKey === resultKey) {
+        // 시료 데이터 추출
+        const samples = [];
+        for (let j = 10; j < 20; j++) {
+          const value = row[j];
+          if (value !== null && value !== undefined && value !== '') {
+            samples.push(String(value));
+          } else {
+            samples.push('');
+          }
+        }
+
+        // registeredAt 날짜 변환
+        let registeredAtStr = '';
+        if (row[21] instanceof Date) {
+          registeredAtStr = Utilities.formatDate(row[21], 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+        } else if (row[21]) {
+          registeredAtStr = String(row[21]);
+        }
+
+        results.push({
+          id: String(row[1] || ''),
+          date: rowDateStr,
+          companyName: String(row[3] || ''),
+          tmNo: String(row[4] || ''),
+          productName: String(row[5] || ''),
+          inspectionItem: String(row[6] || ''),
+          measurementMethod: String(row[7] || ''),
+          lowerLimit: String(row[8] || ''),
+          upperLimit: String(row[9] || ''),
+          samples: samples,
+          passFailResult: String(row[20] || ''),
+          registeredAt: registeredAtStr,
+          registeredBy: String(row[22] || '')
+        });
+      }
+    }
+
+    Logger.log('검사결과 조회 완료 - 건수: ' + results.length);
+
+    return {
+      success: true,
+      data: results
+    };
+
+  } catch (error) {
+    Logger.log('검사결과 조회 오류: ' + error.toString());
+    return {
+      success: false,
+      message: '검사결과 조회 중 오류가 발생했습니다: ' + error.message,
+      data: []
     };
   }
 }
