@@ -81,7 +81,7 @@ function getDashboardStats(token) {
         continue;
       }
       
-      if (session.role !== '관리자' && companyName !== session.companyName) {
+      if (session.role !== '관리자' && session.role !== 'JEO' && companyName !== session.companyName) {
         continue;
       }
       
