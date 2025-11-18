@@ -407,16 +407,16 @@ function getAllInspectionResultKeys(token) {
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
 
-        // 날짜 형식 정규화 (컬럼 인덱스 수정: 업체CODE 추가로 +1)
-        let dateStr = row[2];
-        if (row[2] instanceof Date) {
-          dateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
+        // 날짜 형식 정규화 (컬럼 인덱스: 업체CODE(0), 입고ID(1), ID(2), 날짜(3), 업체명(4), TM-NO(5))
+        let dateStr = row[3];
+        if (row[3] instanceof Date) {
+          dateStr = Utilities.formatDate(row[3], 'Asia/Seoul', 'yyyy-MM-dd');
         } else if (dateStr) {
           dateStr = String(dateStr).trim();
         }
 
-        const rowCompanyName = String(row[3] || '');
-        const tmNo = String(row[4] || '');
+        const rowCompanyName = String(row[4] || '');
+        const tmNo = String(row[5] || '');
 
         if (dateStr && rowCompanyName && tmNo) {
           const key = dateStr + '|' + rowCompanyName + '|' + tmNo;

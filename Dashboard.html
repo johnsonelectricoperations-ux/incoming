@@ -1048,7 +1048,7 @@
     }
 
     // 저장된 검사결과 키 조회
-    function loadSavedInspectionResultKeys() {
+    function loadSavedInspectionResultKeys(callback) {
       google.script.run
         .withSuccessHandler(function(response) {
           if (response.success && response.keys) {
@@ -1057,10 +1057,18 @@
           } else {
             savedInspectionResultKeys = [];
           }
+          // 콜백 실행
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
         })
         .withFailureHandler(function(error) {
           console.error('검사결과 키 조회 실패:', error);
           savedInspectionResultKeys = [];
+          // 실패해도 콜백 실행
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
         })
         .getAllInspectionResultKeys(sessionToken);
     }
@@ -1250,13 +1258,10 @@
           </div>
         `;
 
-        // 저장된 검사결과 키 다시 로드
-        loadSavedInspectionResultKeys();
-
-        // 0.5초 대기 후 검색 재실행 (키 로딩 시간 확보)
-        setTimeout(function() {
+        // 저장된 검사결과 키 다시 로드 후 검색 재실행
+        loadSavedInspectionResultKeys(function() {
           searchInspectionData();
-        }, 500);
+        });
       } else {
         // 검색 결과가 없으면 메시지만 표시
         alert('검색 결과가 없습니다. 먼저 검색을 실행해주세요.');
@@ -1770,13 +1775,10 @@
             // 모달 닫기
             closeInspectionInputModal();
 
-            // 저장된 검사결과 키 갱신
-            loadSavedInspectionResultKeys();
-
-            // 검색 결과 갱신 (키 로딩 시간 확보 후 재검색)
-            setTimeout(function() {
+            // 저장된 검사결과 키 갱신 후 검색 결과 갱신
+            loadSavedInspectionResultKeys(function() {
               searchInspectionData();
-            }, 500);
+            });
           } else {
             alert(response.message || '저장에 실패했습니다.');
           }
