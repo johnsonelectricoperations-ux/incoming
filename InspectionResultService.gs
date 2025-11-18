@@ -173,6 +173,25 @@ function saveInspectionResults(token, dataId, results) {
 
     const timestamp = new Date();
 
+    // 먼저 해당 입고ID의 기존 검사결과가 있는지 확인하고 삭제
+    const existingData = resultSheet.getDataRange().getValues();
+    const rowsToDelete = [];
+
+    for (let i = existingData.length - 1; i >= 1; i--) {
+      // 입고ID(row[1])로 매칭
+      if (String(existingData[i][1]) === String(dataId)) {
+        rowsToDelete.push(i + 1); // 1-based index
+      }
+    }
+
+    // 역순으로 삭제 (뒤에서부터 삭제해야 인덱스가 안 깨짐)
+    if (rowsToDelete.length > 0) {
+      Logger.log(`기존 검사결과 ${rowsToDelete.length}건 삭제 중...`);
+      for (const rowIndex of rowsToDelete) {
+        resultSheet.deleteRow(rowIndex);
+      }
+    }
+
     // 각 검사항목별로 행 추가
     results.forEach(function(result) {
       const id = 'IR' + timestamp.getTime() + '_' + Math.random().toString(36).substr(2, 9);
