@@ -1275,12 +1275,21 @@
       // 데이터 정보 표시
       const infoContainer = document.getElementById('inspectionDataInfo');
       infoContainer.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; align-items: center;">
           <div><strong>업체명:</strong> ${companyName}</div>
           <div><strong>입고일자:</strong> ${date}</div>
           <div><strong>시간:</strong> ${time}</div>
           <div><strong>TM-NO:</strong> ${tmNo}</div>
           <div><strong>품명:</strong> ${productName}</div>
+          <div style="text-align: right;">
+            <button onclick="autoFillInspectionData()"
+              style="padding: 10px 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); transition: all 0.3s;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(40, 167, 69, 0.4)';"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(40, 167, 69, 0.3)';"
+              title="이전 이력 기반 랜덤 데이터 자동 생성">
+              ⚡ 자동입력
+            </button>
+          </div>
         </div>
       `;
 
@@ -1580,6 +1589,110 @@
         passFailSpan.style.background = '#f8d7da';
         passFailSpan.style.color = '#721c24';
       }
+    }
+
+    // 자동입력 기능 (이전 이력 기반 랜덤 데이터 생성)
+    function autoFillInspectionData() {
+      if (!currentInspectionCompanyName || !currentInspectionTmNo || !currentInspectionSpecs) {
+        alert('검사 데이터를 먼저 선택해주세요.');
+        return;
+      }
+
+      console.log('자동입력 시작:', currentInspectionCompanyName, currentInspectionTmNo);
+
+      // 이전 검사결과 조회
+      google.script.run
+        .withSuccessHandler(function(response) {
+          console.log('이전 검사결과 조회 응답:', response);
+
+          if (!response.success || !response.data || response.data.length === 0) {
+            // 로직3: 이력이 없으면 팝업 출력
+            alert('⚠️ 최초등록으로 직접 입력하세요.\n\n해당 업체/TM-NO의 이전 검사결과 이력이 없습니다.');
+            return;
+          }
+
+          // 이력 데이터가 있으면 랜덤 데이터 생성
+          const previousData = response.data;
+          generateRandomInspectionData(previousData);
+        })
+        .withFailureHandler(function(error) {
+          console.error('이전 검사결과 조회 실패:', error);
+          alert('이전 검사결과 조회 중 오류가 발생했습니다.');
+        })
+        .getPreviousInspectionData(sessionToken, currentInspectionCompanyName, currentInspectionTmNo);
+    }
+
+    // 랜덤 검사결과 데이터 생성
+    function generateRandomInspectionData(previousData) {
+      console.log('랜덤 데이터 생성 시작, 이전 데이터:', previousData);
+
+      currentInspectionSpecs.forEach(function(spec, itemIndex) {
+        const sampleSize = parseInt(spec.sampleSize) || 1;
+        const lowerLimit = spec.lowerLimit ? parseFloat(spec.lowerLimit) : null;
+        const upperLimit = spec.upperLimit ? parseFloat(spec.upperLimit) : null;
+
+        // 해당 검사항목의 이전 데이터 찾기
+        const prevItemData = previousData.filter(function(d) {
+          return d.inspectionItem === spec.inspectionItem;
+        });
+
+        // 시료별 입력 필드에 랜덤 값 생성
+        for (let sampleIdx = 0; sampleIdx < sampleSize; sampleIdx++) {
+          const input = document.querySelector(`.sample-input[data-item-index="${itemIndex}"][data-sample-index="${sampleIdx}"]`);
+          if (!input) continue;
+
+          let randomValue = null;
+
+          // 로직4: 상/하한 모두 있는 경우
+          if (lowerLimit !== null && upperLimit !== null) {
+            const range = upperLimit - lowerLimit;
+            const oneThird = lowerLimit + range * (1/3);
+            const twoThird = lowerLimit + range * (2/3);
+            randomValue = oneThird + Math.random() * (twoThird - oneThird);
+          }
+          // 로직5: 한쪽 규격만 있는 경우
+          else if (prevItemData.length > 0) {
+            // 이전 데이터의 모든 시료값 수집
+            const allPrevSamples = [];
+            prevItemData.forEach(function(d) {
+              if (d.samples && d.samples.length > 0) {
+                d.samples.forEach(function(s) {
+                  if (s !== null && s !== undefined && !isNaN(s)) {
+                    allPrevSamples.push(parseFloat(s));
+                  }
+                });
+              }
+            });
+
+            if (allPrevSamples.length > 0) {
+              const minValue = Math.min.apply(null, allPrevSamples);
+              const maxValue = Math.max.apply(null, allPrevSamples);
+              randomValue = minValue + Math.random() * (maxValue - minValue);
+            }
+          }
+          // 이전 데이터도 없고 규격도 없으면 기본값
+          else {
+            // 규격이 하나만 있는 경우 그 근처 값 생성
+            if (lowerLimit !== null) {
+              randomValue = lowerLimit + Math.random() * lowerLimit * 0.1; // 하한의 110%까지
+            } else if (upperLimit !== null) {
+              randomValue = upperLimit * 0.9 + Math.random() * upperLimit * 0.1; // 상한의 90~100%
+            }
+          }
+
+          // 값이 생성되었으면 입력
+          if (randomValue !== null) {
+            // 소수점 2자리로 반올림
+            input.value = randomValue.toFixed(2);
+          }
+        }
+
+        // 자동으로 해당 항목의 합부판정 계산
+        calculatePassFailForItem(itemIndex);
+      });
+
+      console.log('랜덤 데이터 생성 완료');
+      alert('✅ 자동입력이 완료되었습니다.\n\n모든 시료값이 이전 이력 기반으로 생성되었습니다.');
     }
 
     // 검사결과 저장
