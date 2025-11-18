@@ -712,17 +712,18 @@
     
     function uploadFileAndSaveData(formData) {
       const reader = new FileReader();
-      
+
       reader.onload = function(e) {
         const bytes = e.target.result.split(',')[1]; // Base64 데이터
-        
+
         const fileData = {
           fileName: selectedFile.name,
           mimeType: selectedFile.type,
           bytes: bytes,
-          tmNo: formData.tmNo
+          tmNo: formData.tmNo,
+          date: formData.date  // 날짜 정보 추가 (년도/월 폴더 생성용)
         };
-        
+
         google.script.run
           .withSuccessHandler(function(response) {
             if (response.success) {
@@ -740,7 +741,7 @@
           })
           .uploadPdfFile(sessionToken, fileData);
       };
-      
+
       reader.readAsDataURL(selectedFile);
     }
     
