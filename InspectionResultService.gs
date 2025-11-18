@@ -177,9 +177,10 @@ function saveInspectionResults(token, dataId, results) {
     results.forEach(function(result) {
       const id = 'IR' + timestamp.getTime() + '_' + Math.random().toString(36).substr(2, 9);
 
-      // 기본 정보 (업체CODE 포함)
+      // 기본 정보 (업체CODE, 입고ID 포함)
       const row = [
         companyCode,
+        dataId,              // 입고ID 추가
         id,
         dateStr,
         dataInfo.companyName,
@@ -201,7 +202,7 @@ function saveInspectionResults(token, dataId, results) {
 
       const lastRow = resultSheet.getLastRow() + 1;
 
-      // 먼저 텍스트 형식으로 설정 (특히 TM-NO 컬럼)
+      // 먼저 텍스트 형식으로 설정 (특히 입고ID, TM-NO 컬럼)
       resultSheet.getRange(lastRow, 1, 1, row.length).setNumberFormat('@STRING@');
 
       // 데이터 입력
@@ -322,38 +323,32 @@ function getInspectionResultsByDataId(token, dataId) {
       dateStr = String(dateStr).trim();
     }
 
-    // dataId 대신 date|companyName|tmNo 조합으로 검색
-    const searchKey = dateStr + '|' + dataInfo.companyName + '|' + dataInfo.tmNo;
+    // 입고ID로 직접 검색
     const results = [];
 
     Logger.log('=== getInspectionResultsByDataId 검색 시작 ===');
     Logger.log('dataId: ' + dataId);
     Logger.log('dataInfo: ' + JSON.stringify(dataInfo));
-    Logger.log('searchKey: ' + searchKey);
     Logger.log('resultData.length: ' + resultData.length);
 
     for (let i = 1; i < resultData.length; i++) {
       const row = resultData[i];
 
-      // 날짜 형식 정규화 (컬럼 인덱스 수정: 업체CODE 추가로 +1)
-      let rowDateStr = row[2];
-      if (row[2] instanceof Date) {
-        rowDateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
-      } else if (rowDateStr) {
-        rowDateStr = String(rowDateStr).trim();
-      }
-
-      const rowKey = rowDateStr + '|' + String(row[3]) + '|' + String(row[4]);
-
-      if (i <= 3) {
-        Logger.log(`row[${i}] key: ${rowKey}`);
-      }
-
-      if (rowKey === searchKey) {
+      // 입고ID(row[1])로 직접 매칭
+      if (String(row[1]) === String(dataId)) {
         Logger.log('매칭 성공! row: ' + i);
-        // 시료 데이터 추출 (컬럼 인덱스 수정: 업체CODE 추가로 +1)
+
+        // 날짜 형식 정규화
+        let rowDateStr = row[3];
+        if (row[3] instanceof Date) {
+          rowDateStr = Utilities.formatDate(row[3], 'Asia/Seoul', 'yyyy-MM-dd');
+        } else if (rowDateStr) {
+          rowDateStr = String(rowDateStr).trim();
+        }
+
+        // 시료 데이터 추출 (컬럼 인덱스: 입고ID 추가로 +1)
         const samples = [];
-        for (let j = 10; j < 20; j++) {
+        for (let j = 11; j < 21; j++) {
           // 값이 있으면 문자열로 변환, 없으면 빈 문자열
           const value = row[j];
           if (value !== null && value !== undefined && value !== '') {
@@ -365,26 +360,26 @@ function getInspectionResultsByDataId(token, dataId) {
 
         // registeredAt 날짜 변환
         let registeredAtStr = '';
-        if (row[21] instanceof Date) {
-          registeredAtStr = Utilities.formatDate(row[21], 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
-        } else if (row[21]) {
-          registeredAtStr = String(row[21]);
+        if (row[22] instanceof Date) {
+          registeredAtStr = Utilities.formatDate(row[22], 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+        } else if (row[22]) {
+          registeredAtStr = String(row[22]);
         }
 
         results.push({
-          id: String(row[1] || ''),
+          id: String(row[2] || ''),
           date: rowDateStr,
-          companyName: String(row[3] || ''),
-          tmNo: String(row[4] || ''),
-          productName: String(row[5] || ''),
-          inspectionItem: String(row[6] || ''),
-          measurementMethod: String(row[7] || ''),
-          lowerLimit: String(row[8] || ''),
-          upperLimit: String(row[9] || ''),
+          companyName: String(row[4] || ''),
+          tmNo: String(row[5] || ''),
+          productName: String(row[6] || ''),
+          inspectionItem: String(row[7] || ''),
+          measurementMethod: String(row[8] || ''),
+          lowerLimit: String(row[9] || ''),
+          upperLimit: String(row[10] || ''),
           samples: samples,
-          passFailResult: String(row[20] || ''),
+          passFailResult: String(row[21] || ''),
           registeredAt: registeredAtStr,
-          registeredBy: String(row[22] || '')
+          registeredBy: String(row[23] || '')
         });
       }
     }
@@ -440,16 +435,16 @@ function getAllInspectionResultKeys(token) {
       for (let i = 1; i < data.length; i++) {
         const row = data[i];
 
-        // 날짜 형식 정규화 (컬럼 인덱스 수정: 업체CODE 추가로 +1)
-        let dateStr = row[2];
-        if (row[2] instanceof Date) {
-          dateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
+        // 날짜 형식 정규화 (컬럼 인덱스: 업체CODE(0), 입고ID(1), ID(2), 날짜(3), 업체명(4), TM-NO(5))
+        let dateStr = row[3];
+        if (row[3] instanceof Date) {
+          dateStr = Utilities.formatDate(row[3], 'Asia/Seoul', 'yyyy-MM-dd');
         } else if (dateStr) {
           dateStr = String(dateStr).trim();
         }
 
-        const rowCompanyName = String(row[3] || '');
-        const tmNo = String(row[4] || '');
+        const rowCompanyName = String(row[4] || '');
+        const tmNo = String(row[5] || '');
 
         if (dateStr && rowCompanyName && tmNo) {
           const key = dateStr + '|' + rowCompanyName + '|' + tmNo;
@@ -654,19 +649,19 @@ function checkInspectionResults(companyName, resultKey) {
     for (let i = 1; i < resultData.length; i++) {
       const row = resultData[i];
 
-      // 날짜 형식 정규화 (row[2]가 날짜)
-      let rowDateStr = row[2];
-      if (row[2] instanceof Date) {
-        rowDateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
+      // 날짜 형식 정규화 (row[3]이 날짜, 입고ID 추가로 +1)
+      let rowDateStr = row[3];
+      if (row[3] instanceof Date) {
+        rowDateStr = Utilities.formatDate(row[3], 'Asia/Seoul', 'yyyy-MM-dd');
       } else if (rowDateStr) {
         rowDateStr = String(rowDateStr).trim();
       }
 
-      const rowKey = rowDateStr + '|' + String(row[3]) + '|' + String(row[4]);
+      const rowKey = rowDateStr + '|' + String(row[4]) + '|' + String(row[5]);
 
       if (rowKey === resultKey) {
         totalCount++;
-        const passFailResult = String(row[20] || '').trim();
+        const passFailResult = String(row[21] || '').trim();
 
         if (passFailResult === '합격') {
           passCount++;
@@ -745,20 +740,20 @@ function getInspectionResultsByKey(token, resultKey, companyName) {
     for (let i = 1; i < resultData.length; i++) {
       const row = resultData[i];
 
-      // 날짜 형식 정규화 (row[2]가 날짜)
-      let rowDateStr = row[2];
-      if (row[2] instanceof Date) {
-        rowDateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
+      // 날짜 형식 정규화 (row[3]이 날짜, 입고ID 추가로 +1)
+      let rowDateStr = row[3];
+      if (row[3] instanceof Date) {
+        rowDateStr = Utilities.formatDate(row[3], 'Asia/Seoul', 'yyyy-MM-dd');
       } else if (rowDateStr) {
         rowDateStr = String(rowDateStr).trim();
       }
 
-      const rowKey = rowDateStr + '|' + String(row[3]) + '|' + String(row[4]);
+      const rowKey = rowDateStr + '|' + String(row[4]) + '|' + String(row[5]);
 
       if (rowKey === resultKey) {
-        // 시료 데이터 추출
+        // 시료 데이터 추출 (row[11-20], 입고ID 추가로 +1)
         const samples = [];
-        for (let j = 10; j < 20; j++) {
+        for (let j = 11; j < 21; j++) {
           const value = row[j];
           if (value !== null && value !== undefined && value !== '') {
             samples.push(String(value));
@@ -767,28 +762,28 @@ function getInspectionResultsByKey(token, resultKey, companyName) {
           }
         }
 
-        // registeredAt 날짜 변환
+        // registeredAt 날짜 변환 (row[22], 입고ID 추가로 +1)
         let registeredAtStr = '';
-        if (row[21] instanceof Date) {
-          registeredAtStr = Utilities.formatDate(row[21], 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
-        } else if (row[21]) {
-          registeredAtStr = String(row[21]);
+        if (row[22] instanceof Date) {
+          registeredAtStr = Utilities.formatDate(row[22], 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
+        } else if (row[22]) {
+          registeredAtStr = String(row[22]);
         }
 
         results.push({
-          id: String(row[1] || ''),
+          id: String(row[2] || ''),
           date: rowDateStr,
-          companyName: String(row[3] || ''),
-          tmNo: String(row[4] || ''),
-          productName: String(row[5] || ''),
-          inspectionItem: String(row[6] || ''),
-          measurementMethod: String(row[7] || ''),
-          lowerLimit: String(row[8] || ''),
-          upperLimit: String(row[9] || ''),
+          companyName: String(row[4] || ''),
+          tmNo: String(row[5] || ''),
+          productName: String(row[6] || ''),
+          inspectionItem: String(row[7] || ''),
+          measurementMethod: String(row[8] || ''),
+          lowerLimit: String(row[9] || ''),
+          upperLimit: String(row[10] || ''),
           samples: samples,
-          passFailResult: String(row[20] || ''),
+          passFailResult: String(row[21] || ''),
           registeredAt: registeredAtStr,
-          registeredBy: String(row[22] || '')
+          registeredBy: String(row[23] || '')
         });
       }
     }
