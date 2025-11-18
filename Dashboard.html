@@ -1283,11 +1283,11 @@
           <div><strong>품명:</strong> ${productName}</div>
           <div style="text-align: right;">
             <button onclick="autoFillInspectionData()"
-              style="padding: 10px 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); transition: all 0.3s;"
+              style="padding: 10px 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 20px; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); transition: all 0.3s;"
               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(40, 167, 69, 0.4)';"
               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(40, 167, 69, 0.3)';"
               title="이전 이력 기반 랜덤 데이터 자동 생성">
-              ⚡ 자동입력
+              ⚡
             </button>
           </div>
         </div>
@@ -1606,7 +1606,8 @@
           console.log('이전 검사결과 조회 응답:', response);
 
           if (!response.success || !response.data || response.data.length === 0) {
-            // 로직3: 이력이 없으면 자동입력 중단
+            // 로직3: 이력이 없으면 수기로 입력하라는 팝업 출력
+            alert('이전 검사결과 이력이 없습니다.\n수기로 입력해주세요.');
             return;
           }
 
