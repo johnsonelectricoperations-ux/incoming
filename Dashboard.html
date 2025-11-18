@@ -1606,8 +1606,7 @@
           console.log('이전 검사결과 조회 응답:', response);
 
           if (!response.success || !response.data || response.data.length === 0) {
-            // 로직3: 이력이 없으면 팝업 출력
-            alert('⚠️ 최초등록으로 직접 입력하세요.\n\n해당 업체/TM-NO의 이전 검사결과 이력이 없습니다.');
+            // 로직3: 이력이 없으면 자동입력 중단
             return;
           }
 
@@ -1692,7 +1691,6 @@
       });
 
       console.log('랜덤 데이터 생성 완료');
-      alert('✅ 자동입력이 완료되었습니다.\n\n모든 시료값이 이전 이력 기반으로 생성되었습니다.');
     }
 
     // 검사결과 저장
@@ -1774,8 +1772,10 @@
             // 저장된 검사결과 키 갱신
             loadSavedInspectionResultKeys();
 
-            // 검색 결과 갱신 (현재 검색 조건으로 재검색)
-            searchInspectionData();
+            // 검색 결과 갱신 (키 로딩 시간 확보 후 재검색)
+            setTimeout(function() {
+              searchInspectionData();
+            }, 500);
           } else {
             alert(response.message || '저장에 실패했습니다.');
           }
