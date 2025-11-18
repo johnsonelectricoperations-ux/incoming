@@ -97,6 +97,11 @@ function getInspectionSpecs(token, options) {
         const row = data[i];
         const rowCompanyName = String(row[3] || '');
 
+        // 업체명 필터 적용 (옵션에 업체명이 지정된 경우)
+        if (options && options.companyName && rowCompanyName !== options.companyName) {
+          continue;
+        }
+
         // TM-NO 필터 적용
         if (options && options.tmNo && String(row[1]) !== options.tmNo) {
           continue;
