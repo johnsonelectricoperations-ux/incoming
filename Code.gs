@@ -118,12 +118,68 @@ function getOrCreateDriveFolder() {
 function getOrCreateCompanyFolder(companyName) {
   const mainFolder = getOrCreateDriveFolder();
   const folders = mainFolder.getFoldersByName(companyName);
-  
+
   if (folders.hasNext()) {
     return folders.next();
   } else {
     return mainFolder.createFolder(companyName);
   }
+}
+
+/**
+ * 업체별 월별 Drive 폴더 가져오기 또는 생성
+ * @param {string} companyName - 업체명
+ * @param {string} date - 날짜 (YYYY-MM-DD 형식)
+ * @returns {Folder} 월별 폴더 (업체명/YYYY/MM/)
+ */
+function getOrCreateMonthlyFolder(companyName, date) {
+  // 업체 폴더 가져오기
+  const companyFolder = getOrCreateCompanyFolder(companyName);
+
+  // 날짜에서 년도/월 추출
+  let year, month;
+
+  if (date instanceof Date) {
+    year = Utilities.formatDate(date, 'Asia/Seoul', 'yyyy');
+    month = Utilities.formatDate(date, 'Asia/Seoul', 'MM');
+  } else if (typeof date === 'string') {
+    // "YYYY-MM-DD" 또는 "YYYY/MM/DD" 형식
+    const parts = date.split(/[-/]/);
+    if (parts.length >= 2) {
+      year = parts[0];
+      month = parts[1];
+    } else {
+      // 날짜 형식이 올바르지 않으면 현재 날짜 사용
+      const today = new Date();
+      year = Utilities.formatDate(today, 'Asia/Seoul', 'yyyy');
+      month = Utilities.formatDate(today, 'Asia/Seoul', 'MM');
+    }
+  } else {
+    // 기본값: 현재 날짜
+    const today = new Date();
+    year = Utilities.formatDate(today, 'Asia/Seoul', 'yyyy');
+    month = Utilities.formatDate(today, 'Asia/Seoul', 'MM');
+  }
+
+  // 년도 폴더 가져오기 또는 생성
+  let yearFolder;
+  const yearFolders = companyFolder.getFoldersByName(year);
+  if (yearFolders.hasNext()) {
+    yearFolder = yearFolders.next();
+  } else {
+    yearFolder = companyFolder.createFolder(year);
+  }
+
+  // 월 폴더 가져오기 또는 생성
+  let monthFolder;
+  const monthFolders = yearFolder.getFoldersByName(month);
+  if (monthFolders.hasNext()) {
+    monthFolder = monthFolders.next();
+  } else {
+    monthFolder = yearFolder.createFolder(month);
+  }
+
+  return monthFolder;
 }
 
 /**

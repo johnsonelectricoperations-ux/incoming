@@ -420,7 +420,7 @@ function createCompanySheets(companyName, companyCode) {
     let resultSheet = ss.getSheetByName(resultSheetName);
     if (!resultSheet) {
       resultSheet = ss.insertSheet(resultSheetName, lastPosition + 3);
-      const headers = ['업체CODE', 'ID', '날짜', '업체명', 'TM-NO', '품명', '검사항목', '검사방법', '규격하한', '규격상한'];
+      const headers = ['업체CODE', '입고ID', 'ID', '날짜', '업체명', 'TM-NO', '품명', '검사항목', '검사방법', '규격하한', '규격상한'];
       // 최대 10개 시료까지 지원
       for (let i = 1; i <= 10; i++) {
         headers.push('시료' + i);
@@ -429,8 +429,10 @@ function createCompanySheets(companyName, companyCode) {
       resultSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
       resultSheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#cc0000').setFontColor('#ffffff');
 
-      // TM-NO 열(E열, 5번째 컬럼)을 텍스트 형식으로 미리 설정
-      resultSheet.getRange('E:E').setNumberFormat('@STRING@');
+      // 입고ID 열(B열, 2번째 컬럼)을 텍스트 형식으로 미리 설정
+      resultSheet.getRange('B:B').setNumberFormat('@STRING@');
+      // TM-NO 열(F열, 6번째 컬럼)을 텍스트 형식으로 미리 설정
+      resultSheet.getRange('F:F').setNumberFormat('@STRING@');
 
       Logger.log(`시트 생성 완료: ${resultSheetName}`);
     }

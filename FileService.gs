@@ -5,7 +5,7 @@
 /**
  * PDF 파일 업로드
  * @param {string} token - 세션 토큰
- * @param {Object} fileData - { fileName, mimeType, bytes, tmNo }
+ * @param {Object} fileData - { fileName, mimeType, bytes, tmNo, date }
  */
 function uploadPdfFile(token, fileData) {
   try {
@@ -13,7 +13,7 @@ function uploadPdfFile(token, fileData) {
     if (!session || !session.userId) {
       return { success: false, message: '로그인이 필요합니다.' };
     }
-    
+
     // 파일 크기 체크 (10MB 제한)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (fileData.bytes.length > maxSize) {
@@ -22,7 +22,7 @@ function uploadPdfFile(token, fileData) {
         message: '파일 크기는 10MB를 초과할 수 없습니다.'
       };
     }
-    
+
     // MIME 타입 체크
     if (fileData.mimeType !== 'application/pdf') {
       return {
@@ -30,28 +30,27 @@ function uploadPdfFile(token, fileData) {
         message: 'PDF 파일만 업로드 가능합니다.'
       };
     }
-    
-    // 업체별 폴더 가져오기
-    const companyFolder = getOrCreateCompanyFolder(session.companyName);
-    
-    // 파일명 생성 (날짜_TM-NO_원본파일명)
-    const timestamp = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyyMMdd_HHmmss');
-    const safeFileName = fileData.fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const newFileName = `${timestamp}_${fileData.tmNo}_${safeFileName}`;
-    
+
+    // 업체별 월별 폴더 가져오기 (년도/월 폴더 포함)
+    const monthlyFolder = getOrCreateMonthlyFolder(session.companyName, fileData.date);
+
+    // 파일명 생성 (날짜_TM-NO_오전/오후_업체명.pdf)
+    const dateStr = fileData.date.replace(/-/g, '');
+    const newFileName = `${dateStr}_${fileData.tmNo}_${fileData.time}_${session.companyName}.pdf`;
+
     // Blob 생성
     const blob = Utilities.newBlob(
       Utilities.base64Decode(fileData.bytes),
       fileData.mimeType,
       newFileName
     );
-    
+
     // 파일 업로드
-    const file = companyFolder.createFile(blob);
-    
+    const file = monthlyFolder.createFile(blob);
+
     // 파일 공유 설정 (링크가 있는 사용자)
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    
+
     return {
       success: true,
       message: '파일이 업로드되었습니다.',
@@ -59,7 +58,7 @@ function uploadPdfFile(token, fileData) {
       fileName: newFileName,
       fileUrl: file.getUrl()
     };
-    
+
   } catch (error) {
     Logger.log('파일 업로드 오류: ' + error.toString());
     return {
