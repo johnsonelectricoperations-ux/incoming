@@ -31,6 +31,26 @@ function getOrCreateResultSheet(companyName) {
         };
       }
       sheet = ss.getSheetByName(sheetName);
+    } else {
+      // 기존 시트가 있는 경우, 헤더 확인 및 업데이트
+      const headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+      // '입고ID' 열이 없는지 확인 (이전 버전 시트 체크)
+      if (headerRow[0] === '업체CODE' && headerRow[1] !== '입고ID') {
+        Logger.log(`${sheetName}: 이전 버전 헤더 감지, '입고ID' 열 추가`);
+
+        // B열(2번째 열)에 '입고ID' 컬럼 삽입
+        sheet.insertColumnBefore(2);
+
+        // 헤더 설정
+        sheet.getRange(1, 2).setValue('입고ID');
+        sheet.getRange(1, 2).setFontWeight('bold').setBackground('#cc0000').setFontColor('#ffffff');
+
+        // 입고ID 열을 텍스트 형식으로 설정
+        sheet.getRange('B:B').setNumberFormat('@STRING@');
+
+        Logger.log(`${sheetName}: '입고ID' 열 추가 완료`);
+      }
     }
 
     return {
