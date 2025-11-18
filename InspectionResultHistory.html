@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>검사결과 이력 - 검사성적서 관리</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .header-title h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header-title p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-outline:hover {
+      background: white;
+      color: #667eea;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .nav-menu {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 12px 24px;
+      background: #f0f4ff;
+      color: #667eea;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .nav-btn.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 180px;
+      flex: 1;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .form-control {
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      padding-bottom: 2px;
+    }
+
+    .btn-primary {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-secondary {
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1000px;
+    }
+
+    thead {
+      background-color: #f8f9fa;
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #555;
+      border-bottom: 2px solid #e0e0e0;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+    }
+
+    tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .btn-link {
+      padding: 6px 12px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-link:hover {
+      background: #0b7dda;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 15px;
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .badge-secondary {
+      background: #e2e3e5;
+      color: #383d41;
+    }
+
+    /* 모달 스타일 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      overflow: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 50px auto;
+      padding: 0;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 1200px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 25px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .close {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .close:hover {
+      opacity: 0.7;
+    }
+
+    .modal-body {
+      padding: 25px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .result-detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .result-detail-table th,
+    .result-detail-table td {
+      border: 1px solid #dee2e6;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .result-detail-table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+
+    .btn-view {
+      padding: 6px 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-view:hover {
+      background: #5568d3;
+    }
+
+    @media (max-width: 1024px) {
+      .search-container {
+        flex-wrap: wrap;
+      }
+
+      .form-group {
+        min-width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>협력사 수입검사 관리</h1>
+        <p id="userInfo">로딩 중...</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <?!= include('Navigation') ?>
+
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">검사결과 이력</h2>
+      </div>
+
+      <!-- 검색 폼 -->
+      <div class="search-container">
+        <div class="form-group">
+          <label class="form-label">업체명</label>
+          <select class="form-control" id="searchCompany">
+            <option value="">전체</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">시작 일자</label>
+          <input type="date" class="form-control" id="searchDateFrom">
+        </div>
+        <div class="form-group">
+          <label class="form-label">종료 일자</label>
+          <input type="date" class="form-control" id="searchDateTo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">TM-NO</label>
+          <input type="text" class="form-control" id="searchTmNo" placeholder="TM-NO 검색">
+        </div>
+        <div class="form-group">
+          <label class="form-label">검사형태</label>
+          <select class="form-control" id="searchInspectionType">
+            <option value="">전체</option>
+            <option value="검사">검사</option>
+            <option value="무검사">무검사</option>
+          </select>
+        </div>
+        <div class="btn-group">
+          <button class="btn-primary" onclick="searchData()">🔍 검색</button>
+          <button class="btn-secondary" onclick="clearSearch()">↻ 초기화</button>
+        </div>
+      </div>
+
+      <!-- 결과 테이블 -->
+      <div id="tableContainer">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <p>검색 조건을 설정하고 검색 버튼을 눌러주세요.</p>
+          <p style="font-size: 14px; color: #999; margin-top: 10px;">업체명, 날짜기간, TM-NO로 검색하거나, 조건 없이 검색하면 전체 데이터를 조회합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 검사결과 상세 모달 -->
+  <div id="resultDetailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📊 검사결과 상세</h3>
+        <span class="close" onclick="closeResultDetailModal()">&times;</span>
+      </div>
+      <div class="modal-body" id="resultDetailBody">
+        <p>로딩 중...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sessionToken = null;
+    let currentUser = null;
+
+    // 토큰 초기화
+    function initToken() {
+      const serverToken = '<?!= token ?>';
+
+      if (serverToken && serverToken !== 'undefined' && serverToken.length > 10) {
+        sessionToken = serverToken;
+        sessionStorage.setItem('sessionToken', serverToken);
+      } else {
+        sessionToken = sessionStorage.getItem('sessionToken');
+      }
+
+      if (!sessionToken) {
+        redirectToLogin();
+      }
+
+      return sessionToken;
+    }
+
+    // 페이지 이동
+    function safeNavigate(url, params) {
+      let fullUrl = url;
+      if (params) {
+        const queryString = Object.keys(params)
+          .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+          .join('&');
+        fullUrl = url + '?' + queryString;
+      }
+      window.top.location.href = fullUrl;
+    }
+
+    function redirectToLogin() {
+      sessionStorage.removeItem('sessionToken');
+      safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
+    }
+
+    function goToPage(page) {
+      const token = sessionStorage.getItem('sessionToken');
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      safeNavigate(webAppUrl, {
+        'page': page,
+        'token': token,
+        't': Date.now()
+      });
+    }
+
+    // 페이지 로드
+    window.onload = function() {
+      initToken();
+      loadUserInfo();
+      loadCompanyList();
+    };
+
+    // 네비게이션 초기화
+    function initNavigation(currentPage, userRole) {
+      const navButtons = {
+        'dashboard': 'navDashboard',
+        'entry': 'navEntry',
+        'inspection-history': 'navInspectionHistory',
+        'history': 'navHistory',
+        'certificate': 'navCertificate'
+      };
+
+      if (navButtons[currentPage]) {
+        const btn = document.getElementById(navButtons[currentPage]);
+        if (btn) {
+          btn.classList.add('active');
+        }
+      }
+
+      // Item 등록 버튼은 대시보드에서만 표시
+      const itemBtn = document.getElementById('navItem');
+      if (itemBtn) {
+        itemBtn.style.display = 'none';
+      }
+
+      // 검사결과등록 버튼은 관리자/JEO만 표시
+      const inspectionResultBtn = document.getElementById('navInspectionResult');
+      if (inspectionResultBtn) {
+        inspectionResultBtn.style.display = (userRole === '관리자' || userRole === 'JEO') ? 'inline-block' : 'none';
+      }
+
+      // 검사결과이력 버튼은 관리자/JEO만 표시
+      const inspectionHistoryBtn = document.getElementById('navInspectionHistory');
+      if (inspectionHistoryBtn) {
+        inspectionHistoryBtn.style.display = (userRole === '관리자' || userRole === 'JEO') ? 'inline-block' : 'none';
+      }
+
+      // JEO는 성적서입력, 이력관리, 확인증출력 버튼 숨김
+      const entryBtn = document.getElementById('navEntry');
+      if (entryBtn) {
+        entryBtn.style.display = (userRole === 'JEO') ? 'none' : 'inline-block';
+      }
+
+      const historyBtn = document.getElementById('navHistory');
+      if (historyBtn) {
+        historyBtn.style.display = (userRole === 'JEO') ? 'none' : 'inline-block';
+      }
+
+      const certificateBtn = document.getElementById('navCertificate');
+      if (certificateBtn) {
+        certificateBtn.style.display = (userRole === 'JEO') ? 'none' : 'inline-block';
+      }
+
+      // 사용자 관리 버튼은 관리자만 표시
+      const usersBtn = document.getElementById('navUsers');
+      if (usersBtn) {
+        usersBtn.style.display = (userRole === '관리자') ? 'inline-block' : 'none';
+      }
+
+      const navMenu = document.getElementById('navMenu');
+      if (navMenu) {
+        navMenu.style.opacity = '1';
+      }
+    }
+
+    function handleItemClick() {
+      goToPage('dashboard');
+    }
+
+    // 사용자 정보 로드
+    function loadUserInfo() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const user = response.user;
+            currentUser = user;
+            document.getElementById('userInfo').textContent =
+              user.companyName + ' | ' + user.name + ' (' + user.role + ')';
+            initNavigation('inspection-history', user.role);
+          } else {
+            redirectToLogin();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('사용자 정보 로드 실패:', error);
+          redirectToLogin();
+        })
+        .getCurrentUserByToken(sessionToken);
+    }
+
+    // 업체 목록 로드
+    function loadCompanyList() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success && response.companies) {
+            const select = document.getElementById('searchCompany');
+            response.companies.forEach(function(company) {
+              const option = document.createElement('option');
+              option.value = company;
+              option.textContent = company;
+              select.appendChild(option);
+            });
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('업체 목록 로드 실패:', error);
+        })
+        .getCompanyList(sessionToken);
+    }
+
+    // 검색
+    function searchData() {
+      const companyName = document.getElementById('searchCompany').value.trim();
+      const dateFrom = document.getElementById('searchDateFrom').value.trim();
+      const dateTo = document.getElementById('searchDateTo').value.trim();
+      const tmNo = document.getElementById('searchTmNo').value.trim();
+      const inspectionType = document.getElementById('searchInspectionType').value.trim();
+
+      const filters = {
+        companyName: companyName,
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+        tmNo: tmNo,
+        inspectionType: inspectionType
+      };
+
+      console.log('검색 조건:', filters);
+
+      // 로딩 표시
+      const container = document.getElementById('tableContainer');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div><p>데이터를 불러오는 중...</p></div>';
+
+      google.script.run
+        .withSuccessHandler(displayData)
+        .withFailureHandler(function(error) {
+          console.error('데이터 로드 실패:', error);
+          showError('데이터를 불러올 수 없습니다.');
+        })
+        .searchInspectionResultHistory(sessionToken, filters);
+    }
+
+    // 검색 초기화
+    function clearSearch() {
+      document.getElementById('searchCompany').value = '';
+      document.getElementById('searchDateFrom').value = '';
+      document.getElementById('searchDateTo').value = '';
+      document.getElementById('searchTmNo').value = '';
+      document.getElementById('searchInspectionType').value = '';
+
+      const container = document.getElementById('tableContainer');
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>검색 조건을 설정하고 검색 버튼을 눌러주세요.</p></div>';
+    }
+
+    // 데이터 표시
+    function displayData(response) {
+      const container = document.getElementById('tableContainer');
+
+      if (!response || !response.success) {
+        showError(response ? response.message : '데이터를 불러올 수 없습니다.');
+        return;
+      }
+
+      const data = response.data || [];
+
+      if (data.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>검색 결과가 없습니다.</p></div>';
+        return;
+      }
+
+      let html = '<div class="table-responsive"><table><thead><tr>';
+      html += '<th>업체명</th>';
+      html += '<th>입고일자</th>';
+      html += '<th>TM-NO</th>';
+      html += '<th>품명</th>';
+      html += '<th>업체등록성적서</th>';
+      html += '<th>검사</th>';
+      html += '<th>합부판정결과</th>';
+      html += '</tr></thead><tbody>';
+
+      data.forEach(function(item) {
+        html += '<tr>';
+        html += '<td>' + (item.companyName || '') + '</td>';
+        html += '<td>' + (item.date || '') + '</td>';
+        html += '<td>' + (item.tmNo || '') + '</td>';
+        html += '<td>' + (item.productName || '') + '</td>';
+
+        // 업체등록성적서 LINK
+        html += '<td>';
+        if (item.pdfUrl) {
+          html += '<a href="' + item.pdfUrl + '" target="_blank" class="btn-link">📄 보기</a>';
+        } else {
+          html += '-';
+        }
+        html += '</td>';
+
+        // 검사 (무검사 또는 보기 버튼)
+        html += '<td>';
+        if (item.inspectionType === '무검사') {
+          html += '<span class="badge badge-secondary">무검사</span>';
+        } else if (item.hasInspectionResult) {
+          const resultKey = item.date + '|' + item.companyName + '|' + item.tmNo;
+          html += '<button class="btn-view" onclick="viewResultDetail(\'' + escapeHtml(item.companyName) + '\', \'' + escapeHtml(resultKey) + '\')">📊 보기</button>';
+        } else {
+          html += '-';
+        }
+        html += '</td>';
+
+        // 합부판정결과
+        html += '<td>';
+        if (item.inspectionType === '무검사') {
+          // 무검사는 항상 합격
+          html += '<span class="badge badge-success">합격</span>';
+        } else if (item.overallPassFail === '합격') {
+          html += '<span class="badge badge-success">합격</span>';
+        } else if (item.overallPassFail === '불합격') {
+          html += '<span class="badge badge-danger">불합격</span>';
+        } else {
+          html += '<span class="badge badge-secondary">-</span>';
+        }
+        html += '</td>';
+
+        html += '</tr>';
+      });
+
+      html += '</tbody></table></div>';
+      html += '<p style="margin-top: 15px; color: #666; font-size: 14px;">총 ' + data.length + '건</p>';
+
+      container.innerHTML = html;
+    }
+
+    // HTML 이스케이프
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/'/g, "\\'");
+    }
+
+    // 에러 표시
+    function showError(message) {
+      const container = document.getElementById('tableContainer');
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>' + message + '</p></div>';
+    }
+
+    // 검사결과등록 모달 (Dashboard에서 정의된 함수)
+    function showInspectionResultModal() {
+      // Dashboard로 이동하면서 자동으로 모달 열기 파라미터 전달
+      const token = sessionStorage.getItem('sessionToken');
+      const webAppUrl = '<?= getWebAppUrl() ?>';
+      safeNavigate(webAppUrl, {
+        'page': 'dashboard',
+        'token': token,
+        'openInspectionModal': 'true',
+        't': Date.now()
+      });
+    }
+
+    // 검사결과 상세 보기
+    function viewResultDetail(companyName, resultKey) {
+      const modal = document.getElementById('resultDetailModal');
+      const modalBody = document.getElementById('resultDetailBody');
+
+      // 모달 열기
+      modal.style.display = 'block';
+      modalBody.innerHTML = '<p>검사결과를 불러오는 중...</p>';
+
+      // 검사결과 조회
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response && response.success && response.data && response.data.length > 0) {
+            displayResultDetail(response.data, companyName, resultKey);
+          } else {
+            modalBody.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>검사결과를 찾을 수 없습니다.</p></div>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('검사결과 조회 실패:', error);
+          modalBody.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>검사결과를 불러올 수 없습니다.</p></div>';
+        })
+        .getInspectionResultsByKey(sessionToken, resultKey, companyName);
+    }
+
+    // 검사결과 상세 표시
+    function displayResultDetail(results, companyName, resultKey) {
+      const modalBody = document.getElementById('resultDetailBody');
+
+      const keyParts = resultKey.split('|');
+      const date = keyParts[0] || '';
+      const tmNo = keyParts[2] || '';
+
+      let html = '<div>';
+      html += '<p><strong>업체명:</strong> ' + companyName + '</p>';
+      html += '<p><strong>입고일자:</strong> ' + date + '</p>';
+      html += '<p><strong>TM-NO:</strong> ' + tmNo + '</p>';
+      html += '<p><strong>품명:</strong> ' + (results[0].productName || '') + '</p>';
+      html += '</div>';
+
+      html += '<table class="result-detail-table">';
+      html += '<thead><tr>';
+      html += '<th>검사항목</th>';
+      html += '<th>측정방법</th>';
+      html += '<th>규격 하한</th>';
+      html += '<th>규격 상한</th>';
+      html += '<th>시료1</th>';
+      html += '<th>시료2</th>';
+      html += '<th>시료3</th>';
+      html += '<th>시료4</th>';
+      html += '<th>시료5</th>';
+      html += '<th>합부판정</th>';
+      html += '<th>등록일시</th>';
+      html += '<th>등록자</th>';
+      html += '</tr></thead><tbody>';
+
+      results.forEach(function(result) {
+        html += '<tr>';
+        html += '<td>' + (result.inspectionItem || '') + '</td>';
+        html += '<td>' + (result.measurementMethod || '') + '</td>';
+        html += '<td>' + (result.lowerLimit || '') + '</td>';
+        html += '<td>' + (result.upperLimit || '') + '</td>';
+
+        // 시료값 (최대 5개만 표시)
+        for (let i = 0; i < 5; i++) {
+          const sampleValue = result.samples && result.samples[i] ? result.samples[i] : '';
+          html += '<td>' + sampleValue + '</td>';
+        }
+
+        // 합부판정
+        html += '<td>';
+        if (result.passFailResult === '합격') {
+          html += '<span class="badge badge-success">합격</span>';
+        } else if (result.passFailResult === '불합격') {
+          html += '<span class="badge badge-danger">불합격</span>';
+        } else {
+          html += result.passFailResult || '-';
+        }
+        html += '</td>';
+
+        html += '<td>' + (result.registeredAt || '') + '</td>';
+        html += '<td>' + (result.registeredBy || '') + '</td>';
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+
+      modalBody.innerHTML = html;
+    }
+
+    // 검사결과 상세 모달 닫기
+    function closeResultDetailModal() {
+      document.getElementById('resultDetailModal').style.display = 'none';
+    }
+
+    // 로그아웃
+    function logout() {
+      if (confirm('로그아웃 하시겠습니까?')) {
+        const token = sessionStorage.getItem('sessionToken');
+        google.script.run
+          .withSuccessHandler(function() {
+            sessionStorage.removeItem('sessionToken');
+            redirectToLogin();
+          })
+          .withFailureHandler(function(error) {
+            console.error('로그아웃 실패:', error);
+            sessionStorage.removeItem('sessionToken');
+            redirectToLogin();
+          })
+          .logoutWithToken(token);
+      }
+    }
+  </script>
+</body>
+</html>
