@@ -823,3 +823,101 @@ function getInspectionResultsByKey(token, resultKey, companyName) {
     };
   }
 }
+
+/**
+ * 이전 검사결과 조회 (자동입력용)
+ * @param {string} token - 세션 토큰
+ * @param {string} companyName - 업체명
+ * @param {string} tmNo - TM-NO
+ * @returns {Object} {success, data, message}
+ */
+function getPreviousInspectionData(token, companyName, tmNo) {
+  try {
+    const session = getSessionByToken(token);
+    if (!session || !session.userId) {
+      return { success: false, message: '로그인이 필요합니다.', data: [] };
+    }
+
+    // 권한 체크: 관리자 또는 JEO만 접근 가능
+    if (session.role !== '관리자' && session.role !== 'JEO') {
+      return {
+        success: false,
+        message: '검사결과 조회 권한이 없습니다.',
+        data: []
+      };
+    }
+
+    // 해당 업체의 Result 시트 가져오기
+    const sheetResult = getOrCreateResultSheet(companyName);
+    if (!sheetResult.success) {
+      return {
+        success: false,
+        message: sheetResult.message || '수입검사결과 시트를 찾을 수 없습니다.',
+        data: []
+      };
+    }
+
+    const resultSheet = sheetResult.sheet;
+    const resultData = resultSheet.getDataRange().getValues();
+
+    // TM-NO가 일치하는 모든 데이터 수집 (날짜 내림차순)
+    const matchingData = [];
+
+    for (let i = 1; i < resultData.length; i++) {
+      const row = resultData[i];
+      const rowCompanyName = String(row[4] || '');
+      const rowTmNo = String(row[5] || '');
+
+      if (rowCompanyName === companyName && rowTmNo === tmNo) {
+        // 날짜 형식 정규화 (row[3]이 날짜, 입고ID 추가로 +1)
+        let rowDateStr = row[3];
+        if (row[3] instanceof Date) {
+          rowDateStr = Utilities.formatDate(row[3], 'Asia/Seoul', 'yyyy-MM-dd');
+        } else if (rowDateStr) {
+          rowDateStr = String(rowDateStr).trim();
+        }
+
+        // 시료 데이터 추출 (row[11-20], 입고ID 추가로 +1)
+        const samples = [];
+        for (let j = 11; j < 21; j++) {
+          const value = row[j];
+          if (value !== null && value !== undefined && value !== '') {
+            samples.push(parseFloat(value));
+          }
+        }
+
+        // 유효한 시료가 있는 경우만 추가
+        if (samples.length > 0) {
+          matchingData.push({
+            date: rowDateStr,
+            inspectionItem: String(row[7] || ''),
+            samples: samples
+          });
+        }
+      }
+    }
+
+    if (matchingData.length === 0) {
+      return {
+        success: false,
+        message: '이전 검사결과 이력이 없습니다.',
+        data: []
+      };
+    }
+
+    Logger.log('이전 검사결과 조회 완료 - 건수: ' + matchingData.length);
+
+    return {
+      success: true,
+      data: matchingData
+    };
+
+  } catch (error) {
+    Logger.log('이전 검사결과 조회 오류: ' + error.toString());
+    return {
+      success: false,
+      message: '이전 검사결과 조회 중 오류가 발생했습니다: ' + error.message,
+      data: []
+    };
+  }
+}
