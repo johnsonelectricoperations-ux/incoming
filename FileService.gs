@@ -34,10 +34,9 @@ function uploadPdfFile(token, fileData) {
     // 업체별 월별 폴더 가져오기 (년도/월 폴더 포함)
     const monthlyFolder = getOrCreateMonthlyFolder(session.companyName, fileData.date);
 
-    // 파일명 생성 (날짜_TM-NO_원본파일명)
-    const timestamp = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyyMMdd_HHmmss');
-    const safeFileName = fileData.fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const newFileName = `${timestamp}_${fileData.tmNo}_${safeFileName}`;
+    // 파일명 생성 (날짜_TM-NO_오전/오후_업체명.pdf)
+    const dateStr = fileData.date.replace(/-/g, '');
+    const newFileName = `${dateStr}_${fileData.tmNo}_${fileData.time}_${session.companyName}.pdf`;
 
     // Blob 생성
     const blob = Utilities.newBlob(

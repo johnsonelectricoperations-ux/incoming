@@ -721,7 +721,8 @@
           mimeType: selectedFile.type,
           bytes: bytes,
           tmNo: formData.tmNo,
-          date: formData.date  // 날짜 정보 추가 (년도/월 폴더 생성용)
+          date: formData.date,  // 날짜 정보 추가 (년도/월 폴더 생성용)
+          time: formData.time   // 오전/오후 정보 추가 (파일명 생성용)
         };
 
         google.script.run
