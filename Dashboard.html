@@ -494,7 +494,10 @@
             <span class="board-icon">📢</span>
             <span>공지사항</span>
           </div>
-          <span style="font-size: 12px; color: #999;" id="noticeCount">0</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button id="btnNoticeManage" onclick="showNoticeManageModal()" style="display: none; padding: 6px 12px; background: #ff5722; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⚙️ 관리</button>
+            <span style="font-size: 12px; color: #999;" id="noticeCount">0</span>
+          </div>
         </div>
         <div class="board-content" id="noticeBoard">
           <div class="board-empty">
@@ -511,7 +514,10 @@
             <span class="board-icon">📝</span>
             <span>업무연락</span>
           </div>
-          <span style="font-size: 12px; color: #999;" id="workNoticeCount">0</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button id="btnWorkNoticeManage" onclick="showWorkNoticeManageModal()" style="display: none; padding: 6px 12px; background: #673ab7; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⚙️ 관리</button>
+            <span style="font-size: 12px; color: #999;" id="workNoticeCount">0</span>
+          </div>
         </div>
         <div class="board-content" id="workNoticeBoard">
           <div class="board-empty">
@@ -741,11 +747,192 @@
             <option value="무검사">무검사</option>
           </select>
         </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">검사기준서 업로드</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" id="itemFileInput" accept=".pdf" style="flex: 1;">
+            <span id="itemFileName" style="color: #666; font-size: 13px;"></span>
+          </div>
+          <p style="font-size: 12px; color: #999; margin-top: 5px;">PDF 파일만 업로드 가능 (최대 20MB)</p>
+        </div>
       </div>
 
       <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 10px;">
         <button onclick="closeItemEditModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">취소</button>
         <button onclick="saveItem()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 업무연락 관리 모달 (관리자용) -->
+  <div id="workNoticeManageModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto;">
+    <div class="modal-content" style="background-color: white; margin: 50px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 1200px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+      <div style="background: linear-gradient(135deg, #673ab7 0%, #512da8 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 20px; font-weight: 600; margin: 0;">📝 업무연락 관리</h3>
+        <span onclick="closeWorkNoticeManageModal()" style="color: white; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+      </div>
+
+      <div style="padding: 25px; overflow-y: auto; flex: 1;">
+        <div style="margin-bottom: 20px; text-align: right;">
+          <button onclick="showWorkNoticeEditModal()" style="padding: 10px 20px; background: #673ab7; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">➕ 업무연락 추가</button>
+        </div>
+
+        <div id="workNoticeListContainer">
+          <!-- 업무연락 목록이 여기에 표시됩니다 -->
+        </div>
+      </div>
+
+      <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; text-align: right;">
+        <button onclick="closeWorkNoticeManageModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 업무연락 추가/수정 모달 -->
+  <div id="workNoticeEditModal" class="modal" style="display: none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); overflow: auto;">
+    <div class="modal-content" style="background-color: white; margin: 80px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 800px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+      <div style="background: linear-gradient(135deg, #673ab7 0%, #512da8 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="workNoticeEditTitle" style="font-size: 20px; font-weight: 600; margin: 0;">업무연락 추가</h3>
+        <span onclick="closeWorkNoticeEditModal()" style="color: white; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+      </div>
+
+      <div style="padding: 25px;">
+        <input type="hidden" id="workNoticeRowIndex" value="">
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">제목 <span style="color: #e74c3c;">*</span></label>
+          <input type="text" id="workNoticeTitle" placeholder="제목을 입력하세요" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">내용 <span style="color: #e74c3c;">*</span></label>
+          <textarea id="workNoticeContent" placeholder="내용을 입력하세요" rows="6" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">대상업체 <span style="color: #e74c3c;">*</span></label>
+          <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 15px; max-height: 200px; overflow-y: auto; background-color: #fafafa;">
+            <div style="margin-bottom: 10px;">
+              <label style="display: flex; align-items: center; cursor: pointer; padding: 5px;">
+                <input type="checkbox" id="workNoticeTargetAll" value="전체" onchange="toggleAllCompanies(this)" style="margin-right: 8px; width: 18px; height: 18px;">
+                <span style="font-weight: 600; color: #673ab7; font-size: 14px;">전체</span>
+              </label>
+            </div>
+            <div id="workNoticeCompanyList" style="padding-left: 10px;">
+              <!-- 업체 체크박스 목록이 여기에 추가됩니다 -->
+            </div>
+          </div>
+          <p style="font-size: 12px; color: #999; margin-top: 5px;">복수 선택 가능합니다. '전체' 선택 시 모든 업체가 볼 수 있습니다.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">게시 시작일</label>
+            <input type="date" id="workNoticeStartDate" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">게시 종료일</label>
+            <input type="date" id="workNoticeEndDate" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="workNoticeImportant" style="margin-right: 8px; width: 18px; height: 18px;">
+            <span style="font-weight: 600; color: #333; font-size: 14px;">중요 표시 (상단 고정)</span>
+          </label>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="workNoticeActive" checked style="margin-right: 8px; width: 18px; height: 18px;">
+            <span style="font-weight: 600; color: #333; font-size: 14px;">활성화</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 10px;">
+        <button onclick="closeWorkNoticeEditModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">취소</button>
+        <button onclick="saveWorkNotice()" style="padding: 10px 20px; background: #673ab7; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공지사항 관리 모달 (관리자용) -->
+  <div id="noticeManageModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto;">
+    <div class="modal-content" style="background-color: white; margin: 50px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 1200px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+      <div style="background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 20px; font-weight: 600; margin: 0;">📢 공지사항 관리</h3>
+        <span onclick="closeNoticeManageModal()" style="color: white; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+      </div>
+
+      <div style="padding: 25px; overflow-y: auto; flex: 1;">
+        <div style="margin-bottom: 20px; text-align: right;">
+          <button onclick="showNoticeEditModal()" style="padding: 10px 20px; background: #ff5722; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">➕ 공지사항 추가</button>
+        </div>
+
+        <div id="noticeListContainer">
+          <!-- 공지사항 목록이 여기에 표시됩니다 -->
+        </div>
+      </div>
+
+      <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; text-align: right;">
+        <button onclick="closeNoticeManageModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공지사항 추가/수정 모달 -->
+  <div id="noticeEditModal" class="modal" style="display: none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); overflow: auto;">
+    <div class="modal-content" style="background-color: white; margin: 80px auto; padding: 0; border-radius: 12px; width: 90%; max-width: 800px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+      <div style="background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%); color: white; padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="noticeEditTitle" style="font-size: 20px; font-weight: 600; margin: 0;">공지사항 추가</h3>
+        <span onclick="closeNoticeEditModal()" style="color: white; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+      </div>
+
+      <div style="padding: 25px;">
+        <input type="hidden" id="noticeRowIndex" value="">
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">제목 <span style="color: #e74c3c;">*</span></label>
+          <input type="text" id="noticeTitle" placeholder="제목을 입력하세요" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">내용 <span style="color: #e74c3c;">*</span></label>
+          <textarea id="noticeContent" placeholder="내용을 입력하세요" rows="6" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">게시 시작일</label>
+            <input type="date" id="noticeStartDate" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">게시 종료일</label>
+            <input type="date" id="noticeEndDate" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="noticeImportant" style="margin-right: 8px; width: 18px; height: 18px;">
+            <span style="font-weight: 600; color: #333; font-size: 14px;">중요 표시 (상단 고정)</span>
+          </label>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="noticeActive" checked style="margin-right: 8px; width: 18px; height: 18px;">
+            <span style="font-weight: 600; color: #333; font-size: 14px;">활성화</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="padding: 20px 25px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 10px;">
+        <button onclick="closeNoticeEditModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">취소</button>
+        <button onclick="saveNotice()" style="padding: 10px 20px; background: #ff5722; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">저장</button>
       </div>
     </div>
   </div>
@@ -942,6 +1129,22 @@
       if (usersBtn) {
         usersBtn.style.display = (userRole === '관리자') ? 'inline-block' : 'none';
       }
+
+      // 업무연락 관리 버튼은 관리자 또는 JEO만 표시
+      const workNoticeManageBtn = document.getElementById('btnWorkNoticeManage');
+      if (workNoticeManageBtn) {
+        workNoticeManageBtn.style.display = (userRole === '관리자' || userRole === 'JEO') ? 'inline-block' : 'none';
+      }
+
+      // 공지사항 관리 버튼은 관리자 또는 JEO만 표시
+      const noticeManageBtn = document.getElementById('btnNoticeManage');
+      if (noticeManageBtn) {
+        noticeManageBtn.style.display = (userRole === '관리자' || userRole === 'JEO') ? 'inline-block' : 'none';
+      }
+
+      // 업무연락 및 공지사항 로드
+      loadActiveWorkNotices();
+      loadActiveNotices();
 
       // 네비게이션 메뉴 표시 (부드러운 fade-in 효과)
       const navMenu = document.getElementById('navMenu');
@@ -1907,6 +2110,20 @@
         .getItems(sessionToken, options);
     }
 
+    // HTML/JavaScript 문자열 escape 함수
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/\\/g, '&#92;')
+        .replace(/\n/g, ' ')
+        .replace(/\r/g, '');
+    }
+
     // Item 목록 표시
     function displayItems(response) {
       const container = document.getElementById('itemListContainer');
@@ -1925,52 +2142,70 @@
       const isAdmin = currentUser && (currentUser.role === '관리자' || currentUser.role === 'JEO');
 
       let html = '<table style="width: 100%; border-collapse: collapse; margin-top: 20px;"><thead style="background-color: #f8f9fa;"><tr>';
-      html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 20%;">업체명</th>';
-      html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 13%;">TM-NO</th>';
-      html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 20%;">제품명</th>';
+      html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 18%;">업체명</th>';
+      html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 12%;">TM-NO</th>';
+      html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 18%;">제품명</th>';
 
       // 관리자만 검사형태 컬럼 표시
       if (isAdmin) {
-        html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 10%;">검사형태</th>';
+        html += '<th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 8%;">검사형태</th>';
       }
 
-      html += '<th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 15%;">규격</th>';
-      html += '<th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 22%;">작업</th>';
+      html += '<th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 12%;">검사기준서</th>';
+      html += '<th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 12%;">규격</th>';
+      html += '<th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 20%;">작업</th>';
       html += '</tr></thead><tbody>';
 
       response.data.forEach(function(item) {
-        // 규격등록 버튼 결정
+        // 값을 escape 처리
+        const escapedTmNo = escapeHtml(item.tmNo);
+        const escapedProductName = escapeHtml(item.productName);
+        const escapedCompanyName = escapeHtml(item.companyName);
+        const escapedSheetName = escapeHtml(item.sheetName);
+        const escapedInspectionType = escapeHtml(item.inspectionType);
+
+        // 규격등록 버튼 결정 (검사/무검사 관계없이 규격 입력 가능)
         let specButton;
         const specKey = item.tmNo + '|' + item.companyName;
         const specCount = specItemMap[specKey] || 0;
 
-        if (item.inspectionType === '무검사') {
-          // 무검사인 경우
-          specButton = '<span style="padding: 5px 10px; background: #9e9e9e; color: white; border-radius: 4px; font-size: 12px;">무검사</span>';
-        } else if (specCount > 0) {
+        if (specCount > 0) {
           // 규격 등록됨
-          specButton = `<button onclick='showSpecModal("${item.tmNo}", "${item.productName}", "${item.companyName}", true)' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #4caf50; color: white;">✅ 규격 (${specCount}개)</button>`;
+          specButton = `<button onclick='showSpecModal("${escapedTmNo}", "${escapedProductName}", "${escapedCompanyName}", true)' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #4caf50; color: white;">✅ 규격 (${specCount}개)</button>`;
         } else {
           // 규격 미등록
-          specButton = `<button onclick='showSpecModal("${item.tmNo}", "${item.productName}", "${item.companyName}", false)' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #ff9800; color: white;">📋 규격</button>`;
+          specButton = `<button onclick='showSpecModal("${escapedTmNo}", "${escapedProductName}", "${escapedCompanyName}", false)' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #ff9800; color: white;">📋 규격</button>`;
         }
 
         html += `
           <tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor=''">
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.companyName}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.tmNo}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.productName}</td>`;
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${escapeHtml(item.companyName)}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${escapeHtml(item.tmNo)}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${escapeHtml(item.productName)}</td>`;
 
         // 관리자만 검사형태 컬럼 표시
         if (isAdmin) {
-          html += `<td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.inspectionType}</td>`;
+          html += `<td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${escapeHtml(item.inspectionType)}</td>`;
+        }
+
+        // 검사기준서 컬럼 표시
+        let standardButton = '-';
+        if (item.inspectionStandardUrl && item.inspectionStandardUrl.trim() !== '') {
+          standardButton = `<a href="${item.inspectionStandardUrl}" target="_blank" style="padding: 6px 12px; background: #2196F3; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; display: inline-block;">📄 보기</a>`;
         }
 
         html += `
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${standardButton}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${specButton}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
-              <button onclick='editItem("${item.sheetName}", ${item.rowIndex}, "${item.tmNo}", "${item.productName}", "${item.companyName}", "${item.inspectionType}")' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; background: #ffc107; color: white;">✏️ 수정</button>
-              <button onclick='deleteItemConfirm("${item.sheetName}", ${item.rowIndex})' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #f44336; color: white;">🗑️ 삭제</button>
+              <button onclick='editItem("${escapedSheetName}", ${item.rowIndex}, "${escapedTmNo}", "${escapedProductName}", "${escapedCompanyName}", "${escapedInspectionType}", "${escapeHtml(item.inspectionStandardUrl || '')}")' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; background: #ffc107; color: white;">✏️ 수정</button>`;
+
+        // 관리자/JEO만 삭제 버튼 표시
+        if (isAdmin) {
+          html += `<button onclick='deleteItemConfirm("${escapedSheetName}", ${item.rowIndex})' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #f44336; color: white;">🗑️ 삭제</button>`;
+        }
+
+        html += `
             </td>
           </tr>
         `;
@@ -2008,6 +2243,10 @@
       document.getElementById('itemCompanyName').value = '';
       document.getElementById('itemInspectionType').value = '';
 
+      // 검사기준서 파일 입력 초기화
+      document.getElementById('itemFileInput').value = '';
+      document.getElementById('itemFileName').textContent = '';
+
       const select = document.getElementById('itemCompanyName');
       const inspectionTypeField = document.getElementById('itemInspectionTypeField');
       const inspectionTypeSelect = document.getElementById('itemInspectionType');
@@ -2039,13 +2278,24 @@
     }
 
     // Item 수정 모달 열기
-    function editItem(sheetName, rowIndex, tmNo, productName, companyName, inspectionType) {
+    function editItem(sheetName, rowIndex, tmNo, productName, companyName, inspectionType, inspectionStandardUrl) {
       document.getElementById('itemModalTitle').textContent = 'Item 수정';
       document.getElementById('itemSheetName').value = sheetName;
       document.getElementById('itemRowIndex').value = rowIndex;
       document.getElementById('itemTmNo').value = tmNo;
       document.getElementById('itemProductName').value = productName;
       document.getElementById('itemInspectionType').value = inspectionType;
+
+      // 검사기준서 파일 정보 표시
+      const fileNameSpan = document.getElementById('itemFileName');
+      const fileInput = document.getElementById('itemFileInput');
+      fileInput.value = ''; // 파일 입력 초기화
+
+      if (inspectionStandardUrl && inspectionStandardUrl.trim() !== '') {
+        fileNameSpan.innerHTML = `<a href="${inspectionStandardUrl}" target="_blank" style="color: #2196F3; text-decoration: none;">📄 기존 파일 보기</a>`;
+      } else {
+        fileNameSpan.textContent = '';
+      }
 
       const select = document.getElementById('itemCompanyName');
       const inspectionTypeField = document.getElementById('itemInspectionTypeField');
@@ -2108,6 +2358,25 @@
         return;
       }
 
+      // 파일 업로드 체크
+      const fileInput = document.getElementById('itemFileInput');
+      const file = fileInput.files[0];
+
+      if (file) {
+        // 파일이 선택된 경우 먼저 업로드
+        uploadItemStandardFile(file, itemData.companyName, itemData.tmNo, function(fileUrl) {
+          // 파일 업로드 성공 후 itemData에 URL 추가
+          itemData.inspectionStandardUrl = fileUrl;
+          performSaveItem(sheetName, rowIndex, itemData);
+        });
+      } else {
+        // 파일이 없으면 바로 저장
+        performSaveItem(sheetName, rowIndex, itemData);
+      }
+    }
+
+    // 실제 Item 저장 수행
+    function performSaveItem(sheetName, rowIndex, itemData) {
       if (rowIndex) {
         // 수정
         google.script.run
@@ -2135,6 +2404,57 @@
           })
           .addItem(sessionToken, itemData);
       }
+    }
+
+    // 검사기준서 파일 업로드
+    function uploadItemStandardFile(file, companyName, tmNo, callback) {
+      // PDF 파일 타입 체크
+      if (file.type !== 'application/pdf') {
+        alert('PDF 파일만 업로드 가능합니다.');
+        return;
+      }
+
+      // 파일 크기 체크 (20MB)
+      const maxSize = 20 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('파일 크기는 20MB를 초과할 수 없습니다.');
+        return;
+      }
+
+      console.log('검사기준서 파일 업로드 시작:', file.name);
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const bytes = e.target.result.split(',')[1]; // Base64 인코딩된 데이터
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              console.log('파일 업로드 성공:', response.fileUrl);
+              alert('검사기준서가 업로드되었습니다: ' + response.fileName);
+              callback(response.fileUrl);
+            } else {
+              alert('파일 업로드 실패: ' + response.message);
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('파일 업로드 오류:', error);
+            alert('파일 업로드 중 오류가 발생했습니다.');
+          })
+          .uploadInspectionStandardFile(sessionToken, {
+            fileName: file.name,
+            mimeType: file.type,
+            bytes: bytes,
+            companyName: companyName,
+            tmNo: tmNo
+          });
+      };
+
+      reader.onerror = function() {
+        alert('파일 읽기에 실패했습니다.');
+      };
+
+      reader.readAsDataURL(file);
     }
 
     // Item 삭제 확인
@@ -2447,6 +2767,667 @@
         .getInspectionSpecs(sessionToken, {});
     }
 
+    // ========== 업무연락 관리 함수들 ==========
+
+    // 활성 업무연락 로드 (사용자용)
+    function loadActiveWorkNotices() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            displayWorkNotices(response.data);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('업무연락 로드 실패:', error);
+        })
+        .getActiveWorkNotices(sessionToken);
+    }
+
+    // 업무연락 보드에 표시
+    function displayWorkNotices(notices) {
+      const board = document.getElementById('workNoticeBoard');
+      const count = document.getElementById('workNoticeCount');
+
+      count.textContent = notices.length;
+
+      if (!notices || notices.length === 0) {
+        board.innerHTML = `
+          <div class="board-empty">
+            <div class="board-empty-icon">📭</div>
+            <p>등록된 업무연락이 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      notices.forEach(function(notice) {
+        const isImportant = notice.isImportant === 'Y';
+        const borderColor = isImportant ? '#f44336' : '#673ab7';
+        const icon = isImportant ? '🔴' : '💼';
+
+        html += `
+          <div style="padding: 12px; margin-bottom: 10px; border-left: 4px solid ${borderColor}; background: #f9f9f9; border-radius: 4px; cursor: pointer;" onclick="showWorkNoticeDetail('${notice.id}', '${notice.title.replace(/'/g, "\\'")}', '${notice.content.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', '${notice.author}', '${notice.createdAt}')">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
+              <div style="font-weight: 600; font-size: 14px; color: #333; flex: 1;">${icon} ${notice.title}</div>
+              <div style="font-size: 11px; color: #999;">${notice.createdAt.split(' ')[0]}</div>
+            </div>
+            <div style="font-size: 12px; color: #666; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${notice.content}</div>
+          </div>
+        `;
+      });
+
+      board.innerHTML = html;
+    }
+
+    // 업무연락 상세 보기
+    function showWorkNoticeDetail(id, title, content, author, createdAt) {
+      const contentFormatted = content.replace(/\\n/g, '\n').replace(/\\'/g, "'");
+      alert(`📝 ${title}\n\n${contentFormatted}\n\n작성자: ${author}\n작성일: ${createdAt}`);
+    }
+
+    // 업무연락 관리 모달 열기 (관리자용)
+    function showWorkNoticeManageModal() {
+      document.getElementById('workNoticeManageModal').style.display = 'block';
+      loadAllWorkNotices();
+    }
+
+    // 업무연락 관리 모달 닫기
+    function closeWorkNoticeManageModal() {
+      document.getElementById('workNoticeManageModal').style.display = 'none';
+    }
+
+    // 전체 업무연락 로드 (관리자용)
+    function loadAllWorkNotices() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            displayWorkNoticeList(response.data);
+          } else {
+            alert(response.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('업무연락 로드 실패:', error);
+          alert('업무연락 로드 중 오류가 발생했습니다.');
+        })
+        .getAllWorkNotices(sessionToken);
+    }
+
+    // 업무연락 목록 표시 (관리자용)
+    function displayWorkNoticeList(notices) {
+      const container = document.getElementById('workNoticeListContainer');
+
+      if (!notices || notices.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; color: #999;">
+            <div style="font-size: 64px; margin-bottom: 15px;">📭</div>
+            <p>등록된 업무연락이 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <table style="width: 100%; border-collapse: collapse; background: white;">
+          <thead style="background-color: #f8f9fa;">
+            <tr>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 15%;">대상업체</th>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">제목</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 10%;">중요</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 12%;">게시기간</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 8%;">상태</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 15%;">작업</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      notices.forEach(function(notice) {
+        const isActive = notice.isActive === 'Y';
+        const isImportant = notice.isImportant === 'Y';
+        const period = (notice.startDate || '-') + ' ~ ' + (notice.endDate || '-');
+
+        html += `
+          <tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor=''">
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${notice.targetCompany}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${notice.title}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${isImportant ? '🔴' : '-'}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; text-align: center;">${period}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
+              <span style="padding: 4px 8px; background: ${isActive ? '#4caf50' : '#9e9e9e'}; color: white; border-radius: 4px; font-size: 11px;">${isActive ? '활성' : '비활성'}</span>
+            </td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
+              <button onclick='editWorkNotice(${notice.rowIndex})' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; background: #ffc107; color: white;">✏️ 수정</button>
+              <button onclick='deleteWorkNotice(${notice.rowIndex})' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #f44336; color: white;">🗑️ 삭제</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    // 업무연락 추가 모달 열기
+    function showWorkNoticeEditModal() {
+      document.getElementById('workNoticeEditTitle').textContent = '업무연락 추가';
+      document.getElementById('workNoticeRowIndex').value = '';
+      document.getElementById('workNoticeTitle').value = '';
+      document.getElementById('workNoticeContent').value = '';
+      document.getElementById('workNoticeStartDate').value = '';
+      document.getElementById('workNoticeEndDate').value = '';
+      document.getElementById('workNoticeImportant').checked = false;
+      document.getElementById('workNoticeActive').checked = true;
+
+      // 대상업체 목록 로드 후 초기화
+      loadWorkNoticeTargetCompanies(function() {
+        setSelectedCompanies(''); // 모든 체크박스 해제
+      });
+
+      document.getElementById('workNoticeEditModal').style.display = 'block';
+    }
+
+    // 업무연락 추가/수정 모달 닫기
+    function closeWorkNoticeEditModal() {
+      document.getElementById('workNoticeEditModal').style.display = 'none';
+    }
+
+    // 업무연락 수정 모달 열기
+    function editWorkNotice(rowIndex) {
+      // 해당 행의 데이터를 가져오기
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const notice = response.data.find(n => n.rowIndex === rowIndex);
+            if (notice) {
+              document.getElementById('workNoticeEditTitle').textContent = '업무연락 수정';
+              document.getElementById('workNoticeRowIndex').value = notice.rowIndex;
+              document.getElementById('workNoticeTitle').value = notice.title;
+              document.getElementById('workNoticeContent').value = notice.content;
+              document.getElementById('workNoticeStartDate').value = notice.startDate;
+              document.getElementById('workNoticeEndDate').value = notice.endDate;
+              document.getElementById('workNoticeImportant').checked = notice.isImportant === 'Y';
+              document.getElementById('workNoticeActive').checked = notice.isActive === 'Y';
+
+              // 대상업체 목록 로드 후 기존 선택 복원
+              loadWorkNoticeTargetCompanies(function() {
+                setSelectedCompanies(notice.targetCompany);
+              });
+
+              document.getElementById('workNoticeEditModal').style.display = 'block';
+            }
+          }
+        })
+        .getAllWorkNotices(sessionToken);
+    }
+
+    // 업무연락 저장
+    function saveWorkNotice() {
+      const rowIndex = document.getElementById('workNoticeRowIndex').value;
+      const title = document.getElementById('workNoticeTitle').value.trim();
+      const content = document.getElementById('workNoticeContent').value.trim();
+      const targetCompany = getSelectedCompanies(); // 선택된 업체 목록 가져오기
+      const startDate = document.getElementById('workNoticeStartDate').value;
+      const endDate = document.getElementById('workNoticeEndDate').value;
+      const isImportant = document.getElementById('workNoticeImportant').checked ? 'Y' : 'N';
+      const isActive = document.getElementById('workNoticeActive').checked ? 'Y' : 'N';
+
+      if (!title || !content || !targetCompany) {
+        alert('제목, 내용, 대상업체는 필수 입력 항목입니다.');
+        return;
+      }
+
+      const noticeData = {
+        title: title,
+        content: content,
+        targetCompany: targetCompany,
+        startDate: startDate,
+        endDate: endDate,
+        isImportant: isImportant,
+        isActive: isActive
+      };
+
+      if (rowIndex) {
+        // 수정
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              alert('업무연락이 수정되었습니다.');
+              closeWorkNoticeEditModal();
+              loadAllWorkNotices();
+              loadActiveWorkNotices(); // 사용자 보드도 업데이트
+            } else {
+              alert(response.message);
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('업무연락 수정 실패:', error);
+            alert('업무연락 수정 중 오류가 발생했습니다.');
+          })
+          .updateWorkNotice(sessionToken, parseInt(rowIndex), noticeData);
+      } else {
+        // 추가
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              alert('업무연락이 등록되었습니다.');
+              closeWorkNoticeEditModal();
+              loadAllWorkNotices();
+              loadActiveWorkNotices(); // 사용자 보드도 업데이트
+            } else {
+              alert(response.message);
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('업무연락 등록 실패:', error);
+            alert('업무연락 등록 중 오류가 발생했습니다.');
+          })
+          .addWorkNotice(sessionToken, noticeData);
+      }
+    }
+
+    // 업무연락 삭제
+    function deleteWorkNotice(rowIndex) {
+      if (!confirm('이 업무연락을 삭제하시겠습니까?')) {
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            alert('업무연락이 삭제되었습니다.');
+            loadAllWorkNotices();
+            loadActiveWorkNotices(); // 사용자 보드도 업데이트
+          } else {
+            alert(response.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('업무연락 삭제 실패:', error);
+          alert('업무연락 삭제 중 오류가 발생했습니다.');
+        })
+        .deleteWorkNotice(sessionToken, rowIndex);
+    }
+
+    // 대상업체 목록 로드
+    function loadWorkNoticeTargetCompanies(callback) {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const companyListDiv = document.getElementById('workNoticeCompanyList');
+            companyListDiv.innerHTML = ''; // 초기화
+
+            // 업체 목록 추가 (체크박스로)
+            if (response.companies && response.companies.length > 0) {
+              response.companies.forEach(function(companyName) {
+                const label = document.createElement('label');
+                label.style.cssText = 'display: flex; align-items: center; cursor: pointer; padding: 5px; margin-bottom: 5px;';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'company-checkbox';
+                checkbox.value = companyName;
+                checkbox.style.cssText = 'margin-right: 8px; width: 16px; height: 16px;';
+                checkbox.onchange = function() { updateAllCheckbox(); };
+
+                const span = document.createElement('span');
+                span.textContent = companyName;
+                span.style.cssText = 'font-size: 14px; color: #333;';
+
+                label.appendChild(checkbox);
+                label.appendChild(span);
+                companyListDiv.appendChild(label);
+              });
+            } else {
+              companyListDiv.innerHTML = '<p style="color: #999; font-size: 13px;">등록된 업체가 없습니다.</p>';
+            }
+
+            if (callback) callback();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('업체 목록 로드 실패:', error);
+          alert('업체 목록을 불러오는데 실패했습니다: ' + error.message);
+        })
+        .getCompanyList(sessionToken);
+    }
+
+    // 전체 업체 선택/해제
+    function toggleAllCompanies(allCheckbox) {
+      const companyCheckboxes = document.querySelectorAll('.company-checkbox');
+      companyCheckboxes.forEach(function(checkbox) {
+        checkbox.checked = allCheckbox.checked;
+        checkbox.disabled = allCheckbox.checked;
+      });
+    }
+
+    // 개별 체크박스 상태에 따라 전체 체크박스 업데이트
+    function updateAllCheckbox() {
+      const allCheckbox = document.getElementById('workNoticeTargetAll');
+      const companyCheckboxes = document.querySelectorAll('.company-checkbox');
+      const checkedCount = Array.from(companyCheckboxes).filter(cb => cb.checked).length;
+
+      if (checkedCount === companyCheckboxes.length && companyCheckboxes.length > 0) {
+        allCheckbox.checked = true;
+      } else {
+        allCheckbox.checked = false;
+      }
+    }
+
+    // 선택된 업체 목록 가져오기
+    function getSelectedCompanies() {
+      const allCheckbox = document.getElementById('workNoticeTargetAll');
+
+      if (allCheckbox.checked) {
+        return '전체';
+      }
+
+      const companyCheckboxes = document.querySelectorAll('.company-checkbox:checked');
+      const selectedCompanies = Array.from(companyCheckboxes).map(cb => cb.value);
+
+      return selectedCompanies.join(', ');
+    }
+
+    // 업체 체크박스 설정 (수정 시)
+    function setSelectedCompanies(targetCompany) {
+      // 초기화
+      const allCheckbox = document.getElementById('workNoticeTargetAll');
+      allCheckbox.checked = false;
+      const companyCheckboxes = document.querySelectorAll('.company-checkbox');
+      companyCheckboxes.forEach(cb => {
+        cb.checked = false;
+        cb.disabled = false;
+      });
+
+      if (!targetCompany) return;
+
+      if (targetCompany === '전체' || targetCompany.includes('전체')) {
+        allCheckbox.checked = true;
+        companyCheckboxes.forEach(cb => {
+          cb.checked = true;
+          cb.disabled = true;
+        });
+      } else {
+        // 쉼표로 구분된 업체명 목록
+        const companies = targetCompany.split(',').map(c => c.trim());
+        companyCheckboxes.forEach(cb => {
+          if (companies.includes(cb.value)) {
+            cb.checked = true;
+          }
+        });
+      }
+    }
+
+    // ========== 공지사항 관리 함수들 ==========
+
+    // 활성 공지사항 로드 (사용자용 - 전체 업체)
+    function loadActiveNotices() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            displayNotices(response.data);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('공지사항 로드 실패:', error);
+        })
+        .getActiveNotices(sessionToken);
+    }
+
+    // 공지사항 보드에 표시
+    function displayNotices(notices) {
+      const board = document.getElementById('noticeBoard');
+      const count = document.getElementById('noticeCount');
+
+      count.textContent = notices.length;
+
+      if (!notices || notices.length === 0) {
+        board.innerHTML = `
+          <div class="board-empty">
+            <div class="board-empty-icon">📭</div>
+            <p>등록된 공지사항이 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      notices.forEach(function(notice) {
+        const isImportant = notice.isImportant === 'Y';
+        const borderColor = isImportant ? '#f44336' : '#ff5722';
+        const icon = isImportant ? '🔴' : '📢';
+
+        html += `
+          <div style="padding: 12px; margin-bottom: 10px; border-left: 4px solid ${borderColor}; background: #f9f9f9; border-radius: 4px; cursor: pointer;" onclick="showNoticeDetail('${notice.id}', '${notice.title.replace(/'/g, "\\'")}', '${notice.content.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', '${notice.author}', '${notice.createdAt}')">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
+              <div style="font-weight: 600; font-size: 14px; color: #333; flex: 1;">${icon} ${notice.title}</div>
+              <div style="font-size: 11px; color: #999;">${notice.createdAt.split(' ')[0]}</div>
+            </div>
+            <div style="font-size: 12px; color: #666; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${notice.content}</div>
+          </div>
+        `;
+      });
+
+      board.innerHTML = html;
+    }
+
+    // 공지사항 상세 보기
+    function showNoticeDetail(id, title, content, author, createdAt) {
+      const contentFormatted = content.replace(/\\n/g, '\n').replace(/\\'/g, "'");
+      alert(`📢 ${title}\n\n${contentFormatted}\n\n작성자: ${author}\n작성일: ${createdAt}`);
+    }
+
+    // 공지사항 관리 모달 열기 (관리자용)
+    function showNoticeManageModal() {
+      document.getElementById('noticeManageModal').style.display = 'block';
+      loadAllNotices();
+    }
+
+    // 공지사항 관리 모달 닫기
+    function closeNoticeManageModal() {
+      document.getElementById('noticeManageModal').style.display = 'none';
+    }
+
+    // 전체 공지사항 로드 (관리자용)
+    function loadAllNotices() {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            displayNoticeList(response.data);
+          } else {
+            alert(response.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('공지사항 로드 실패:', error);
+          alert('공지사항 로드 중 오류가 발생했습니다.');
+        })
+        .getAllNotices(sessionToken);
+    }
+
+    // 공지사항 목록 표시 (관리자용)
+    function displayNoticeList(notices) {
+      const container = document.getElementById('noticeListContainer');
+
+      if (!notices || notices.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; color: #999;">
+            <div style="font-size: 64px; margin-bottom: 15px;">📭</div>
+            <p>등록된 공지사항이 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <table style="width: 100%; border-collapse: collapse; background: white;">
+          <thead style="background-color: #f8f9fa;">
+            <tr>
+              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">제목</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 10%;">중요</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 15%;">게시기간</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 8%;">상태</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 15%;">작업</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      notices.forEach(function(notice) {
+        const isActive = notice.isActive === 'Y';
+        const isImportant = notice.isImportant === 'Y';
+        const period = (notice.startDate || '-') + ' ~ ' + (notice.endDate || '-');
+
+        html += `
+          <tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor=''">
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${notice.title}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${isImportant ? '🔴' : '-'}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 12px; text-align: center;">${period}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
+              <span style="padding: 4px 8px; background: ${isActive ? '#4caf50' : '#9e9e9e'}; color: white; border-radius: 4px; font-size: 11px;">${isActive ? '활성' : '비활성'}</span>
+            </td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
+              <button onclick='editNotice(${notice.rowIndex})' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; margin-right: 5px; background: #ffc107; color: white;">✏️ 수정</button>
+              <button onclick='deleteNotice(${notice.rowIndex})' style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; background: #f44336; color: white;">🗑️ 삭제</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    // 공지사항 추가 모달 열기
+    function showNoticeEditModal() {
+      document.getElementById('noticeEditTitle').textContent = '공지사항 추가';
+      document.getElementById('noticeRowIndex').value = '';
+      document.getElementById('noticeTitle').value = '';
+      document.getElementById('noticeContent').value = '';
+      document.getElementById('noticeStartDate').value = '';
+      document.getElementById('noticeEndDate').value = '';
+      document.getElementById('noticeImportant').checked = false;
+      document.getElementById('noticeActive').checked = true;
+
+      document.getElementById('noticeEditModal').style.display = 'block';
+    }
+
+    // 공지사항 추가/수정 모달 닫기
+    function closeNoticeEditModal() {
+      document.getElementById('noticeEditModal').style.display = 'none';
+    }
+
+    // 공지사항 수정 모달 열기
+    function editNotice(rowIndex) {
+      // 해당 행의 데이터를 가져오기
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const notice = response.data.find(n => n.rowIndex === rowIndex);
+            if (notice) {
+              document.getElementById('noticeEditTitle').textContent = '공지사항 수정';
+              document.getElementById('noticeRowIndex').value = notice.rowIndex;
+              document.getElementById('noticeTitle').value = notice.title;
+              document.getElementById('noticeContent').value = notice.content;
+              document.getElementById('noticeStartDate').value = notice.startDate;
+              document.getElementById('noticeEndDate').value = notice.endDate;
+              document.getElementById('noticeImportant').checked = notice.isImportant === 'Y';
+              document.getElementById('noticeActive').checked = notice.isActive === 'Y';
+
+              document.getElementById('noticeEditModal').style.display = 'block';
+            }
+          }
+        })
+        .getAllNotices(sessionToken);
+    }
+
+    // 공지사항 저장
+    function saveNotice() {
+      const rowIndex = document.getElementById('noticeRowIndex').value;
+      const title = document.getElementById('noticeTitle').value.trim();
+      const content = document.getElementById('noticeContent').value.trim();
+      const startDate = document.getElementById('noticeStartDate').value;
+      const endDate = document.getElementById('noticeEndDate').value;
+      const isImportant = document.getElementById('noticeImportant').checked ? 'Y' : 'N';
+      const isActive = document.getElementById('noticeActive').checked ? 'Y' : 'N';
+
+      if (!title || !content) {
+        alert('제목과 내용은 필수 입력 항목입니다.');
+        return;
+      }
+
+      const noticeData = {
+        title: title,
+        content: content,
+        startDate: startDate,
+        endDate: endDate,
+        isImportant: isImportant,
+        isActive: isActive
+      };
+
+      if (rowIndex) {
+        // 수정
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              alert('공지사항이 수정되었습니다.');
+              closeNoticeEditModal();
+              loadAllNotices();
+              loadActiveNotices(); // 사용자 보드도 업데이트
+            } else {
+              alert(response.message);
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('공지사항 수정 실패:', error);
+            alert('공지사항 수정 중 오류가 발생했습니다.');
+          })
+          .updateNotice(sessionToken, parseInt(rowIndex), noticeData);
+      } else {
+        // 추가
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              alert('공지사항이 등록되었습니다.');
+              closeNoticeEditModal();
+              loadAllNotices();
+              loadActiveNotices(); // 사용자 보드도 업데이트
+            } else {
+              alert(response.message);
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('공지사항 등록 실패:', error);
+            alert('공지사항 등록 중 오류가 발생했습니다.');
+          })
+          .addNotice(sessionToken, noticeData);
+      }
+    }
+
+    // 공지사항 삭제
+    function deleteNotice(rowIndex) {
+      if (!confirm('이 공지사항을 삭제하시겠습니까?')) {
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            alert('공지사항이 삭제되었습니다.');
+            loadAllNotices();
+            loadActiveNotices(); // 사용자 보드도 업데이트
+          } else {
+            alert(response.message);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('공지사항 삭제 실패:', error);
+          alert('공지사항 삭제 중 오류가 발생했습니다.');
+        })
+        .deleteNotice(sessionToken, rowIndex);
+    }
+
     // 모달 외부 클릭 시 닫기
     window.onclick = function(event) {
       // 검사결과등록 모달 외부 클릭
@@ -2465,6 +3446,30 @@
       const itemModal = document.getElementById('itemModal');
       if (event.target === itemModal) {
         closeItemModal();
+      }
+
+      // 업무연락 관리 모달 외부 클릭
+      const workNoticeManageModal = document.getElementById('workNoticeManageModal');
+      if (event.target === workNoticeManageModal) {
+        closeWorkNoticeManageModal();
+      }
+
+      // 업무연락 수정 모달 외부 클릭
+      const workNoticeEditModal = document.getElementById('workNoticeEditModal');
+      if (event.target === workNoticeEditModal) {
+        closeWorkNoticeEditModal();
+      }
+
+      // 공지사항 관리 모달 외부 클릭
+      const noticeManageModal = document.getElementById('noticeManageModal');
+      if (event.target === noticeManageModal) {
+        closeNoticeManageModal();
+      }
+
+      // 공지사항 수정 모달 외부 클릭
+      const noticeEditModal = document.getElementById('noticeEditModal');
+      if (event.target === noticeEditModal) {
+        closeNoticeEditModal();
       }
     };
   </script>
