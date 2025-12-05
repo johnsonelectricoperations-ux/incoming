@@ -296,20 +296,11 @@
 
         showAlert('로그인 성공! 페이지를 이동합니다...', 'success');
 
-        // 토큰을 URL 파라미터로 전달하여 페이지 이동
-        // iframe 샌드박스 환경에서는 form submit으로 페이지 전환
-        google.script.run
-          .withSuccessHandler(function(webAppUrl) {
-            const token = sessionStorage.getItem('sessionToken');
-            redirectToPage(webAppUrl, token);
-          })
-          .withFailureHandler(function() {
-            // 실패시 하드코딩된 URL 사용
-            const token = sessionStorage.getItem('sessionToken');
-            const fallbackUrl = 'https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec';
-            redirectToPage(fallbackUrl, token);
-          })
-          .getWebAppUrl();
+        // 사용자 제스처 컨텍스트를 유지하기 위해 즉시 페이지 이동
+        // google.script.run 비동기 콜백을 사용하면 샌드박스 에러 발생
+        const token = sessionStorage.getItem('sessionToken');
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec';
+        redirectToPage(webAppUrl, token);
       } else {
         showAlert(response.message, 'error');
         resetForm();
