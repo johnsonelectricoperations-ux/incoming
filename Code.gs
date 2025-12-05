@@ -118,12 +118,68 @@ function getOrCreateDriveFolder() {
 function getOrCreateCompanyFolder(companyName) {
   const mainFolder = getOrCreateDriveFolder();
   const folders = mainFolder.getFoldersByName(companyName);
-  
+
   if (folders.hasNext()) {
     return folders.next();
   } else {
     return mainFolder.createFolder(companyName);
   }
+}
+
+/**
+ * 업체별 년도/월 폴더 가져오기 또는 생성
+ * @param {string} companyName - 업체명
+ * @param {Date|string} date - 날짜 (Date 객체 또는 "YYYY-MM-DD" 문자열)
+ * @returns {Folder} 월별 폴더
+ */
+function getOrCreateMonthlyFolder(companyName, date) {
+  // 업체 폴더 가져오기
+  const companyFolder = getOrCreateCompanyFolder(companyName);
+
+  // 날짜에서 년도/월 추출
+  let year, month;
+
+  if (date instanceof Date) {
+    year = Utilities.formatDate(date, 'Asia/Seoul', 'yyyy');
+    month = Utilities.formatDate(date, 'Asia/Seoul', 'MM');
+  } else if (typeof date === 'string') {
+    // "YYYY-MM-DD" 또는 "YYYY/MM/DD" 형식
+    const parts = date.split(/[-/]/);
+    if (parts.length >= 2) {
+      year = parts[0];
+      month = parts[1];
+    } else {
+      // 날짜 형식이 올바르지 않으면 현재 날짜 사용
+      const today = new Date();
+      year = Utilities.formatDate(today, 'Asia/Seoul', 'yyyy');
+      month = Utilities.formatDate(today, 'Asia/Seoul', 'MM');
+    }
+  } else {
+    // 기본값: 현재 날짜
+    const today = new Date();
+    year = Utilities.formatDate(today, 'Asia/Seoul', 'yyyy');
+    month = Utilities.formatDate(today, 'Asia/Seoul', 'MM');
+  }
+
+  // 년도 폴더 가져오기 또는 생성
+  let yearFolder;
+  const yearFolders = companyFolder.getFoldersByName(year);
+  if (yearFolders.hasNext()) {
+    yearFolder = yearFolders.next();
+  } else {
+    yearFolder = companyFolder.createFolder(year);
+  }
+
+  // 월 폴더 가져오기 또는 생성
+  let monthFolder;
+  const monthFolders = yearFolder.getFoldersByName(month);
+  if (monthFolders.hasNext()) {
+    monthFolder = monthFolders.next();
+  } else {
+    monthFolder = yearFolder.createFolder(month);
+  }
+
+  return monthFolder;
 }
 
 /**
@@ -182,6 +238,42 @@ function initializeSheets() {
     Logger.log('JEO본사 시트 생성 실패: ' + jeoSheetsResult.message);
   }
 
+  // 4. 업무연락 시트 생성
+  let workNoticeSheet = ss.getSheetByName('업무연락');
+  if (!workNoticeSheet) {
+    Logger.log('업무연락 시트 생성 중...');
+    workNoticeSheet = ss.insertSheet('업무연락');
+    workNoticeSheet.getRange('A1:J1').setValues([[
+      'ID', '제목', '내용', '대상업체', '작성자', '작성일시', '게시시작일', '게시종료일', '중요여부', '활성화여부'
+    ]]);
+    workNoticeSheet.getRange('A1:J1').setFontWeight('bold').setBackground('#673ab7').setFontColor('#ffffff');
+
+    // ID 열(A열)을 텍스트 형식으로 설정
+    workNoticeSheet.getRange('A:A').setNumberFormat('@STRING@');
+
+    Logger.log('업무연락 시트 생성 완료');
+  } else {
+    Logger.log('업무연락 시트가 이미 존재합니다.');
+  }
+
+  // 5. 공지사항 시트 생성
+  let noticeSheet = ss.getSheetByName('공지사항');
+  if (!noticeSheet) {
+    Logger.log('공지사항 시트 생성 중...');
+    noticeSheet = ss.insertSheet('공지사항');
+    noticeSheet.getRange('A1:I1').setValues([[
+      'ID', '제목', '내용', '작성자', '작성일시', '게시시작일', '게시종료일', '중요여부', '활성화여부'
+    ]]);
+    noticeSheet.getRange('A1:I1').setFontWeight('bold').setBackground('#ff5722').setFontColor('#ffffff');
+
+    // ID 열(A열)을 텍스트 형식으로 설정
+    noticeSheet.getRange('A:A').setNumberFormat('@STRING@');
+
+    Logger.log('공지사항 시트 생성 완료');
+  } else {
+    Logger.log('공지사항 시트가 이미 존재합니다.');
+  }
+
   Logger.log('=== 시트 초기화 완료 ===');
   Logger.log('');
   Logger.log('초기 로그인 정보:');
@@ -197,6 +289,54 @@ function initializeSheets() {
     adminId: 'admin',
     adminPassword: 'admin1234'
   };
+}
+
+/**
+ * 자동 마이그레이션 - 기존 시스템에 누락된 시트 추가
+ * 로그인 시 자동 실행
+ */
+function autoMigrateSheetsIfNeeded() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let migrated = false;
+
+    // 업무연락 시트 확인 및 생성
+    let workNoticeSheet = ss.getSheetByName('업무연락');
+    if (!workNoticeSheet) {
+      Logger.log('[자동 마이그레이션] 업무연락 시트 생성 중...');
+      workNoticeSheet = ss.insertSheet('업무연락');
+      workNoticeSheet.getRange('A1:J1').setValues([[
+        'ID', '제목', '내용', '대상업체', '작성자', '작성일시', '게시시작일', '게시종료일', '중요여부', '활성화여부'
+      ]]);
+      workNoticeSheet.getRange('A1:J1').setFontWeight('bold').setBackground('#673ab7').setFontColor('#ffffff');
+      workNoticeSheet.getRange('A:A').setNumberFormat('@STRING@');
+      migrated = true;
+      Logger.log('[자동 마이그레이션] 업무연락 시트 생성 완료');
+    }
+
+    // 공지사항 시트 확인 및 생성
+    let noticeSheet = ss.getSheetByName('공지사항');
+    if (!noticeSheet) {
+      Logger.log('[자동 마이그레이션] 공지사항 시트 생성 중...');
+      noticeSheet = ss.insertSheet('공지사항');
+      noticeSheet.getRange('A1:I1').setValues([[
+        'ID', '제목', '내용', '작성자', '작성일시', '게시시작일', '게시종료일', '중요여부', '활성화여부'
+      ]]);
+      noticeSheet.getRange('A1:I1').setFontWeight('bold').setBackground('#ff5722').setFontColor('#ffffff');
+      noticeSheet.getRange('A:A').setNumberFormat('@STRING@');
+      migrated = true;
+      Logger.log('[자동 마이그레이션] 공지사항 시트 생성 완료');
+    }
+
+    if (migrated) {
+      Logger.log('[자동 마이그레이션] 시트 마이그레이션 완료');
+    }
+
+    return { success: true, migrated: migrated };
+  } catch (error) {
+    Logger.log('[자동 마이그레이션] 오류: ' + error.toString());
+    return { success: false, message: error.toString() };
+  }
 }
 
 /**
