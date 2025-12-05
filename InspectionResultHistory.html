@@ -552,6 +552,10 @@
       initToken();
       loadUserInfo();
       loadCompanyList();
+
+      // 시작 일자 초기값을 오늘 날짜로 설정
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('searchDateFrom').value = today;
     };
 
     // 네비게이션 초기화

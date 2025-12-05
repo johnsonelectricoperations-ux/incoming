@@ -1235,6 +1235,10 @@
     function showInspectionResultModal() {
       document.getElementById('inspectionResultModal').style.display = 'block';
 
+      // 입고일자 초기값을 오늘 날짜로 설정
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('inspectionSearchDate').value = today;
+
       // 업체명 목록 로드
       loadInspectionCompanyList();
 
