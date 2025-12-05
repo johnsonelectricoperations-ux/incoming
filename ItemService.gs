@@ -31,6 +31,17 @@ function getOrCreateItemListSheet(companyName) {
         };
       }
       sheet = ss.getSheetByName(sheetName);
+    } else {
+      // 기존 시트가 있는 경우, 헤더 확인 및 업데이트
+      const headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+      // '검사기준서' 열이 없는지 확인 (5개 열만 있는 이전 버전 시트 체크)
+      if (headerRow.length === 5 && headerRow[4] === '검사형태') {
+        Logger.log(`${sheetName}: 이전 버전 헤더 감지, '검사기준서' 열 추가`);
+        sheet.getRange(1, 6).setValue('검사기준서');
+        sheet.getRange(1, 6).setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
+        sheet.getRange('F:F').setNumberFormat('@STRING@');
+      }
     }
 
     return {
@@ -82,7 +93,7 @@ function searchTmNo(token, searchText) {
       }
 
       const sheet = sheetResult.sheet;
-      const data = sheet.getDataRange().getValues();
+      const data = sheet.getDataRange().getDisplayValues();
 
       if (data.length <= 1) {
         continue;
@@ -101,7 +112,8 @@ function searchTmNo(token, searchText) {
             tmNo: tmNo,
             productName: productName,
             companyName: rowCompanyName,
-            inspectionType: String(row[4] || '')
+            inspectionType: String(row[4] || ''),
+            inspectionStandardUrl: String(row[5] || '')
           });
         }
 
@@ -162,7 +174,7 @@ function getItemByTmNo(token, tmNo) {
       }
 
       const sheet = sheetResult.sheet;
-      const data = sheet.getDataRange().getValues();
+      const data = sheet.getDataRange().getDisplayValues();
 
       // 헤더 제외하고 검색
       for (let i = 1; i < data.length; i++) {
@@ -174,7 +186,8 @@ function getItemByTmNo(token, tmNo) {
               tmNo: String(row[1] || ''),
               productName: String(row[2] || ''),
               companyName: String(row[3] || ''),
-              inspectionType: String(row[4] || '')
+              inspectionType: String(row[4] || ''),
+              inspectionStandardUrl: String(row[5] || '')
             }
           };
         }
@@ -239,7 +252,7 @@ function addItem(token, itemData) {
     }
 
     // 중복 체크 (컬럼 인덱스 수정: TM-NO는 두번째 열(index 1))
-    const data = itemSheet.getDataRange().getValues();
+    const data = itemSheet.getDataRange().getDisplayValues();
     for (let i = 1; i < data.length; i++) {
       if (String(data[i][1]) === String(itemData.tmNo)) {
         return {
@@ -249,19 +262,20 @@ function addItem(token, itemData) {
       }
     }
 
-    // 새 행 추가 (업체CODE 포함)
+    // 새 행 추가 (업체CODE 포함, 검사기준서 URL 포함)
     const lastRow = itemSheet.getLastRow() + 1;
 
     // 먼저 텍스트 형식으로 설정 (특히 TM-NO 컬럼)
-    itemSheet.getRange(lastRow, 1, 1, 5).setNumberFormat('@STRING@');
+    itemSheet.getRange(lastRow, 1, 1, 6).setNumberFormat('@STRING@');
 
     // 데이터 입력
-    itemSheet.getRange(lastRow, 1, 1, 5).setValues([[
+    itemSheet.getRange(lastRow, 1, 1, 6).setValues([[
       companyCode,
       itemData.tmNo,
       itemData.productName,
       itemData.companyName,
-      itemData.inspectionType || ''
+      itemData.inspectionType || '',
+      itemData.inspectionStandardUrl || ''
     ]]);
 
     return {
@@ -317,7 +331,7 @@ function getItems(token, options) {
       }
 
       const sheet = sheetResult.sheet;
-      const data = sheet.getDataRange().getValues();
+      const data = sheet.getDataRange().getDisplayValues();
 
       if (data.length <= 1) {
         continue;
@@ -342,7 +356,8 @@ function getItems(token, options) {
           tmNo: String(row[1] || ''),
           productName: String(row[2] || ''),
           companyName: rowCompanyName,
-          inspectionType: String(row[4] || '')
+          inspectionType: String(row[4] || ''),
+          inspectionStandardUrl: String(row[5] || '')
         });
       }
     }
@@ -398,8 +413,9 @@ function updateItem(token, sheetName, rowIndex, itemData) {
       };
     }
 
-    // 기존 데이터 확인 (5개 컬럼)
-    const existingData = itemSheet.getRange(rowIndex, 1, 1, 5).getValues()[0];
+    // 기존 데이터 확인 (최소 5개 컬럼, 검사기준서 포함 시 6개)
+    const lastCol = Math.max(itemSheet.getLastColumn(), 6);
+    const existingData = itemSheet.getRange(rowIndex, 1, 1, lastCol).getValues()[0];
     const existingCompany = String(existingData[3]);
 
     // 권한 체크
@@ -410,8 +426,8 @@ function updateItem(token, sheetName, rowIndex, itemData) {
       };
     }
 
-    // 데이터 수정 (업체CODE 포함)
-    const range = itemSheet.getRange(rowIndex, 1, 1, 5);
+    // 데이터 수정 (업체CODE 포함, 검사기준서 URL 포함)
+    const range = itemSheet.getRange(rowIndex, 1, 1, 6);
 
     // 먼저 텍스트 형식으로 설정
     range.setNumberFormat('@STRING@');
@@ -422,7 +438,8 @@ function updateItem(token, sheetName, rowIndex, itemData) {
       itemData.tmNo,
       itemData.productName,
       itemData.companyName,
-      itemData.inspectionType || ''
+      itemData.inspectionType || '',
+      itemData.inspectionStandardUrl || ''
     ]]);
 
     return {
@@ -465,8 +482,9 @@ function deleteItem(token, sheetName, rowIndex) {
       };
     }
 
-    // 기존 데이터 확인 (5개 컬럼)
-    const existingData = itemSheet.getRange(rowIndex, 1, 1, 5).getValues()[0];
+    // 기존 데이터 확인 (최소 5개 컬럼, 검사기준서 포함 시 6개)
+    const lastCol = Math.max(itemSheet.getLastColumn(), 6);
+    const existingData = itemSheet.getRange(rowIndex, 1, 1, lastCol).getValues()[0];
     const existingCompany = String(existingData[3]);
 
     // 권한 체크
