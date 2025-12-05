@@ -1005,6 +1005,7 @@
     let isLoadingItems = false;
     let isLoadingItemCompanyList = false;
     let isLoadingItemSpecCounts = false;
+    let isItemSearchStarted = false; // 검색 시작 여부 플래그
     let itemsCache = null;
     let itemCompanyListCache = null;
     let itemSpecCountsCache = null;
@@ -1343,9 +1344,9 @@
       // 로딩 표시
       const container = document.getElementById('inspectionSearchResultContainer');
       container.innerHTML = `
-        <div style="text-align: center; padding: 60px 20px; color: #666;">
-          <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
-          <p>검색 중...</p>
+        <div style="text-align: center; padding: 60px 20px; color: #667eea;">
+          <div style="border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+          <p style="font-size: 16px; font-weight: 600;">검색 중입니다...</p>
         </div>
       `;
 
@@ -2031,6 +2032,12 @@
 
     // Item 초기 안내 메시지 표시
     function showItemInitialMessage() {
+      // 이미 검색이 시작된 경우 초기 메시지를 표시하지 않음
+      if (isItemSearchStarted) {
+        console.log('검색이 이미 시작됨, 초기 메시지 표시 건너뜀');
+        return;
+      }
+
       const container = document.getElementById('itemListContainer');
       container.innerHTML = `
         <div style="text-align: center; padding: 60px 20px; color: #999;">
@@ -2044,6 +2051,7 @@
     // Item 관리 모달 닫기
     function closeItemModal() {
       document.getElementById('itemModal').style.display = 'none';
+      isItemSearchStarted = false; // 플래그 리셋
     }
 
     // Item 업체명 목록 로드 (검색용)
@@ -2251,6 +2259,8 @@
 
     // Item 검색
     function searchItems() {
+      isItemSearchStarted = true; // 검색 시작 플래그 설정
+
       const companyName = document.getElementById('searchItemCompany').value.trim();
       const tmNo = document.getElementById('searchItemTmNo').value.trim();
 
@@ -2258,14 +2268,24 @@
       if (companyName) filters.companyName = companyName;
       if (tmNo) filters.tmNo = tmNo;
 
+      // 로딩 표시
+      const container = document.getElementById('itemListContainer');
+      container.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; color: #667eea;">
+          <div style="border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+          <p style="font-size: 16px; font-weight: 600;">검색 중입니다...</p>
+        </div>
+      `;
+
       loadItems(filters);
     }
 
     // Item 검색 초기화
     function clearItemSearch() {
+      isItemSearchStarted = false; // 플래그 리셋
       document.getElementById('searchItemCompany').value = '';
       document.getElementById('searchItemTmNo').value = '';
-      loadItems();
+      showItemInitialMessage();
     }
 
     // Item 추가 모달 열기
