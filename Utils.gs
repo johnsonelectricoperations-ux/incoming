@@ -388,13 +388,15 @@ function createCompanySheets(companyName, companyCode) {
     let listSheet = ss.getSheetByName(listSheetName);
     if (!listSheet) {
       listSheet = ss.insertSheet(listSheetName, lastPosition + 1);
-      listSheet.getRange('A1:E1').setValues([[
-        '업체CODE', 'TM-NO', '제품명', '업체명', '검사형태'
+      listSheet.getRange('A1:F1').setValues([[
+        '업체CODE', 'TM-NO', '제품명', '업체명', '검사형태', '검사기준서'
       ]]);
-      listSheet.getRange('A1:E1').setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
+      listSheet.getRange('A1:F1').setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
 
       // TM-NO 열(B열, 2번째 컬럼)을 텍스트 형식으로 미리 설정
       listSheet.getRange('B:B').setNumberFormat('@STRING@');
+      // 검사기준서 URL 열(F열, 6번째 컬럼)을 텍스트 형식으로 미리 설정
+      listSheet.getRange('F:F').setNumberFormat('@STRING@');
 
       Logger.log(`시트 생성 완료: ${listSheetName}`);
     }
@@ -487,7 +489,7 @@ function generateNextCompanyCode() {
       return 'C01'; // Users 시트가 없으면 첫 번째 코드 반환
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     // 헤더만 있는 경우
     if (data.length <= 1) {
@@ -536,7 +538,7 @@ function findCompanyCodeByName(companyName) {
     const userSheet = getSheet(USER_SHEET_NAME);
     if (!userSheet) return null;
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     // 헤더 제외하고 검색
     for (let i = 1; i < data.length; i++) {
@@ -623,7 +625,7 @@ function getAllCompanyNames() {
       return [];
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
     if (data.length <= 1) {
       return [];
     }
