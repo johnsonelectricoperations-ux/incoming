@@ -86,7 +86,7 @@ function getInspectionSpecs(token, options) {
       }
 
       const sheet = sheetResult.sheet;
-      const data = sheet.getDataRange().getValues();
+      const data = sheet.getDataRange().getDisplayValues();
 
       if (data.length <= 1) {
         continue;
@@ -468,7 +468,7 @@ function deleteInspectionSpecsByTmNoAndCompany(token, tmNo, companyName) {
     }
 
     const inspectionSheet = sheetResult.sheet;
-    const data = inspectionSheet.getDataRange().getValues();
+    const data = inspectionSheet.getDataRange().getDisplayValues();
 
     let deletedCount = 0;
 
@@ -533,7 +533,7 @@ function getInspectionSpecsByTmNo(token, tmNo) {
       }
 
       const sheet = sheetResult.sheet;
-      const data = sheet.getDataRange().getValues();
+      const data = sheet.getDataRange().getDisplayValues();
 
       // 헤더 제외하고 검색
       for (let i = 1; i < data.length; i++) {
@@ -611,7 +611,7 @@ function getInspectionSpecsForResult(token, companyName, tmNo) {
     }
 
     const sheet = sheetResult.sheet;
-    const data = sheet.getDataRange().getValues();
+    const data = sheet.getDataRange().getDisplayValues();
     const specs = [];
 
     // 헤더 제외하고 검색
