@@ -181,7 +181,7 @@ function getData(token, options) {
       }
 
       try {
-        const itemListData = sheet.getDataRange().getValues();
+        const itemListData = sheet.getDataRange().getDisplayValues();
 
         if (itemListData.length > 1) {
           for (let i = 1; i < itemListData.length; i++) {
@@ -214,7 +214,7 @@ function getData(token, options) {
       }
 
       try {
-        const allData = dataSheet.getDataRange().getValues();
+        const allData = dataSheet.getDataRange().getDisplayValues();
 
         if (allData.length <= 1) {
           continue; // 헤더만 있거나 데이터 없음
@@ -384,7 +384,7 @@ function getDataById(token, id) {
       }
 
       try {
-        const data = dataSheet.getDataRange().getValues();
+        const data = dataSheet.getDataRange().getDisplayValues();
 
         for (let i = 1; i < data.length; i++) {
           const row = data[i];
@@ -468,7 +468,7 @@ function updateData(token, id, dataObj) {
       }
 
       try {
-        const data = dataSheet.getDataRange().getValues();
+        const data = dataSheet.getDataRange().getDisplayValues();
 
         for (let i = 1; i < data.length; i++) {
           const row = data[i];
@@ -555,7 +555,7 @@ function deleteData(token, id) {
       }
 
       try {
-        const data = dataSheet.getDataRange().getValues();
+        const data = dataSheet.getDataRange().getDisplayValues();
 
         for (let i = 1; i < data.length; i++) {
           const row = data[i];
@@ -636,7 +636,7 @@ function getDataByDate(token, date) {
       }
 
       try {
-        const data = dataSheet.getDataRange().getValues();
+        const data = dataSheet.getDataRange().getDisplayValues();
 
         for (let i = 1; i < data.length; i++) {
           const row = data[i];
@@ -719,7 +719,7 @@ function getDataByDateAndTime(token, date, time) {
       }
 
       try {
-        const data = dataSheet.getDataRange().getValues();
+        const data = dataSheet.getDataRange().getDisplayValues();
 
         for (let i = 1; i < data.length; i++) {
           const row = data[i];
@@ -826,7 +826,7 @@ function searchDataForInspectionResult(token, filters) {
       };
     }
 
-    const userData = userSheet.getDataRange().getValues();
+    const userData = userSheet.getDataRange().getDisplayValues();
     const normalCompanies = [];
 
     for (let i = 1; i < userData.length; i++) {
@@ -862,7 +862,7 @@ function searchDataForInspectionResult(token, filters) {
       }
 
       try {
-        const dataValues = dataSheet.getDataRange().getValues();
+        const dataValues = dataSheet.getDataRange().getDisplayValues();
 
         // 헤더 제외하고 검색
         for (let i = 1; i < dataValues.length; i++) {
@@ -905,7 +905,7 @@ function searchDataForInspectionResult(token, filters) {
 
           if (itemListSheet) {
             try {
-              const itemData = itemListSheet.getDataRange().getValues();
+              const itemData = itemListSheet.getDataRange().getDisplayValues();
               for (let j = 1; j < itemData.length; j++) {
                 if (String(itemData[j][1]) === tmNo) {
                   inspectionType = String(itemData[j][4] || '검사');
