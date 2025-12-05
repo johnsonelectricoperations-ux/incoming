@@ -308,6 +308,7 @@
     }
 
     // iframe 샌드박스에서 안전한 페이지 리디렉션
+    // 여러 방법을 폴백으로 시도하여 샌드박스 제약 우회
     function redirectToPage(baseUrl, token) {
       // URL 파라미터 생성
       const params = {
@@ -323,9 +324,42 @@
 
       const fullUrl = baseUrl + '?' + queryString;
 
-      // window.top.location.href로 직접 네비게이션
-      // form.submit()은 사용자 제스처로 간주되지 않아 sandbox 에러 발생
-      window.top.location.href = fullUrl;
+      // 방법 1: window.top.location.href 시도 (가장 선호)
+      try {
+        window.top.location.href = fullUrl;
+        return;
+      } catch (e) {
+        console.warn('window.top.location.href 실패, 다음 방법 시도:', e.message);
+      }
+
+      // 방법 2: window.location.replace 시도
+      try {
+        window.location.replace(fullUrl);
+        return;
+      } catch (e) {
+        console.warn('window.location.replace 실패, 다음 방법 시도:', e.message);
+      }
+
+      // 방법 3: meta refresh 태그 사용 (최후의 수단)
+      try {
+        const meta = document.createElement('meta');
+        meta.httpEquiv = 'refresh';
+        meta.content = '0; url=' + fullUrl;
+        document.head.appendChild(meta);
+        console.log('meta refresh 태그로 리다이렉트');
+      } catch (e) {
+        console.error('모든 리다이렉트 방법 실패:', e.message);
+        // 최후의 수단: 사용자에게 수동 링크 제공
+        showManualRedirectLink(fullUrl);
+      }
+    }
+
+    // 모든 자동 리다이렉트 실패 시 수동 링크 제공
+    function showManualRedirectLink(url) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.innerHTML = '자동 이동에 실패했습니다. <a href="' + url + '" target="_top" style="color: #667eea; font-weight: bold; text-decoration: underline;">여기를 클릭</a>하여 계속하세요.';
+      alertBox.className = 'alert alert-error';
+      alertBox.style.display = 'block';
     }
 
     // 회원가입 폼 표시
