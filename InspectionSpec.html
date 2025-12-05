@@ -33,6 +33,15 @@
       align-items: center;
     }
 
+    .company-name {
+      color: #ff6b35;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
     .header-title h1 {
       font-size: 24px;
       margin-bottom: 5px;
@@ -429,6 +438,7 @@
   <div class="header">
     <div class="header-content">
       <div class="header-title">
+        <div class="company-name">Johnson Electric Operations</div>
         <h1>협력사 수입검사 관리</h1>
         <p id="userInfo">로딩 중...</p>
       </div>
@@ -495,6 +505,15 @@
         <div class="form-group">
           <label class="form-label">업체명</label>
           <input type="text" class="form-control" id="specCompanyName" placeholder="업체명이 자동으로 입력됩니다" readonly style="background-color: #f5f5f5;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">검사기준서 업로드</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" id="specFileInput" accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png" style="flex: 1;">
+            <span id="specFileName" style="color: #666; font-size: 13px;"></span>
+          </div>
+          <p style="font-size: 12px; color: #999; margin-top: 5px;">PDF, Excel, Word, 이미지 파일 업로드 가능 (최대 20MB)</p>
         </div>
 
         <div class="form-group">
@@ -763,16 +782,27 @@
         grouped[key].items.push(spec);
       });
 
-      let html = '<table><thead><tr><th>TM-NO</th><th>제품명</th><th>업체명</th><th>검사항목 수</th><th>작업</th></tr></thead><tbody>';
+      let html = '<table><thead><tr><th>TM-NO</th><th>제품명</th><th>업체명</th><th>검사항목 수</th><th>검사기준서</th><th>작업</th></tr></thead><tbody>';
 
       Object.keys(grouped).forEach(function(key) {
         const group = grouped[key];
+        const hasStandard = group.items[0].inspectionStandardUrl && group.items[0].inspectionStandardUrl.trim() !== '';
+
         html += `
           <tr>
             <td>${group.tmNo}</td>
             <td>${group.productName}</td>
             <td>${group.companyName}</td>
             <td>${group.items.length}개</td>
+            <td>`;
+
+        if (hasStandard) {
+          html += `<a href="${group.items[0].inspectionStandardUrl}" target="_blank" class="btn-sm btn-edit" style="background: #2196f3;">📄 보기</a>`;
+        } else {
+          html += '-';
+        }
+
+        html += `</td>
             <td>
               <button class="btn-sm btn-edit" onclick='editSpecs("${group.tmNo}", "${group.productName}", "${group.companyName}")'>✏️ 수정</button>
               <button class="btn-sm btn-delete" onclick='deleteSpecs("${group.tmNo}", "${group.productName}", "${group.companyName}")'>🗑️ 삭제</button>
@@ -795,6 +825,10 @@
       document.getElementById('specProductName').readOnly = true;
       document.getElementById('specCompanyName').value = '';
       document.getElementById('specCompanyName').readOnly = true;
+
+      // 파일 입력 초기화
+      document.getElementById('specFileInput').value = '';
+      document.getElementById('specFileName').textContent = '';
 
       // 검사항목 테이블 초기화
       document.getElementById('inspectionItemsBody').innerHTML = '';
@@ -969,6 +1003,63 @@
         return;
       }
 
+      // 검사기준서 파일 업로드 처리
+      const fileInput = document.getElementById('specFileInput');
+      const file = fileInput.files[0];
+
+      if (file) {
+        // 파일이 선택된 경우, 먼저 업로드
+        uploadInspectionStandardFile(file, companyName, tmNo, function(fileUrl) {
+          // 업로드 성공 후 각 spec에 URL 추가
+          specs.forEach(function(spec) {
+            spec.inspectionStandardUrl = fileUrl;
+          });
+          saveSpecsToServer(specs, tmNo, companyName);
+        });
+      } else {
+        // 파일이 없는 경우 바로 저장 (기존 URL 유지 또는 빈 값)
+        saveSpecsToServer(specs, tmNo, companyName);
+      }
+    }
+
+    // 검사기준서 파일 업로드
+    function uploadInspectionStandardFile(file, companyName, tmNo, callback) {
+      // 파일 크기 체크 (20MB)
+      const maxSize = 20 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('파일 크기는 20MB를 초과할 수 없습니다.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const bytes = e.target.result.split(',')[1]; // Base64 데이터 추출
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              callback(response.fileUrl);
+            } else {
+              alert(response.message || '파일 업로드 중 오류가 발생했습니다.');
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('파일 업로드 실패:', error);
+            alert('파일 업로드 중 오류가 발생했습니다.');
+          })
+          .uploadInspectionStandardFile(sessionToken, {
+            fileName: file.name,
+            mimeType: file.type,
+            bytes: bytes,
+            companyName: companyName,
+            tmNo: tmNo
+          });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // 서버에 검사 규격 저장
+    function saveSpecsToServer(specs, tmNo, companyName) {
       // 수정 모드인 경우, 기존 데이터 먼저 삭제 후 추가 (중복 방지)
       if (editingTmNo !== null) {
         google.script.run
@@ -1030,6 +1121,9 @@
       document.getElementById('specCompanyName').value = companyName;
       document.getElementById('specCompanyName').readOnly = true;
 
+      // 파일 입력 초기화
+      document.getElementById('specFileInput').value = '';
+
       // 기존 데이터 로드
       google.script.run
         .withSuccessHandler(function(response) {
@@ -1050,6 +1144,15 @@
               `;
               tbody.appendChild(row);
             });
+
+            // 기존 검사기준서 파일 표시
+            if (response.data.length > 0 && response.data[0].inspectionStandardUrl) {
+              const url = response.data[0].inspectionStandardUrl;
+              const fileName = url.substring(url.lastIndexOf('/') + 1);
+              document.getElementById('specFileName').innerHTML = `현재 파일: <a href="${url}" target="_blank" style="color: #667eea;">${tmNo}_검사기준서</a>`;
+            } else {
+              document.getElementById('specFileName').textContent = '등록된 파일 없음';
+            }
           }
         })
         .getInspectionSpecs(sessionToken, {tmNo: tmNo, companyName: companyName});
