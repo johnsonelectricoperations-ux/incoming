@@ -1399,7 +1399,7 @@
               <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">시간</th>
               <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">TM-NO</th>
               <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">품명</th>
-              <th style="padding: 12px; text-align: right; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 100px;">수량</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 100px;">수량</th>
               <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 180px;">작업</th>
             </tr>
           </thead>
@@ -1411,6 +1411,9 @@
         // 백엔드에서 무검사 항목은 이미 필터링되어 있음
         const resultKey = item.date + '|' + item.companyName + '|' + item.tmNo;
         const isSaved = savedInspectionResultKeys.includes(resultKey);
+
+        // 수량 포맷 (천단위 콤마)
+        const formattedQuantity = (item.quantity || 0).toLocaleString('ko-KR');
 
         // 버튼 스타일 및 텍스트
         let buttonHtml = '';
@@ -1431,7 +1434,7 @@
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.time}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.tmNo}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.productName}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: right; font-weight: 600;">${item.quantity}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center; font-weight: 600;">${formattedQuantity}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
               ${buttonHtml}
             </td>

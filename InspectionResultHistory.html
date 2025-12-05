@@ -757,19 +757,22 @@
       html += '<th>입고일자</th>';
       html += '<th>TM-NO</th>';
       html += '<th>품명</th>';
-      html += '<th style="text-align: right;">수량</th>';
+      html += '<th style="text-align: center;">수량</th>';
       html += '<th>업체등록성적서</th>';
       html += '<th>검사</th>';
       html += '<th>합부판정결과</th>';
       html += '</tr></thead><tbody>';
 
       data.forEach(function(item) {
+        // 수량 포맷 (천단위 콤마)
+        var formattedQuantity = (item.quantity || 0).toLocaleString('ko-KR');
+
         html += '<tr>';
         html += '<td>' + (item.companyName || '') + '</td>';
         html += '<td>' + (item.date || '') + '</td>';
         html += '<td>' + (item.tmNo || '') + '</td>';
         html += '<td>' + (item.productName || '') + '</td>';
-        html += '<td style="text-align: right; font-weight: 600;">' + (item.quantity || 0) + '</td>';
+        html += '<td style="text-align: center; font-weight: 600;">' + formattedQuantity + '</td>';
 
         // 업체등록성적서 LINK
         html += '<td>';
