@@ -35,7 +35,7 @@ function loginUser(userId, password) {
       };
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     // 헤더만 있는 경우 확인
     if (data.length <= 1) {
@@ -82,6 +82,9 @@ function loginUser(userId, password) {
 
         try {
           setSession(sessionData);
+
+          // 자동 마이그레이션 (누락된 시트 생성)
+          autoMigrateSheetsIfNeeded();
 
           // 세션 저장 검증
           Utilities.sleep(200); // 200ms 대기
@@ -293,7 +296,7 @@ function registerUser(userData) {
       };
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     // 입력값 정규화
     const companyName = (userData.companyName || '').toString().trim();
@@ -715,7 +718,7 @@ function loginUserWithToken(userId, password) {
       };
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     // 헤더만 있는 경우 확인
     if (data.length <= 1) {
@@ -767,6 +770,9 @@ function loginUserWithToken(userId, password) {
             message: '세션 생성 중 오류가 발생했습니다. 다시 시도해주세요.'
           };
         }
+
+        // 자동 마이그레이션 (누락된 시트 생성)
+        autoMigrateSheetsIfNeeded();
 
         Logger.log('토큰 로그인 성공: ' + normalizedUserId);
 
@@ -845,7 +851,7 @@ function getCompanyList(token) {
       };
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     if (data.length <= 1) {
       return {
@@ -930,7 +936,7 @@ function getNormalCompanyList(token) {
       };
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     if (data.length <= 1) {
       return {
