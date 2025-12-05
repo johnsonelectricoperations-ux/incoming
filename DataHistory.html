@@ -35,6 +35,15 @@
       gap: 15px;
     }
 
+    .company-name {
+      color: #ff6b35;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
     .header-title h1 {
       font-size: 24px;
       margin-bottom: 5px;
@@ -294,6 +303,7 @@
   <div class="header">
     <div class="header-content">
       <div class="header-title">
+        <div class="company-name">Johnson Electric Operations</div>
         <h1>협력사 수입검사 관리</h1>
         <p id="userInfo">로딩 중...</p>
       </div>
@@ -584,6 +594,7 @@
       html += '<th>제품명</th>';
       html += '<th>수량</th>';
       html += '<th>성적서</th>';
+      html += '<th>작업</th>';
       html += '</tr></thead><tbody>';
 
       data.forEach(function(item) {
@@ -601,6 +612,9 @@
           html += '-';
         }
         html += '</td>';
+        html += '<td>';
+        html += '<button class="btn-link" style="background: #f44336; margin-left: 5px;" onclick="deleteDataRecord(\'' + item.id + '\')">🗑️ 삭제</button>';
+        html += '</td>';
         html += '</tr>';
       });
 
@@ -614,6 +628,35 @@
     function showError(message) {
       const container = document.getElementById('tableContainer');
       container.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>' + message + '</p></div>';
+    }
+
+    // 데이터 삭제
+    function deleteDataRecord(id) {
+      if (!confirm('이 성적서를 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) {
+        return;
+      }
+
+      // 로딩 표시
+      const container = document.getElementById('tableContainer');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div><p>삭제 중...</p></div>';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            alert(response.message || '성적서가 삭제되었습니다.');
+            // 현재 검색 조건으로 다시 검색
+            searchData();
+          } else {
+            alert(response.message || '삭제에 실패했습니다.');
+            searchData();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('삭제 실패:', error);
+          alert('삭제 중 오류가 발생했습니다.');
+          searchData();
+        })
+        .deleteData(sessionToken, id);
     }
 
     // 로그아웃
