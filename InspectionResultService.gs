@@ -81,7 +81,7 @@ function saveInspectionResults(token, dataId, results) {
       }
 
       try {
-        const dataValues = dataSheet.getDataRange().getValues();
+        const dataValues = dataSheet.getDataRange().getDisplayValues();
 
         for (let i = 1; i < dataValues.length; i++) {
           if (String(dataValues[i][1]) === String(dataId)) { // row[1]이 ID (업체CODE가 추가되어 인덱스 변경)
@@ -238,7 +238,7 @@ function getInspectionResultsByDataId(token, dataId) {
       }
 
       try {
-        const dataValues = dataSheet.getDataRange().getValues();
+        const dataValues = dataSheet.getDataRange().getDisplayValues();
 
         for (let i = 1; i < dataValues.length; i++) {
           if (String(dataValues[i][1]) === String(dataId)) { // row[1]이 ID
@@ -292,7 +292,7 @@ function getInspectionResultsByDataId(token, dataId) {
     }
 
     const resultSheet = sheetResult.sheet;
-    const resultData = resultSheet.getDataRange().getValues();
+    const resultData = resultSheet.getDataRange().getDisplayValues();
 
     // 날짜 형식 변환
     let dateStr = dataInfo.date;
@@ -414,7 +414,7 @@ function getAllInspectionResultKeys(token) {
       }
 
       const sheet = sheetResult.sheet;
-      const data = sheet.getDataRange().getValues();
+      const data = sheet.getDataRange().getDisplayValues();
 
       // 헤더 제외하고 처리
       for (let i = 1; i < data.length; i++) {
@@ -515,7 +515,7 @@ function searchInspectionResultHistory(token, filters) {
       }
 
       try {
-        const dataValues = dataSheet.getDataRange().getValues();
+        const dataValues = dataSheet.getDataRange().getDisplayValues();
 
         // 헤더 제외하고 처리
         for (let i = 1; i < dataValues.length; i++) {
@@ -554,7 +554,7 @@ function searchInspectionResultHistory(token, filters) {
 
           if (itemListSheet) {
             try {
-              const itemData = itemListSheet.getDataRange().getValues();
+              const itemData = itemListSheet.getDataRange().getDisplayValues();
               for (let j = 1; j < itemData.length; j++) {
                 if (String(itemData[j][1]) === tmNo) {
                   inspectionType = String(itemData[j][4] || '검사');
@@ -624,7 +624,7 @@ function checkInspectionResults(companyName, resultKey) {
     }
 
     const resultSheet = sheetResult.sheet;
-    const resultData = resultSheet.getDataRange().getValues();
+    const resultData = resultSheet.getDataRange().getDisplayValues();
 
     let passCount = 0;
     let failCount = 0;
@@ -714,7 +714,7 @@ function getInspectionResultsByKey(token, resultKey, companyName) {
     }
 
     const resultSheet = sheetResult.sheet;
-    const resultData = resultSheet.getDataRange().getValues();
+    const resultData = resultSheet.getDataRange().getDisplayValues();
     const results = [];
 
     Logger.log('=== getInspectionResultsByKey 검색 시작 ===');
