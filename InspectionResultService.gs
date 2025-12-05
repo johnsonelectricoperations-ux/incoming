@@ -601,6 +601,7 @@ function searchInspectionResultHistory(token, filters) {
           const rowCompanyName = String(row[2] || '');
           const tmNo = String(row[5] || '');
           const productName = String(row[6] || '');
+          const quantity = Number(row[7]) || 0;
           const pdfUrl = String(row[8] || '');
 
           // 날짜 범위 필터 적용
@@ -643,6 +644,7 @@ function searchInspectionResultHistory(token, filters) {
             date: dateStr,
             tmNo: tmNo,
             productName: productName,
+            quantity: quantity,
             pdfUrl: pdfUrl,
             hasInspectionResult: resultInfo.exists,
             overallPassFail: overallPassFail,

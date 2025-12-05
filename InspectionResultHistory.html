@@ -757,6 +757,7 @@
       html += '<th>입고일자</th>';
       html += '<th>TM-NO</th>';
       html += '<th>품명</th>';
+      html += '<th style="text-align: right;">수량</th>';
       html += '<th>업체등록성적서</th>';
       html += '<th>검사</th>';
       html += '<th>합부판정결과</th>';
@@ -768,6 +769,7 @@
         html += '<td>' + (item.date || '') + '</td>';
         html += '<td>' + (item.tmNo || '') + '</td>';
         html += '<td>' + (item.productName || '') + '</td>';
+        html += '<td style="text-align: right; font-weight: 600;">' + (item.quantity || 0) + '</td>';
 
         // 업체등록성적서 LINK
         html += '<td>';
