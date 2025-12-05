@@ -903,6 +903,7 @@ function searchDataForInspectionResult(token, filters) {
           const rowCompanyName = String(row[2] || '');
           const tmNo = String(row[5] || '');
           const productName = String(row[6] || '');
+          const quantity = Number(row[7]) || 0;
 
           // 날짜 형식 정규화
           let rowDate = row[3];
@@ -946,6 +947,7 @@ function searchDataForInspectionResult(token, filters) {
             time: rowTime,
             tmNo: tmNo,
             productName: productName,
+            quantity: quantity,
             inspectionType: inspectionType
           });
         }
