@@ -112,6 +112,19 @@
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
 
+    .btn-search {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      font-size: 18px;
+      padding: 10px 16px;
+      min-width: 50px;
+    }
+
+    .btn-search:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    }
+
     .btn-secondary {
       background: white;
       color: #667eea;
@@ -513,6 +526,7 @@
           <div class="search-box">
             <input type="text" id="searchInput" placeholder="업체명 또는 업체코드로 검색..." onkeyup="handleSearch()">
           </div>
+          <button class="btn btn-search" onclick="handleSearch()" title="검색">🔍</button>
           <button class="btn btn-primary" onclick="showAddCompanyModal()">신규 업체 등록</button>
         </div>
       </div>
