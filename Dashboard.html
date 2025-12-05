@@ -1394,11 +1394,11 @@
         <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
           <thead style="background-color: #f8f9fa;">
             <tr>
-              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">업체명</th>
-              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">입고일자</th>
-              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">시간</th>
-              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">TM-NO</th>
-              <th style="padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">품명</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">업체명</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">입고일자</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">시간</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">TM-NO</th>
+              <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px;">품명</th>
               <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 100px;">수량</th>
               <th style="padding: 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; font-size: 14px; width: 180px;">작업</th>
             </tr>
@@ -1429,11 +1429,11 @@
 
         html += `
           <tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor=''">
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.companyName}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.date}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.time}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.tmNo}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${item.productName}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${item.companyName}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${item.date}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${item.time}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${item.tmNo}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">${item.productName}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center; font-weight: 600;">${formattedQuantity}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: center;">
               ${buttonHtml}

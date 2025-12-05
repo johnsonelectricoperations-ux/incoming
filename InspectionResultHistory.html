@@ -753,14 +753,14 @@
       }
 
       let html = '<div class="table-responsive"><table><thead><tr>';
-      html += '<th>업체명</th>';
-      html += '<th>입고일자</th>';
-      html += '<th>TM-NO</th>';
-      html += '<th>품명</th>';
+      html += '<th style="text-align: center;">업체명</th>';
+      html += '<th style="text-align: center;">입고일자</th>';
+      html += '<th style="text-align: center;">TM-NO</th>';
+      html += '<th style="text-align: center;">품명</th>';
       html += '<th style="text-align: center;">수량</th>';
-      html += '<th>업체등록성적서</th>';
-      html += '<th>검사</th>';
-      html += '<th>합부판정결과</th>';
+      html += '<th style="text-align: center;">업체등록성적서</th>';
+      html += '<th style="text-align: center;">검사</th>';
+      html += '<th style="text-align: center;">합부판정결과</th>';
       html += '</tr></thead><tbody>';
 
       data.forEach(function(item) {
@@ -768,14 +768,14 @@
         var formattedQuantity = (item.quantity || 0).toLocaleString('ko-KR');
 
         html += '<tr>';
-        html += '<td>' + (item.companyName || '') + '</td>';
-        html += '<td>' + (item.date || '') + '</td>';
-        html += '<td>' + (item.tmNo || '') + '</td>';
-        html += '<td>' + (item.productName || '') + '</td>';
+        html += '<td style="text-align: center;">' + (item.companyName || '') + '</td>';
+        html += '<td style="text-align: center;">' + (item.date || '') + '</td>';
+        html += '<td style="text-align: center;">' + (item.tmNo || '') + '</td>';
+        html += '<td style="text-align: center;">' + (item.productName || '') + '</td>';
         html += '<td style="text-align: center; font-weight: 600;">' + formattedQuantity + '</td>';
 
         // 업체등록성적서 LINK
-        html += '<td>';
+        html += '<td style="text-align: center;">';
         if (item.pdfUrl) {
           html += '<a href="' + item.pdfUrl + '" target="_blank" class="btn-link">📄 보기</a>';
         } else {
@@ -784,7 +784,7 @@
         html += '</td>';
 
         // 검사 (무검사 또는 보기 버튼)
-        html += '<td>';
+        html += '<td style="text-align: center;">';
         if (item.inspectionType === '무검사') {
           html += '<span class="badge badge-secondary">무검사</span>';
         } else if (item.hasInspectionResult) {
@@ -796,7 +796,7 @@
         html += '</td>';
 
         // 합부판정결과
-        html += '<td>';
+        html += '<td style="text-align: center;">';
         if (item.inspectionType === '무검사') {
           // 무검사는 항상 합격
           html += '<span class="badge badge-success">합격</span>';
