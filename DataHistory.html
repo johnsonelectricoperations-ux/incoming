@@ -380,7 +380,7 @@
       return sessionToken;
     }
 
-    // 페이지 이동
+    // 페이지 이동 (폴백 리다이렉트)
     function safeNavigate(url, params) {
       let fullUrl = url;
       if (params) {
@@ -389,7 +389,34 @@
           .join('&');
         fullUrl = url + '?' + queryString;
       }
-      window.top.location.href = fullUrl;
+
+      // 방법 1: window.top.location.href 시도
+      try {
+        window.top.location.href = fullUrl;
+        return;
+      } catch (e) {
+        console.warn('window.top.location.href 실패, 다음 방법 시도:', e.message);
+      }
+
+      // 방법 2: window.location.replace 시도
+      try {
+        window.location.replace(fullUrl);
+        return;
+      } catch (e) {
+        console.warn('window.location.replace 실패, 다음 방법 시도:', e.message);
+      }
+
+      // 방법 3: meta refresh 태그
+      try {
+        const meta = document.createElement('meta');
+        meta.httpEquiv = 'refresh';
+        meta.content = '0; url=' + fullUrl;
+        document.head.appendChild(meta);
+        console.log('meta refresh 태그로 리다이렉트');
+      } catch (e) {
+        console.error('모든 리다이렉트 방법 실패:', e.message);
+        alert('페이지 이동에 실패했습니다. 수동으로 새로고침해주세요.');
+      }
     }
 
     function redirectToLogin() {
