@@ -786,11 +786,14 @@ function getDataByDateAndTime(token, date, time) {
 
 /**
  * 검사결과등록을 위한 Data 검색
+ * 최적화: ItemList 데이터를 사전에 캐싱하여 중복 조회 제거
  * @param {string} token - 세션 토큰
  * @param {Object} filters - 검색 필터 {companyName, date, time, tmNo}
  * @returns {Object} {success, data: [{id, companyName, date, time, tmNo, productName}]}
  */
 function searchDataForInspectionResult(token, filters) {
+  const startTime = new Date().getTime();
+
   try {
     // 토큰 검증
     const session = getSessionByToken(token);
@@ -846,7 +849,35 @@ function searchDataForInspectionResult(token, filters) {
     const filterTime = filters.time || '';
     const filterTmNo = filters.tmNo || '';
 
+    // 최적화: ItemList 데이터를 사전에 모두 로드하여 Map으로 캐싱
+    const itemListStartTime = new Date().getTime();
+    const itemInspectionTypeMap = {};
+    for (const companyName of normalCompanies) {
+      // 업체명 필터가 있으면 해당 업체만 로드
+      if (filterCompanyName && filterCompanyName !== companyName) {
+        continue;
+      }
+
+      const itemListSheetName = getItemListSheetName(companyName);
+      const itemListSheet = ss.getSheetByName(itemListSheetName);
+
+      if (itemListSheet) {
+        try {
+          const itemData = itemListSheet.getDataRange().getDisplayValues();
+          for (let j = 1; j < itemData.length; j++) {
+            const tmNo = String(itemData[j][1] || '');
+            const key = companyName + '|' + tmNo;
+            itemInspectionTypeMap[key] = String(itemData[j][4] || '검사');
+          }
+        } catch (e) {
+          Logger.log(`ItemList 로드 오류 (${companyName}): ${e.message}`);
+        }
+      }
+    }
+    Logger.log(`ItemList 캐싱 완료 (${new Date().getTime() - itemListStartTime}ms)`);
+
     // 각 업체의 Data 시트에서 검색
+    const dataStartTime = new Date().getTime();
     for (const companyName of normalCompanies) {
       // 업체명 필터 적용
       if (filterCompanyName && filterCompanyName !== companyName) {
@@ -898,24 +929,9 @@ function searchDataForInspectionResult(token, filters) {
             continue;
           }
 
-          // ItemList에서 검사형태 조회
-          let inspectionType = '';
-          const itemListSheetName = getItemListSheetName(rowCompanyName);
-          const itemListSheet = ss.getSheetByName(itemListSheetName);
-
-          if (itemListSheet) {
-            try {
-              const itemData = itemListSheet.getDataRange().getDisplayValues();
-              for (let j = 1; j < itemData.length; j++) {
-                if (String(itemData[j][1]) === tmNo) {
-                  inspectionType = String(itemData[j][4] || '검사');
-                  break;
-                }
-              }
-            } catch (e) {
-              Logger.log(`ItemList 조회 오류 (${rowCompanyName}, ${tmNo}): ${e.message}`);
-            }
-          }
+          // ItemList에서 검사형태 조회 (캐시 사용)
+          const itemKey = rowCompanyName + '|' + tmNo;
+          const inspectionType = itemInspectionTypeMap[itemKey] || '검사';
 
           // 무검사 항목은 제외 (검사결과등록 대상이 아님)
           if (inspectionType === '무검사') {
@@ -930,7 +946,7 @@ function searchDataForInspectionResult(token, filters) {
             time: rowTime,
             tmNo: tmNo,
             productName: productName,
-            inspectionType: inspectionType || '검사'
+            inspectionType: inspectionType
           });
         }
       } catch (e) {
@@ -938,8 +954,10 @@ function searchDataForInspectionResult(token, filters) {
         continue;
       }
     }
+    Logger.log(`Data 조회 완료 (${new Date().getTime() - dataStartTime}ms)`);
 
-    Logger.log(`검사결과등록용 검색 완료: ${results.length}건`);
+    const totalTime = new Date().getTime() - startTime;
+    Logger.log(`검사결과등록용 검색 완료: ${results.length}건 (${totalTime}ms)`);
 
     return {
       success: true,
@@ -947,7 +965,8 @@ function searchDataForInspectionResult(token, filters) {
     };
 
   } catch (error) {
-    Logger.log('searchDataForInspectionResult 오류: ' + error.toString());
+    const totalTime = new Date().getTime() - startTime;
+    Logger.log(`searchDataForInspectionResult 오류 (${totalTime}ms): ${error.toString()}`);
     return {
       success: false,
       message: '검색 중 오류가 발생했습니다: ' + error.message,

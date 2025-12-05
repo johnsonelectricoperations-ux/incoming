@@ -459,8 +459,11 @@ function getAllInspectionResultKeys(token) {
 
 /**
  * 검사결과 이력 검색 (업체명/시작일자/종료일자/TM-NO)
+ * 최적화: ItemList와 Result 데이터를 사전에 캐싱하여 중복 조회 제거
  */
 function searchInspectionResultHistory(token, filters) {
+  const startTime = new Date().getTime();
+
   try {
     const session = getSessionByToken(token);
     if (!session || !session.userId) {
@@ -504,7 +507,73 @@ function searchInspectionResultHistory(token, filters) {
 
     Logger.log('조회 대상 업체: ' + companiesToQuery.join(', '));
 
-    // 각 업체별로 Data 시트와 Result 시트 조회
+    // 최적화: ItemList 데이터를 사전에 모두 로드하여 Map으로 캐싱
+    const itemListStartTime = new Date().getTime();
+    const itemInspectionTypeMap = {};
+    for (const companyName of companiesToQuery) {
+      const itemListSheetName = getItemListSheetName(companyName);
+      const itemListSheet = ss.getSheetByName(itemListSheetName);
+
+      if (itemListSheet) {
+        try {
+          const itemData = itemListSheet.getDataRange().getDisplayValues();
+          for (let j = 1; j < itemData.length; j++) {
+            const tmNo = String(itemData[j][1] || '');
+            const key = companyName + '|' + tmNo;
+            itemInspectionTypeMap[key] = String(itemData[j][4] || '검사');
+          }
+        } catch (e) {
+          Logger.log(`ItemList 로드 오류 (${companyName}): ${e.message}`);
+        }
+      }
+    }
+    Logger.log(`ItemList 캐싱 완료 (${new Date().getTime() - itemListStartTime}ms)`);
+
+    // 최적화: Result 데이터를 사전에 모두 로드하여 Map으로 캐싱
+    const resultStartTime = new Date().getTime();
+    const resultMap = {}; // key: resultKey, value: {exists, passCount, failCount}
+    for (const companyName of companiesToQuery) {
+      const sheetResult = getOrCreateResultSheet(companyName);
+      if (!sheetResult.success) {
+        continue;
+      }
+
+      try {
+        const resultSheet = sheetResult.sheet;
+        const resultData = resultSheet.getDataRange().getDisplayValues();
+
+        for (let i = 1; i < resultData.length; i++) {
+          const row = resultData[i];
+
+          // 날짜 형식 정규화 (row[2]가 날짜)
+          let rowDateStr = row[2];
+          if (row[2] instanceof Date) {
+            rowDateStr = Utilities.formatDate(row[2], 'Asia/Seoul', 'yyyy-MM-dd');
+          } else if (rowDateStr) {
+            rowDateStr = String(rowDateStr).trim();
+          }
+
+          const rowKey = rowDateStr + '|' + String(row[3]) + '|' + String(row[4]);
+          const passFailResult = String(row[20] || '').trim();
+
+          if (!resultMap[rowKey]) {
+            resultMap[rowKey] = { exists: true, passCount: 0, failCount: 0 };
+          }
+
+          if (passFailResult === '합격') {
+            resultMap[rowKey].passCount++;
+          } else if (passFailResult === '불합격') {
+            resultMap[rowKey].failCount++;
+          }
+        }
+      } catch (e) {
+        Logger.log(`Result 로드 오류 (${companyName}): ${e.message}`);
+      }
+    }
+    Logger.log(`Result 캐싱 완료 (${new Date().getTime() - resultStartTime}ms)`);
+
+    // 각 업체별로 Data 시트 조회
+    const dataStartTime = new Date().getTime();
     for (const companyName of companiesToQuery) {
       const dataSheetName = getDataSheetName(companyName);
       const dataSheet = ss.getSheetByName(dataSheetName);
@@ -547,33 +616,27 @@ function searchInspectionResultHistory(token, filters) {
             continue;
           }
 
-          // ItemList에서 검사형태 조회
-          let inspectionType = '';
-          const itemListSheetName = getItemListSheetName(rowCompanyName);
-          const itemListSheet = ss.getSheetByName(itemListSheetName);
-
-          if (itemListSheet) {
-            try {
-              const itemData = itemListSheet.getDataRange().getDisplayValues();
-              for (let j = 1; j < itemData.length; j++) {
-                if (String(itemData[j][1]) === tmNo) {
-                  inspectionType = String(itemData[j][4] || '검사');
-                  break;
-                }
-              }
-            } catch (e) {
-              Logger.log(`ItemList 조회 오류 (${rowCompanyName}, ${tmNo}): ${e.message}`);
-            }
-          }
+          // ItemList에서 검사형태 조회 (캐시 사용)
+          const itemKey = rowCompanyName + '|' + tmNo;
+          const inspectionType = itemInspectionTypeMap[itemKey] || '검사';
 
           // 검사형태 필터 적용
           if (filterInspectionType && inspectionType !== filterInspectionType) {
             continue;
           }
 
-          // 검사결과 존재 여부 및 합부판정 확인
+          // 검사결과 존재 여부 및 합부판정 확인 (캐시 사용)
           const resultKey = dateStr + '|' + rowCompanyName + '|' + tmNo;
-          const inspectionResults = checkInspectionResults(companyName, resultKey);
+          const resultInfo = resultMap[resultKey] || { exists: false, passCount: 0, failCount: 0 };
+
+          let overallPassFail = '';
+          if (resultInfo.exists) {
+            if (resultInfo.failCount > 0) {
+              overallPassFail = '불합격';
+            } else if (resultInfo.passCount > 0) {
+              overallPassFail = '합격';
+            }
+          }
 
           results.push({
             companyName: rowCompanyName,
@@ -581,9 +644,9 @@ function searchInspectionResultHistory(token, filters) {
             tmNo: tmNo,
             productName: productName,
             pdfUrl: pdfUrl,
-            hasInspectionResult: inspectionResults.exists,
-            overallPassFail: inspectionResults.overallPassFail,
-            inspectionType: inspectionType || '검사'
+            hasInspectionResult: resultInfo.exists,
+            overallPassFail: overallPassFail,
+            inspectionType: inspectionType
           });
         }
 
@@ -592,8 +655,10 @@ function searchInspectionResultHistory(token, filters) {
         continue;
       }
     }
+    Logger.log(`Data 조회 완료 (${new Date().getTime() - dataStartTime}ms)`);
 
-    Logger.log('검색 완료 - 총 ' + results.length + '건');
+    const totalTime = new Date().getTime() - startTime;
+    Logger.log(`검색 완료 - 총 ${results.length}건 (${totalTime}ms)`);
 
     return {
       success: true,
@@ -601,7 +666,8 @@ function searchInspectionResultHistory(token, filters) {
     };
 
   } catch (error) {
-    Logger.log('검사결과 이력 검색 오류: ' + error.toString());
+    const totalTime = new Date().getTime() - startTime;
+    Logger.log(`검사결과 이력 검색 오류 (${totalTime}ms): ${error.toString()}`);
     return {
       success: false,
       message: '검사결과 이력 검색 중 오류가 발생했습니다: ' + error.message,
