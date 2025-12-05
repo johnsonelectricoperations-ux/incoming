@@ -38,7 +38,7 @@ function getDashboardStats(token) {
       };
     }
     
-    const allData = dataSheet.getDataRange().getValues();
+    const allData = dataSheet.getDataRange().getDisplayValues();
     
     if (allData.length <= 1) {
       return {
