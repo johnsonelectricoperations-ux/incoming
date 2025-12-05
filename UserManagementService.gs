@@ -35,7 +35,7 @@ function getCompanies(token) {
       };
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
 
     if (data.length <= 1) {
       return {
@@ -131,7 +131,7 @@ function getCompanyDetails(token, companyCode) {
       };
     }
 
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
     Logger.log('getCompanyDetails - Users 시트 행 수: ' + data.length);
 
     if (data.length <= 1) {
@@ -247,7 +247,7 @@ function getCompanyStatistics(companyName) {
       Logger.log('Data 시트명: ' + dataSheetName);
       const dataSheet = ss.getSheetByName(dataSheetName);
       if (dataSheet) {
-        const dataData = dataSheet.getDataRange().getValues();
+        const dataData = dataSheet.getDataRange().getDisplayValues();
         stats.dataCount = dataData.length > 1 ? dataData.length - 1 : 0;
         Logger.log('Data 카운트: ' + stats.dataCount);
       }
@@ -261,7 +261,7 @@ function getCompanyStatistics(companyName) {
       Logger.log('Item 시트명: ' + itemSheetName);
       const itemSheet = ss.getSheetByName(itemSheetName);
       if (itemSheet) {
-        const itemData = itemSheet.getDataRange().getValues();
+        const itemData = itemSheet.getDataRange().getDisplayValues();
         stats.itemCount = itemData.length > 1 ? itemData.length - 1 : 0;
         Logger.log('Item 카운트: ' + stats.itemCount);
       }
@@ -275,7 +275,7 @@ function getCompanyStatistics(companyName) {
       Logger.log('Spec 시트명: ' + specSheetName);
       const specSheet = ss.getSheetByName(specSheetName);
       if (specSheet) {
-        const specData = specSheet.getDataRange().getValues();
+        const specData = specSheet.getDataRange().getDisplayValues();
         stats.specCount = specData.length > 1 ? specData.length - 1 : 0;
         Logger.log('Spec 카운트: ' + stats.specCount);
       }
@@ -289,7 +289,7 @@ function getCompanyStatistics(companyName) {
       Logger.log('Result 시트명: ' + resultSheetName);
       const resultSheet = ss.getSheetByName(resultSheetName);
       if (resultSheet) {
-        const resultData = resultSheet.getDataRange().getValues();
+        const resultData = resultSheet.getDataRange().getDisplayValues();
         stats.resultCount = resultData.length > 1 ? resultData.length - 1 : 0;
         Logger.log('Result 카운트: ' + stats.resultCount);
       }
@@ -401,7 +401,7 @@ function addCompany(token, companyData) {
     }
 
     // ID 중복 체크
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       const existingId = String(row[3] || '').trim();
@@ -540,7 +540,7 @@ function addUserToCompany(token, userData) {
     }
 
     // 업체 코드 존재 확인 및 업체명 가져오기
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
     let companyName = '';
 
     for (let i = 1; i < data.length; i++) {
@@ -647,7 +647,7 @@ function updateCompanyName(token, companyCode, newCompanyName) {
     }
 
     // 업체 코드 존재 확인
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
     let oldCompanyName = '';
     let updatedCount = 0;
 
@@ -972,7 +972,7 @@ function changePassword(token, currentPassword, newPassword) {
     }
 
     // 사용자 정보 조회
-    const data = userSheet.getDataRange().getValues();
+    const data = userSheet.getDataRange().getDisplayValues();
     let userRowIndex = -1;
     let storedPassword = '';
 
