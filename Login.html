@@ -299,7 +299,7 @@
         // 사용자 제스처 컨텍스트를 유지하기 위해 즉시 페이지 이동
         // google.script.run 비동기 콜백을 사용하면 샌드박스 에러 발생
         const token = sessionStorage.getItem('sessionToken');
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec';
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbx87b8v6spv3gYFwEt0HpA9t-Cs1NVMQqOCC7Z6nseS6O-qaGzF5QCgyk3goKaZ4VDV/exec';
         redirectToPage(webAppUrl, token);
       } else {
         showAlert(response.message, 'error');

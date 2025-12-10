@@ -734,7 +734,7 @@
     // 로그인 페이지로 리다이렉트
     function redirectToLogin() {
       sessionStorage.removeItem('sessionToken');
-      safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
+      safeNavigate('https://script.google.com/macros/s/AKfycbx87b8v6spv3gYFwEt0HpA9t-Cs1NVMQqOCC7Z6nseS6O-qaGzF5QCgyk3goKaZ4VDV/exec', null);
     }
 
     let currentData = null;
@@ -995,12 +995,12 @@
         google.script.run
           .withSuccessHandler(function() {
             sessionStorage.removeItem('sessionToken');
-            safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
+            safeNavigate('https://script.google.com/macros/s/AKfycbx87b8v6spv3gYFwEt0HpA9t-Cs1NVMQqOCC7Z6nseS6O-qaGzF5QCgyk3goKaZ4VDV/exec', null);
           })
           .withFailureHandler(function(error) {
             console.error('로그아웃 실패:', error);
             sessionStorage.removeItem('sessionToken');
-            safeNavigate('https://script.google.com/macros/s/AKfycbxpjukKc_G4SaPL52w47ANnQc8MvCmkP6IzUX8DaXBqqdz_L8Th3kLqv4_HdslfGnxIBw/exec', null);
+            safeNavigate('https://script.google.com/macros/s/AKfycbx87b8v6spv3gYFwEt0HpA9t-Cs1NVMQqOCC7Z6nseS6O-qaGzF5QCgyk3goKaZ4VDV/exec', null);
           })
           .logoutWithToken(token);
       }
