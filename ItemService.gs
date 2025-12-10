@@ -538,3 +538,93 @@ function deleteItem(token, sheetName, rowIndex) {
     };
   }
 }
+
+/**
+ * Excel 파일을 Google Drive에 업로드
+ * @param {string} token - 세션 토큰
+ * @param {string} fileContent - Base64로 인코딩된 파일 내용
+ * @param {string} fileName - 파일명
+ * @param {string} mimeType - MIME 타입
+ * @param {string} companyName - 업체명 (폴더 구분용)
+ * @param {string} fileType - 파일 유형 ('standard' 또는 'sample')
+ * @returns {Object} {success, fileId, message}
+ */
+function uploadExcelFile(token, fileContent, fileName, mimeType, companyName, fileType) {
+  try {
+    const session = getSessionByToken(token);
+    if (!session || !session.userId) {
+      return {
+        success: false,
+        message: '로그인이 필요합니다.'
+      };
+    }
+
+    // Base64 디코딩
+    const fileBlob = Utilities.newBlob(
+      Utilities.base64Decode(fileContent),
+      mimeType,
+      fileName
+    );
+
+    // Google Drive 루트 폴더 가져오기
+    const rootFolders = DriveApp.getFoldersByName('JEO_InspectionFiles');
+    let rootFolder;
+
+    if (rootFolders.hasNext()) {
+      rootFolder = rootFolders.next();
+    } else {
+      // 루트 폴더가 없으면 생성
+      rootFolder = DriveApp.createFolder('JEO_InspectionFiles');
+    }
+
+    // 업체별 폴더 가져오기 또는 생성
+    const companyFolders = rootFolder.getFoldersByName(companyName);
+    let companyFolder;
+
+    if (companyFolders.hasNext()) {
+      companyFolder = companyFolders.next();
+    } else {
+      companyFolder = rootFolder.createFolder(companyName);
+    }
+
+    // Excel 폴더 가져오기 또는 생성
+    const excelFolders = companyFolder.getFoldersByName('Excel');
+    let excelFolder;
+
+    if (excelFolders.hasNext()) {
+      excelFolder = excelFolders.next();
+    } else {
+      excelFolder = companyFolder.createFolder('Excel');
+    }
+
+    // 파일 유형별 하위 폴더 (Standard 또는 Sample)
+    const typeFolderName = fileType === 'standard' ? 'Standard' : 'Sample';
+    const typeFolders = excelFolder.getFoldersByName(typeFolderName);
+    let typeFolder;
+
+    if (typeFolders.hasNext()) {
+      typeFolder = typeFolders.next();
+    } else {
+      typeFolder = excelFolder.createFolder(typeFolderName);
+    }
+
+    // 파일 생성
+    const file = typeFolder.createFile(fileBlob);
+    const fileId = file.getId();
+
+    Logger.log(`Excel 파일 업로드 완료: ${fileName} (ID: ${fileId})`);
+
+    return {
+      success: true,
+      fileId: fileId,
+      message: 'Excel 파일이 업로드되었습니다.'
+    };
+
+  } catch (error) {
+    Logger.log('uploadExcelFile 오류: ' + error.toString());
+    return {
+      success: false,
+      message: 'Excel 파일 업로드 중 오류가 발생했습니다: ' + error.toString()
+    };
+  }
+}
