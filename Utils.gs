@@ -388,15 +388,17 @@ function createCompanySheets(companyName, companyCode) {
     let listSheet = ss.getSheetByName(listSheetName);
     if (!listSheet) {
       listSheet = ss.insertSheet(listSheetName, lastPosition + 1);
-      listSheet.getRange('A1:F1').setValues([[
-        '업체CODE', 'TM-NO', '제품명', '업체명', '검사형태', '검사기준서'
+      listSheet.getRange('A1:H1').setValues([[
+        '업체CODE', 'TM-NO', '제품명', '업체명', '검사형태', '검사기준서', '검사기준서Excel', '검사성적서Excel'
       ]]);
-      listSheet.getRange('A1:F1').setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
+      listSheet.getRange('A1:H1').setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
 
       // TM-NO 열(B열, 2번째 컬럼)을 텍스트 형식으로 미리 설정
       listSheet.getRange('B:B').setNumberFormat('@STRING@');
       // 검사기준서 URL 열(F열, 6번째 컬럼)을 텍스트 형식으로 미리 설정
       listSheet.getRange('F:F').setNumberFormat('@STRING@');
+      // Excel File ID 열(G, H열)을 텍스트 형식으로 미리 설정
+      listSheet.getRange('G:H').setNumberFormat('@STRING@');
 
       Logger.log(`시트 생성 완료: ${listSheetName}`);
     }

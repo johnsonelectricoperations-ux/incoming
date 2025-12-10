@@ -33,7 +33,8 @@ function getOrCreateItemListSheet(companyName) {
       sheet = ss.getSheetByName(sheetName);
     } else {
       // 기존 시트가 있는 경우, 헤더 확인 및 업데이트
-      const headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+      const lastCol = sheet.getLastColumn();
+      const headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
 
       // '검사기준서' 열이 없는지 확인 (5개 열만 있는 이전 버전 시트 체크)
       if (headerRow.length === 5 && headerRow[4] === '검사형태') {
@@ -41,6 +42,22 @@ function getOrCreateItemListSheet(companyName) {
         sheet.getRange(1, 6).setValue('검사기준서');
         sheet.getRange(1, 6).setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
         sheet.getRange('F:F').setNumberFormat('@STRING@');
+      }
+
+      // '검사기준서Excel' 열이 없는지 확인 (6개 열만 있는 경우)
+      if (headerRow.length === 6 && headerRow[5] === '검사기준서') {
+        Logger.log(`${sheetName}: Excel 컬럼 추가 - '검사기준서Excel', '검사성적서Excel'`);
+        sheet.getRange(1, 7, 1, 2).setValues([['검사기준서Excel', '검사성적서Excel']]);
+        sheet.getRange(1, 7, 1, 2).setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
+        sheet.getRange('G:H').setNumberFormat('@STRING@');
+      }
+
+      // 7개 열인 경우 (검사기준서Excel만 있고 검사성적서Excel 없음)
+      if (headerRow.length === 7 && headerRow[6] === '검사기준서Excel') {
+        Logger.log(`${sheetName}: '검사성적서Excel' 컬럼 추가`);
+        sheet.getRange(1, 8).setValue('검사성적서Excel');
+        sheet.getRange(1, 8).setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
+        sheet.getRange('H:H').setNumberFormat('@STRING@');
       }
     }
 
@@ -113,7 +130,9 @@ function searchTmNo(token, searchText) {
             productName: productName,
             companyName: rowCompanyName,
             inspectionType: String(row[4] || ''),
-            inspectionStandardUrl: String(row[5] || '')
+            inspectionStandardUrl: String(row[5] || ''),
+            standardExcelFileId: String(row[6] || ''),
+            sampleExcelFileId: String(row[7] || '')
           });
         }
 
@@ -187,7 +206,9 @@ function getItemByTmNo(token, tmNo) {
               productName: String(row[2] || ''),
               companyName: String(row[3] || ''),
               inspectionType: String(row[4] || ''),
-              inspectionStandardUrl: String(row[5] || '')
+              inspectionStandardUrl: String(row[5] || ''),
+              standardExcelFileId: String(row[6] || ''),
+              sampleExcelFileId: String(row[7] || '')
             }
           };
         }
@@ -262,20 +283,22 @@ function addItem(token, itemData) {
       }
     }
 
-    // 새 행 추가 (업체CODE 포함, 검사기준서 URL 포함)
+    // 새 행 추가 (업체CODE 포함, 검사기준서 URL, Excel File IDs 포함)
     const lastRow = itemSheet.getLastRow() + 1;
 
     // 먼저 텍스트 형식으로 설정 (특히 TM-NO 컬럼)
-    itemSheet.getRange(lastRow, 1, 1, 6).setNumberFormat('@STRING@');
+    itemSheet.getRange(lastRow, 1, 1, 8).setNumberFormat('@STRING@');
 
     // 데이터 입력
-    itemSheet.getRange(lastRow, 1, 1, 6).setValues([[
+    itemSheet.getRange(lastRow, 1, 1, 8).setValues([[
       companyCode,
       itemData.tmNo,
       itemData.productName,
       itemData.companyName,
       itemData.inspectionType || '',
-      itemData.inspectionStandardUrl || ''
+      itemData.inspectionStandardUrl || '',
+      itemData.standardExcelFileId || '',
+      itemData.sampleExcelFileId || ''
     ]]);
 
     return {
@@ -357,7 +380,9 @@ function getItems(token, options) {
           productName: String(row[2] || ''),
           companyName: rowCompanyName,
           inspectionType: String(row[4] || ''),
-          inspectionStandardUrl: String(row[5] || '')
+          inspectionStandardUrl: String(row[5] || ''),
+          standardExcelFileId: String(row[6] || ''),
+          sampleExcelFileId: String(row[7] || '')
         });
       }
     }
@@ -413,8 +438,8 @@ function updateItem(token, sheetName, rowIndex, itemData) {
       };
     }
 
-    // 기존 데이터 확인 (최소 5개 컬럼, 검사기준서 포함 시 6개)
-    const lastCol = Math.max(itemSheet.getLastColumn(), 6);
+    // 기존 데이터 확인 (최소 5개 컬럼, 검사기준서 포함 시 6개, Excel 포함 시 8개)
+    const lastCol = Math.max(itemSheet.getLastColumn(), 8);
     const existingData = itemSheet.getRange(rowIndex, 1, 1, lastCol).getValues()[0];
     const existingCompany = String(existingData[3]);
 
@@ -426,8 +451,8 @@ function updateItem(token, sheetName, rowIndex, itemData) {
       };
     }
 
-    // 데이터 수정 (업체CODE 포함, 검사기준서 URL 포함)
-    const range = itemSheet.getRange(rowIndex, 1, 1, 6);
+    // 데이터 수정 (업체CODE 포함, 검사기준서 URL, Excel File IDs 포함)
+    const range = itemSheet.getRange(rowIndex, 1, 1, 8);
 
     // 먼저 텍스트 형식으로 설정
     range.setNumberFormat('@STRING@');
@@ -439,7 +464,9 @@ function updateItem(token, sheetName, rowIndex, itemData) {
       itemData.productName,
       itemData.companyName,
       itemData.inspectionType || '',
-      itemData.inspectionStandardUrl || ''
+      itemData.inspectionStandardUrl || '',
+      itemData.standardExcelFileId || '',
+      itemData.sampleExcelFileId || ''
     ]]);
 
     return {
@@ -482,8 +509,8 @@ function deleteItem(token, sheetName, rowIndex) {
       };
     }
 
-    // 기존 데이터 확인 (최소 5개 컬럼, 검사기준서 포함 시 6개)
-    const lastCol = Math.max(itemSheet.getLastColumn(), 6);
+    // 기존 데이터 확인 (최소 5개 컬럼, 검사기준서 포함 시 6개, Excel 포함 시 8개)
+    const lastCol = Math.max(itemSheet.getLastColumn(), 8);
     const existingData = itemSheet.getRange(rowIndex, 1, 1, lastCol).getValues()[0];
     const existingCompany = String(existingData[3]);
 
