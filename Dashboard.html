@@ -749,12 +749,30 @@
         </div>
 
         <div style="margin-bottom: 20px;">
-          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">검사기준서 업로드</label>
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">검사기준서 PDF (참고용)</label>
           <div style="display: flex; gap: 10px; align-items: center;">
             <input type="file" id="itemFileInput" accept=".pdf" style="flex: 1;">
             <span id="itemFileName" style="color: #666; font-size: 13px;"></span>
           </div>
           <p style="font-size: 12px; color: #999; margin-top: 5px;">PDF 파일만 업로드 가능 (최대 20MB)</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">검사기준서 Excel 📊</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" id="itemStandardExcelInput" accept=".xlsx,.xls" style="flex: 1;">
+            <span id="itemStandardExcelName" style="color: #666; font-size: 13px;"></span>
+          </div>
+          <p style="font-size: 12px; color: #999; margin-top: 5px;">Excel 파일만 업로드 가능 (.xlsx, .xls) - 검사규격 자동 등록용</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">검사성적서 Excel 📊</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" id="itemSampleExcelInput" accept=".xlsx,.xls" style="flex: 1;">
+            <span id="itemSampleExcelName" style="color: #666; font-size: 13px;"></span>
+          </div>
+          <p style="font-size: 12px; color: #999; margin-top: 5px;">Excel 파일만 업로드 가능 (.xlsx, .xls) - 샘플 측정값 (랜덤값 생성 기준)</p>
         </div>
       </div>
 
@@ -1089,7 +1107,69 @@
 
       // 사용자 정보 로드 (세션 확인)
       loadUserInfo();
+
+      // Excel 파일 입력 이벤트 리스너 추가
+      setupExcelFileInputListeners();
     };
+
+    // Excel 파일 입력 이벤트 리스너 설정
+    function setupExcelFileInputListeners() {
+      // 검사기준서 Excel 파일 선택 시
+      const standardExcelInput = document.getElementById('itemStandardExcelInput');
+      if (standardExcelInput) {
+        standardExcelInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          const nameSpan = document.getElementById('itemStandardExcelName');
+
+          if (file) {
+            // 파일 타입 검증
+            const validTypes = [
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+              'application/vnd.ms-excel' // .xls
+            ];
+
+            if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/i)) {
+              alert('Excel 파일만 업로드 가능합니다 (.xlsx, .xls)');
+              e.target.value = '';
+              nameSpan.textContent = '';
+              return;
+            }
+
+            nameSpan.textContent = file.name;
+          } else {
+            nameSpan.textContent = '';
+          }
+        });
+      }
+
+      // 검사성적서 Excel 파일 선택 시
+      const sampleExcelInput = document.getElementById('itemSampleExcelInput');
+      if (sampleExcelInput) {
+        sampleExcelInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          const nameSpan = document.getElementById('itemSampleExcelName');
+
+          if (file) {
+            // 파일 타입 검증
+            const validTypes = [
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+              'application/vnd.ms-excel' // .xls
+            ];
+
+            if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/i)) {
+              alert('Excel 파일만 업로드 가능합니다 (.xlsx, .xls)');
+              e.target.value = '';
+              nameSpan.textContent = '';
+              return;
+            }
+
+            nameSpan.textContent = file.name;
+          } else {
+            nameSpan.textContent = '';
+          }
+        });
+      }
+    }
 
     // 네비게이션 초기화 함수
     function initNavigation(currentPage, userRole) {
@@ -2297,9 +2377,15 @@
       document.getElementById('itemCompanyName').value = '';
       document.getElementById('itemInspectionType').value = '';
 
-      // 검사기준서 파일 입력 초기화
+      // 검사기준서 PDF 파일 입력 초기화
       document.getElementById('itemFileInput').value = '';
       document.getElementById('itemFileName').textContent = '';
+
+      // Excel 파일 입력 초기화
+      document.getElementById('itemStandardExcelInput').value = '';
+      document.getElementById('itemStandardExcelName').textContent = '';
+      document.getElementById('itemSampleExcelInput').value = '';
+      document.getElementById('itemSampleExcelName').textContent = '';
 
       const select = document.getElementById('itemCompanyName');
       const inspectionTypeField = document.getElementById('itemInspectionTypeField');
